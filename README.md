@@ -4,13 +4,17 @@ AI-Powered Marketplace Assistant for Local Artisans
 
 ## Tech Stack
 
-- **Framework**: Next.js 16 (App Router)
-- **Database**: Supabase PostgreSQL
-- **ORM**: Prisma
-- **Auth**: Supabase Auth
-- **Storage**: Supabase Storage
-- **AI**: Google Gemini
-- **Styling**: Tailwind CSS
+| Category           | Technology              | Purpose                                            |
+| ------------------ | ----------------------- | -------------------------------------------------- |
+| **Frontend**       | Next.js 16 (App Router) | React framework with server-side rendering         |
+| **Styling**        | Tailwind CSS            | Utility-first CSS framework                        |
+| **Database**       | Supabase PostgreSQL     | Cloud-hosted PostgreSQL database                   |
+| **ORM**            | Prisma                  | Type-safe database client and schema management    |
+| **Authentication** | Supabase Auth           | User authentication and authorization              |
+| **File Storage**   | Supabase Storage        | Cloud storage for images and files                 |
+| **AI Services**    | Google Gemini           | AI-powered content generation and image processing |
+| **Language**       | TypeScript              | Type-safe JavaScript development                   |
+| **Deployment**     | Vercel                  | Serverless deployment platform                     |
 
 ## Getting Started
 
@@ -98,4 +102,3 @@ Key models:
 - `npm run db:push` - Push schema to database
 - `npm run db:generate` - Generate Prisma client
 - `npm run db:studio` - Open Prisma Studio
-
