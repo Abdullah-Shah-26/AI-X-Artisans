@@ -1,0 +1,337 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ARTISAN
+  VOLUNTEER
+  CUSTOMER
+}
+
+enum ProjectStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum CollaborationStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// Base user model
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  name            String
+  avatar          String?
+  role            Role
+  profileComplete Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Role-specific profiles
+  artisanProfile   ArtisanProfile?
+  volunteerProfile VolunteerProfile?
+
+  // Relations
+  products       Product[]
+  projectsPosted Project[] @relation("ArtisanProjects")
+
+  // Chat
+  conversationsAsParticipant1 Conversation[] @relation("Participant1")
+  conversationsAsParticipant2 Conversation[] @relation("Participant2")
+  messagesSent                Message[]
+
+  // Connections
+  connectionsSent     ConnectionRequest[] @relation("ConnectionSender")
+  connectionsReceived ConnectionRequest[] @relation("ConnectionReceiver")
+
+  // Project applications & collaborations
+  applicationsAsVolunteer   ProjectApplication[] @relation("VolunteerApplications")
+  applicationsAsArtisan     ProjectApplication[] @relation("ArtisanApplications")
+  collaborationsAsVolunteer Collaboration[]      @relation("VolunteerCollaborations")
+  collaborationsAsArtisan   Collaboration[]      @relation("ArtisanCollaborations")
+
+  // Certificates
+  certificatesCreated Certificate[] @relation("CertificateArtist")
+
+  // Volunteer Certificates
+  volunteerCertificatesReceived VolunteerCertificate[] @relation("VolunteerCertificates")
+  volunteerCertificatesIssued   VolunteerCertificate[] @relation("IssuedCertificates")
+
+  // Cart & Favorites (for customers)
+  cartItems CartItem[]
+  favorites Favorite[]
+
+  // Price offers (bargaining)
+  offersAsCustomer PriceOffer[] @relation("CustomerOffers")
+  offersAsArtisan  PriceOffer[] @relation("ArtisanOffers")
+}
+
+model ArtisanProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location          String?
+  bio               String?
+  story             String?
+  storyVideoUrl     String?
+  craftTypes        String[] @default([])
+  yearsOfExperience Int?
+
+  campaigns CrowdfundCampaign[]
+}
+
+model VolunteerProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills            String[] @default([])
+  bio               String?
+  motivation        String?
+  projectsCompleted Int      @default(0)
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  name            String
+  description     String
+  longDescription String?
+  price           Float
+  image           String
+  category        String
+  craftTradition  String?
+  storyVideoUrl   String?
+  dateAdded       DateTime @default(now())
+
+  artisanId String
+  artisan   User   @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  certificateId String?      @unique
+  certificate   Certificate? @relation(fields: [certificateId], references: [id])
+
+  // Relations
+  cartItems   CartItem[]
+  favorites   Favorite[]
+  priceOffers PriceOffer[]
+}
+
+model Certificate {
+  id             String   @id @default(cuid())
+  artworkName    String
+  craftTradition String
+  certifiedDate  DateTime @default(now())
+  heritageStory  String?
+  image          String?
+
+  artistId String
+  artist   User   @relation("CertificateArtist", fields: [artistId], references: [id], onDelete: Cascade)
+
+  product Product?
+}
+
+model Project {
+  id           String        @id @default(cuid())
+  title        String
+  description  String
+  skillsNeeded String[]      @default([])
+  status       ProjectStatus @default(OPEN)
+  createdAt    DateTime      @default(now())
+
+  postedById String
+  postedBy   User   @relation("ArtisanProjects", fields: [postedById], references: [id], onDelete: Cascade)
+
+  applications   ProjectApplication[]
+  collaborations Collaboration[]
+}
+
+model ProjectApplication {
+  id              String            @id @default(cuid())
+  status          ApplicationStatus @default(PENDING)
+  applicationDate DateTime          @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  volunteerId String
+  volunteer   User   @relation("VolunteerApplications", fields: [volunteerId], references: [id], onDelete: Cascade)
+
+  artisanId String
+  artisan   User   @relation("ArtisanApplications", fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, volunteerId])
+}
+
+model Collaboration {
+  id        String              @id @default(cuid())
+  status    CollaborationStatus @default(IN_PROGRESS)
+  startDate DateTime            @default(now())
+  endDate   DateTime?
+  rating    Int?
+  feedback  String?
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  volunteerId String
+  volunteer   User   @relation("VolunteerCollaborations", fields: [volunteerId], references: [id], onDelete: Cascade)
+
+  artisanId String
+  artisan   User   @relation("ArtisanCollaborations", fields: [artisanId], references: [id], onDelete: Cascade)
+
+  // Certificate issued to volunteer
+  certificate VolunteerCertificate?
+}
+
+model VolunteerCertificate {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  issuedAt    DateTime @default(now())
+
+  collaborationId String        @unique
+  collaboration   Collaboration @relation(fields: [collaborationId], references: [id], onDelete: Cascade)
+
+  volunteerId String
+  volunteer   User   @relation("VolunteerCertificates", fields: [volunteerId], references: [id], onDelete: Cascade)
+
+  artisanId String
+  artisan   User   @relation("IssuedCertificates", fields: [artisanId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  lastMessageAt   DateTime?
+  lastMessageText String?
+
+  participant1Id String
+  participant1   User   @relation("Participant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+
+  participant2Id String
+  participant2   User   @relation("Participant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  @@unique([participant1Id, participant2Id])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  text      String?
+  imageUrl  String?
+  timestamp DateTime @default(now())
+
+  senderId String
+  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model ConnectionRequest {
+  id        String           @id @default(cuid())
+  status    ConnectionStatus @default(PENDING)
+  timestamp DateTime         @default(now())
+
+  senderId String
+  sender   User   @relation("ConnectionSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiverId String
+  receiver   User   @relation("ConnectionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+}
+
+model CartItem {
+  id         String  @id @default(cuid())
+  quantity   Int     @default(1)
+  offerPrice Float? // If added from accepted offer
+  offerId    String? // Link to the accepted offer
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model Favorite {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model CrowdfundCampaign {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  goalAmount    Float
+  currentAmount Float    @default(0)
+  image         String?
+  status        String   @default("ACTIVE")
+  endDate       DateTime
+  createdAt     DateTime @default(now())
+
+  artisanId String
+  artisan   ArtisanProfile @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COUNTERED
+  EXPIRED
+  COMPLETED
+}
+
+model PriceOffer {
+  id          String      @id @default(cuid())
+  offerAmount Float
+  status      OfferStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  expiresAt   DateTime? // When accepted offer expires
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  customerId String
+  customer   User   @relation("CustomerOffers", fields: [customerId], references: [id], onDelete: Cascade)
+
+  artisanId String
+  artisan   User   @relation("ArtisanOffers", fields: [artisanId], references: [id], onDelete: Cascade)
+
+  counterAmount Float? // If artisan counters with different price
+  finalPrice    Float? // The agreed price (offerAmount or counterAmount)
+
+  @@unique([productId, customerId])
+}
