@@ -26,12 +26,18 @@ const demoProducts = [
       artisanProfile: {
         bio: "Master basket weaver with 20 years of experience in traditional craft",
         craftSpecialty: "Basket Weaving",
+        location: "Rajasthan, India",
+        story:
+          "I learned the art of basket weaving from my grandmother. Each basket I create uses traditional techniques and natural fibers, preserving our cultural heritage while creating functional art pieces.",
+        craftTypes: ["Basket Weaving", "Natural Fiber Work"],
+        yearsOfExperience: null,
       },
       _count: { products: 8 },
     },
     certificate: {
       id: "cert-demo-1",
       productId: "demo-1",
+      artworkName: "Handwoven Basket",
       heritageStory:
         "This handwoven basket represents centuries of traditional craftsmanship, using natural fibers and geometric patterns unique to our region.",
       certificationDate: new Date(),
@@ -59,6 +65,11 @@ const demoProducts = [
       artisanProfile: {
         bio: "Third-generation brass artisan specializing in traditional oil lamps",
         craftSpecialty: "Brass Work",
+        location: "Uttar Pradesh, India",
+        story:
+          "My family has been working with brass for three generations. I specialize in creating traditional diyas and decorative brass items using ancient techniques.",
+        craftTypes: ["Brass Work", "Metal Craft"],
+        yearsOfExperience: null,
       },
       _count: { products: 15 },
     },
@@ -85,6 +96,11 @@ const demoProducts = [
       artisanProfile: {
         bio: "Ceramic artist known for intricate hand-painted designs",
         craftSpecialty: "Ceramic Art",
+        location: "Rajasthan, India",
+        story:
+          "I create beautiful ceramic pieces using traditional pottery techniques. Each piece is hand-painted with intricate designs inspired by our rich cultural heritage.",
+        craftTypes: ["Ceramic Art", "Pottery"],
+        yearsOfExperience: null,
       },
       _count: { products: 10 },
     },
@@ -111,6 +127,11 @@ const demoProducts = [
       artisanProfile: {
         bio: "Expert wood carver specializing in decorative boxes and furniture",
         craftSpecialty: "Wood Carving",
+        location: "Karnataka, India",
+        story:
+          "I specialize in creating intricate wooden jewelry boxes and decorative items. My work combines traditional wood carving with beautiful brass inlay patterns.",
+        craftTypes: ["Wood Carving", "Brass Inlay"],
+        yearsOfExperience: null,
       },
       _count: { products: 12 },
     },
@@ -137,6 +158,11 @@ const demoProducts = [
       artisanProfile: {
         bio: "Terracotta specialist creating functional and decorative pottery",
         craftSpecialty: "Terracotta",
+        location: "Gujarat, India",
+        story:
+          "I work with terracotta clay to create both functional and decorative pieces. My planters and pottery items are made using traditional techniques that have been in my family for generations.",
+        craftTypes: ["Terracotta", "Clay Work"],
+        yearsOfExperience: null,
       },
       _count: { products: 18 },
     },
@@ -163,6 +189,11 @@ const demoProducts = [
       artisanProfile: {
         bio: "Bamboo craftsman creating sustainable and eco-friendly products",
         craftSpecialty: "Bamboo Craft",
+        location: "Assam, India",
+        story:
+          "I create beautiful and functional bamboo products that are both sustainable and artistic. My work promotes eco-friendly living while preserving traditional bamboo crafting techniques.",
+        craftTypes: ["Bamboo Craft", "Eco-friendly Products"],
+        yearsOfExperience: 16,
       },
       _count: { products: 14 },
     },
@@ -189,6 +220,11 @@ const demoProducts = [
       artisanProfile: {
         bio: "Traditional potter specializing in functional clay cookware",
         craftSpecialty: "Clay Pottery",
+        location: "Telangana, India",
+        story:
+          "I create traditional clay pots and cookware that are both beautiful and functional. My work preserves ancient pottery techniques while creating items for modern kitchens.",
+        craftTypes: ["Clay Pottery", "Traditional Cookware"],
+        yearsOfExperience: 22,
       },
       _count: { products: 11 },
     },
@@ -214,6 +250,11 @@ const demoProducts = [
       artisanProfile: {
         bio: "Master weaver creating traditional dhurries and rugs",
         craftSpecialty: "Weaving",
+        location: "Rajasthan, India",
+        story:
+          "I am a master weaver specializing in traditional dhurries and cotton rugs. Each piece is woven on traditional handlooms using techniques passed down through generations.",
+        craftTypes: ["Weaving", "Handloom"],
+        yearsOfExperience: 25,
       },
       _count: { products: 9 },
     },
@@ -271,6 +312,11 @@ const demoProducts = [
       artisanProfile: {
         bio: "Block printing expert using traditional wooden blocks and natural dyes",
         craftSpecialty: "Block Printing",
+        location: "Rajasthan, India",
+        story:
+          "I am an expert in traditional block printing techniques using hand-carved wooden blocks and natural dyes. My work preserves the ancient art of block printing while creating beautiful textile pieces for modern homes.",
+        craftTypes: ["Block Printing", "Natural Dyes", "Textile Art"],
+        yearsOfExperience: 20,
       },
       _count: { products: 13 },
     },

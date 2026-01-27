@@ -139,7 +139,7 @@ function ProfileSetupContent() {
   // Loading state
   if (loading && step === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-100">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-emerald-50 to-teal-100">
         <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
           <div className="animate-spin w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
@@ -151,7 +151,7 @@ function ProfileSetupContent() {
   // Role selection step
   if (step === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-100 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-emerald-50 to-teal-100 p-4">
         <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg">
           <h1 className="text-2xl font-bold text-center mb-2 text-gray-900">
             Welcome to AIxArtisans!
@@ -264,7 +264,7 @@ function ProfileSetupContent() {
 
   // Profile setup form
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-emerald-50 to-teal-100 p-4">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg">
         <h1 className="text-2xl font-bold text-center mb-2 text-gray-900">
           Complete Your Profile
@@ -460,7 +460,7 @@ export default function ProfileSetupPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-100">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-emerald-50 to-teal-100">
           <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
             <div className="animate-spin w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading...</p>

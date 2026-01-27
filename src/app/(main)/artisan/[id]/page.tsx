@@ -328,7 +328,7 @@ export default async function ArtisanProfilePage({
                     Specializations
                   </h2>
                   <div className="flex flex-wrap gap-2">
-                    {artisan.artisanProfile.craftTypes.map((craft) => (
+                    {artisan.artisanProfile.craftTypes.map((craft: string) => (
                       <span
                         key={craft}
                         className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm"
@@ -378,7 +378,7 @@ export default async function ArtisanProfilePage({
 
               {artisan.products && artisan.products.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {artisan.products.map((product) => (
+                  {artisan.products.map((product: any) => (
                     <Link
                       key={product.id}
                       href={isDemo ? "#" : `/marketplace/${product.id}`}
