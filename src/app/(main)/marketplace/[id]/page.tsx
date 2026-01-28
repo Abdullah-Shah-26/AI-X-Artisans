@@ -43,7 +43,7 @@ const demoProducts = [
       certificationDate: new Date(),
       qrCode: "demo-qr-1",
     },
-  },
+  },                                                                                                                              
   {
     id: "demo-2",
     name: "Brass Oil Lamp",
@@ -290,15 +290,14 @@ const demoProducts = [
     stock: 3,
     dateAdded: new Date(),
     artisan: {
-      id: "demo-a9",
-      name: "Ramesh Joshi",
-      avatar:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100",
+      id: "demo-a1",
+      name: "Lakshmi Devi",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
       artisanProfile: {
         location: "Varanasi, India",
         bio: "Master silk weaver with 25 years of experience in traditional Banarasi sarees",
         story:
-          "Born into a family of traditional weavers in Varanasi, Ramesh learned the art of silk weaving from his grandfather. He specializes in creating intricate Banarasi sarees using traditional pit looms and authentic zari work techniques passed down through generations.",
+          "Born into a family of traditional weavers in Varanasi, I learned the art of silk weaving from my grandmother. I specialize in creating intricate Banarasi sarees using traditional pit looms and authentic zari work techniques passed down through generations.",
         craftSpecialty: "Silk Weaving",
         craftTypes: ["Silk Weaving", "Zari Work"],
         yearsOfExperience: 25,

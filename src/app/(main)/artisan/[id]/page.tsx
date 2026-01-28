@@ -10,12 +10,17 @@ const demoArtisans: Record<string, any> = {
     name: "Lakshmi Devi",
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
     artisanProfile: {
-      bio: "Master basket weaver with 20 years of experience in traditional craft techniques passed down through generations.",
-      location: "Rajasthan, India",
-      craftTypes: ["Basket Weaving", "Natural Fiber Work"],
+      bio: "Master silk weaver with 25 years of experience in traditional Banarasi sarees and basket weaving.",
+      location: "Varanasi, India",
+      craftTypes: [
+        "Silk Weaving",
+        "Zari Work",
+        "Basket Weaving",
+        "Natural Fiber Work",
+      ],
       story:
-        "I learned the art of basket weaving from my grandmother. Each basket I create uses traditional techniques and natural fibers, preserving our cultural heritage while creating functional art pieces.",
-      yearsOfExperience: 20,
+        "Born into a family of traditional weavers in Varanasi, I learned the art of silk weaving from my grandmother. I specialize in creating intricate Banarasi sarees using traditional pit looms and authentic zari work techniques passed down through generations. I also create beautiful handwoven baskets using natural fibers.",
+      yearsOfExperience: 25,
     },
     products: [],
   },

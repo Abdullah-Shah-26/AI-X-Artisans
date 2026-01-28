@@ -52,7 +52,7 @@ const demoCertificates = [
       "This exquisite Banarasi silk saree is a masterpiece woven on traditional pit looms using techniques perfected over centuries. The intricate zari work and traditional motifs represent the pinnacle of Indian textile artistry, with each thread telling a story of heritage spanning generations. This saree embodies the timeless elegance and cultural richness of Varanasi's legendary weaving tradition.",
     image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500",
     qrCode: "demo-qr-9",
-    artist: { name: "Ramesh Joshi" },
+    artist: { name: "Lakshmi Devi" },
     product: { id: "demo-9", name: "Handwoven Silk Saree" },
   },
 ];

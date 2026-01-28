@@ -255,16 +255,35 @@ export function ChatClient({
     }
   }, [selectedConversation]);
 
-  // Poll for new messages every 3 seconds for real conversations
+  // Subscribe to real-time messages for real conversations
   useEffect(() => {
     if (!selectedConversation || isMockConversation(selectedConversation))
       return;
 
-    const interval = setInterval(() => {
-      loadMessages(selectedConversation);
-    }, 3000);
+    const channel = supabase
+      .channel(`conversation:${selectedConversation}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "Message",
+          filter: `conversationId=eq.${selectedConversation}`,
+        },
+        (payload) => {
+          const newMessage = payload.new as Message;
+          setMessages((prev) => {
+            // Avoid duplicates
+            if (prev.some((msg) => msg.id === newMessage.id)) return prev;
+            return [...prev, newMessage];
+          });
+        },
+      )
+      .subscribe();
 
-    return () => clearInterval(interval);
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [selectedConversation]);
 
   useEffect(() => {

@@ -287,8 +287,8 @@ export function PhotoStudioClient() {
       };
 
       newRecognition.onerror = (event: any) => {
-        // Silently handle abort errors (user cancelled)
-        if (event.error !== "aborted") {
+        // Silently handle common errors that aren't actual problems
+        if (event.error !== "aborted" && event.error !== "no-speech") {
           console.error("Speech recognition error", event.error);
         }
         setIsListening(false);

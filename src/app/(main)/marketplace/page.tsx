@@ -205,10 +205,9 @@ const demoProducts = [
     category: "Textiles",
     craftTradition: "Silk Weaving",
     artisan: {
-      id: "demo-a9",
-      name: "Ramesh Joshi",
-      avatar:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100",
+      id: "demo-a1",
+      name: "Lakshmi Devi",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
     },
     hasCertificate: true,
     isDemo: true,
