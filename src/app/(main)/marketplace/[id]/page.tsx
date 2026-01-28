@@ -104,7 +104,15 @@ const demoProducts = [
       },
       _count: { products: 10 },
     },
-    certificate: null,
+    certificate: {
+      id: "cert-demo-3",
+      productId: "demo-3",
+      artworkName: "Ceramic Tea Set",
+      heritageStory:
+        "This hand-painted ceramic tea set showcases traditional pottery techniques passed down through generations. Each piece is individually crafted and painted with intricate designs inspired by our rich cultural heritage, representing the timeless art of ceramic craftsmanship.",
+      certificationDate: new Date(),
+      qrCode: "demo-qr-3",
+    },
   },
   {
     id: "demo-4",
@@ -197,7 +205,15 @@ const demoProducts = [
       },
       _count: { products: 14 },
     },
-    certificate: null,
+    certificate: {
+      id: "cert-demo-6",
+      productId: "demo-6",
+      artworkName: "Bamboo Basket Set",
+      heritageStory:
+        "These handwoven bamboo baskets represent sustainable craftsmanship rooted in traditional techniques. Made from locally sourced bamboo using eco-friendly methods, each basket embodies our commitment to preserving both cultural heritage and environmental sustainability.",
+      certificationDate: new Date(),
+      qrCode: "demo-qr-6",
+    },
   },
   {
     id: "demo-7",
@@ -289,7 +305,15 @@ const demoProducts = [
       },
       _count: { products: 16 },
     },
-    certificate: null,
+    certificate: {
+      id: "cert-demo-9",
+      productId: "demo-9",
+      artworkName: "Handwoven Silk Saree",
+      heritageStory:
+        "This exquisite Banarasi silk saree is a masterpiece woven on traditional pit looms using techniques perfected over centuries. The intricate zari work and traditional motifs represent the pinnacle of Indian textile artistry, with each thread telling a story of heritage spanning generations. This saree embodies the timeless elegance and cultural richness of Varanasi's legendary weaving tradition.",
+      certificationDate: new Date(),
+      qrCode: "demo-qr-9",
+    },
   },
   {
     id: "demo-10",
