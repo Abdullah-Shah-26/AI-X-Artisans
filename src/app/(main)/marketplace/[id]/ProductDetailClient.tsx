@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { CustomerHeader } from "@/components/layout/CustomerHeader";
 
 type StyleType = "minimalist" | "bohemian" | "extravagant" | "classic";
 type StylistStep = "select" | "generating" | "result";
@@ -83,11 +84,24 @@ export function ProductDetailClient({
   );
   const [offer, setOffer] = useState(userOffer);
   const [offerLoading, setOfferLoading] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [favoritesCount, setFavoritesCount] = useState(0);
 
-  // Prevent hydration mismatch
+  // Prevent hydration mismatch and load cart/favorites count
   useEffect(() => {
     setMounted(true);
-  }, []);
+
+    // Load cart and favorites count from localStorage for guest users
+    if (user?.id === "guest-user" && typeof window !== "undefined") {
+      const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+      setCartCount(guestCart.length);
+
+      const guestFavorites = JSON.parse(
+        localStorage.getItem("guestFavorites") || "[]",
+      );
+      setFavoritesCount(guestFavorites.length);
+    }
+  }, [user]);
 
   const minOffer = Math.round(product.price * 0.7);
   const maxOffer = product.price;
@@ -105,12 +119,24 @@ export function ProductDetailClient({
     }
     setLoading(true);
 
-    // Guest mode simulation
+    // Guest mode simulation - store in localStorage
     if (user.id === "guest-user") {
       setTimeout(() => {
+        // Get current cart from localStorage
+        const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+        // Add product if not already in cart
+        if (!guestCart.includes(product.id)) {
+          guestCart.push(product.id);
+          localStorage.setItem("guestCart", JSON.stringify(guestCart));
+          // Update cart count state
+          setCartCount(guestCart.length);
+        }
+
         setAddedToCart(true);
         setLoading(false);
-        setTimeout(() => setAddedToCart(false), 2000);
+        setTimeout(() => {
+          setAddedToCart(false);
+        }, 1000);
       }, 600);
       return;
     }
@@ -122,7 +148,11 @@ export function ProductDetailClient({
         body: JSON.stringify({ productId: product.id, quantity: 1 }),
       });
       setAddedToCart(true);
-      setTimeout(() => setAddedToCart(false), 2000);
+      setTimeout(() => {
+        setAddedToCart(false);
+        // Refresh to update cart count
+        router.refresh();
+      }, 1000);
     } catch (e) {
       console.error(e);
     } finally {
@@ -138,8 +168,26 @@ export function ProductDetailClient({
     const newFav = !favorite;
     setFavorite(newFav);
 
-    // Guest mode simulation
-    if (user.id === "guest-user") return;
+    // Guest mode simulation - store in localStorage
+    if (user.id === "guest-user") {
+      const guestFavorites = JSON.parse(
+        localStorage.getItem("guestFavorites") || "[]",
+      );
+      if (newFav) {
+        if (!guestFavorites.includes(product.id)) {
+          guestFavorites.push(product.id);
+        }
+      } else {
+        const index = guestFavorites.indexOf(product.id);
+        if (index > -1) {
+          guestFavorites.splice(index, 1);
+        }
+      }
+      localStorage.setItem("guestFavorites", JSON.stringify(guestFavorites));
+      // Update favorites count state
+      setFavoritesCount(guestFavorites.length);
+      return;
+    }
 
     try {
       await fetch("/api/favorites", {
@@ -203,9 +251,9 @@ export function ProductDetailClient({
       return;
     }
 
-    // Guest mode simulation - redirect to demo chat
+    // Guest mode simulation - redirect to demo connections
     if (user.id === "guest-user") {
-      router.push("/dashboard/chat");
+      router.push("/dashboard/connections");
       return;
     }
 
@@ -219,13 +267,13 @@ export function ProductDetailClient({
 
       if (res.ok) {
         const conversation = await res.json();
-        // Redirect to chat with this conversation
-        router.push(`/dashboard/chat?conversation=${conversation.id}`);
+        // Redirect to connections with this conversation
+        router.push(`/dashboard/connections?conversation=${conversation.id}`);
       }
     } catch (e) {
       console.error(e);
-      // Fallback to general chat page
-      router.push("/dashboard/chat");
+      // Fallback to general connections page
+      router.push("/dashboard/connections");
     }
   };
 
@@ -341,63 +389,17 @@ export function ProductDetailClient({
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <Link href="/marketplace" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg overflow-hidden border border-emerald-500/30">
-                <img
-                  src="/image.png"
-                  alt="AIxArtisans"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
-                AIxArtisans
-              </span>
-            </Link>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-2 text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg"
-              >
-                {!mounted ? (
-                  // Render a placeholder during SSR to prevent hydration mismatch
-                  <div className="w-5 h-5" />
-                ) : theme === "dark" ? (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                    />
-                  </svg>
-                )}
-              </button>
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Back button + Logo */}
+            <div className="flex items-center gap-3">
+              {/* Back button */}
               <Link
                 href="/marketplace"
-                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-2"
+                className="p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition"
+                title="Back to Marketplace"
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -406,15 +408,62 @@ export function ProductDetailClient({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    d="M15 19l-7-7 7-7"
                   />
                 </svg>
-                Back to Marketplace
               </Link>
+
+              {/* Logo */}
+              <Link href="/marketplace" className="flex items-center gap-2">
+                <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg overflow-hidden border border-emerald-500/30">
+                  <img
+                    src="/image.png"
+                    alt="AIxArtisans"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="text-base md:text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+                  AIxArtisans
+                </span>
+              </Link>
+            </div>
+
+            {/* Right: Favorite + Cart */}
+            <div className="flex items-center gap-2">
+              {/* Favorite button - Links to marketplace favorites */}
+              {user && (
+                <Link
+                  href="/marketplace?view=favorites"
+                  className="p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition relative"
+                  title="View Favorites"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill={favorite ? "currentColor" : "none"}
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                  {favoritesCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-medium">
+                      {favoritesCount}
+                    </span>
+                  )}
+                </Link>
+              )}
+
+              {/* Cart button */}
               {user && (
                 <Link
                   href="/cart"
-                  className="p-2 text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg relative"
+                  className="p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition relative"
+                  title="View Cart"
                 >
                   <svg
                     className="w-5 h-5"
@@ -429,6 +478,11 @@ export function ProductDetailClient({
                       d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                     />
                   </svg>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-emerald-500 text-white text-[10px] rounded-full flex items-center justify-center font-medium">
+                      {cartCount}
+                    </span>
+                  )}
                 </Link>
               )}
             </div>
@@ -773,7 +827,7 @@ export function ProductDetailClient({
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={handleAddToCart}
                 disabled={loading || addedToCart}
@@ -841,17 +895,19 @@ export function ProductDetailClient({
                       d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                     />
                   </svg>
-                  Message Artisan
+                  <span className="hidden sm:inline">Message Artisan</span>
+                  <span className="sm:hidden">Message</span>
                 </button>
               )}
 
               <button
                 onClick={handleToggleFavorite}
-                className={`p-3.5 rounded-xl ring-1 transition ${
+                className={`sm:w-auto w-full py-3.5 px-4 rounded-xl ring-1 transition flex items-center justify-center gap-2 ${
                   favorite
                     ? "bg-red-50 dark:bg-red-500/10 ring-red-200 dark:ring-red-500/30 text-red-500"
                     : "ring-gray-200 dark:ring-zinc-700 text-gray-500 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-800"
                 }`}
+                title={favorite ? "Remove from favorites" : "Add to favorites"}
               >
                 <svg
                   className="w-5 h-5"
@@ -866,6 +922,9 @@ export function ProductDetailClient({
                     d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                   />
                 </svg>
+                <span className="sm:hidden font-medium">
+                  {favorite ? "Remove from Favorites" : "Add to Favorites"}
+                </span>
               </button>
             </div>
           </div>
@@ -948,48 +1007,46 @@ export function ProductDetailClient({
 
       {/* AI Stylist Modal */}
       {isStylistOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
-          <div className="bg-white dark:bg-zinc-900 rounded-3xl w-full max-w-5xl max-h-[95vh] overflow-hidden ring-1 ring-gray-200 dark:ring-zinc-800 shadow-2xl animate-in zoom-in-95 duration-300">
-            {/* Header with gradient */}
-            <div className="bg-linear-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 text-white">
+        <div className="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-zinc-900 rounded-t-3xl sm:rounded-3xl w-full max-w-5xl max-h-[92vh] sm:max-h-[90vh] overflow-hidden ring-1 ring-gray-200 dark:ring-zinc-800 shadow-2xl animate-in slide-in-from-bottom sm:zoom-in-95 duration-300">
+            {/* Compact Purple Header - Professional */}
+            <div className="bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                      />
-                    </svg>
-                  </div>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+                    />
+                  </svg>
                   <div>
-                    <h2 className="text-2xl font-bold">AI Stylist</h2>
-                    <p className="text-purple-100 text-sm">
-                      Transform your saree design with AI magic
+                    <h2 className="text-base font-semibold">AI Stylist</h2>
+                    <p className="text-xs text-purple-100">
+                      Transform your product design with AI magic
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={handleCloseStylist}
-                  className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
                 >
                   <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    strokeWidth={2}
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={2}
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
@@ -997,21 +1054,11 @@ export function ProductDetailClient({
               </div>
             </div>
 
-            <div className="p-8 overflow-y-auto max-h-[calc(95vh-120px)]">
+            <div className="p-4 sm:p-6 md:p-8 overflow-y-auto max-h-[calc(92vh-65px)] sm:max-h-[calc(90vh-65px)]">
               {stylistStep === "select" && (
-                <div className="space-y-8">
-                  <div className="text-center">
-                    <p className="text-lg text-gray-600 dark:text-zinc-400 mb-2">
-                      Choose a design style to transform your saree
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-zinc-500">
-                      Our AI will reimagine the saree design while preserving
-                      its elegance
-                    </p>
-                  </div>
-
+                <div className="space-y-6">
                   {stylistError && (
-                    <div className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-2xl border border-red-200 dark:border-red-500/20">
+                    <div className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-500/20">
                       <div className="flex items-center gap-2">
                         <svg
                           className="w-5 h-5"
@@ -1029,66 +1076,111 @@ export function ProductDetailClient({
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
                       {
                         id: "minimalist",
                         name: "Minimalist",
                         desc: "Clean lines, subtle patterns",
-                        icon: "M4 6h16M4 12h16M4 18h16",
-                        gradient: "from-slate-500 to-gray-600",
+                        icon: (
+                          <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                            />
+                          </svg>
+                        ),
+                        color:
+                          "bg-slate-100 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400",
                       },
                       {
                         id: "bohemian",
                         name: "Bohemian",
                         desc: "Rich textures, artistic flair",
-                        icon: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
-                        gradient: "from-amber-500 to-orange-600",
+                        icon: (
+                          <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"
+                            />
+                          </svg>
+                        ),
+                        color:
+                          "bg-orange-100 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400",
                       },
                       {
                         id: "extravagant",
                         name: "Extravagant",
                         desc: "Luxurious, ornate details",
-                        icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
-                        gradient: "from-purple-500 to-pink-600",
+                        icon: (
+                          <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+                            />
+                          </svg>
+                        ),
+                        color:
+                          "bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400",
                       },
                       {
                         id: "classic",
                         name: "Classic",
                         desc: "Traditional, timeless beauty",
-                        icon: "M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z",
-                        gradient: "from-emerald-500 to-teal-600",
+                        icon: (
+                          <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        ),
+                        color:
+                          "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
                       },
                     ].map((style) => (
                       <button
                         key={style.id}
                         onClick={() => handleStyleSelect(style.id as StyleType)}
-                        className="group relative p-6 rounded-2xl border-2 border-gray-200 dark:border-zinc-700 hover:border-transparent hover:shadow-2xl hover:shadow-purple-500/25 text-center transition-all duration-300 hover:-translate-y-1 bg-white dark:bg-zinc-800 overflow-hidden"
+                        className="group relative p-5 rounded-xl border-2 border-gray-200 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-lg text-center transition-all duration-200 bg-white dark:bg-zinc-800"
                       >
                         <div
-                          className={`absolute inset-0 bg-linear-to-br ${style.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
-                        />
-                        <div
-                          className={`w-12 h-12 mx-auto mb-4 rounded-full bg-linear-to-br ${style.gradient} flex items-center justify-center text-white shadow-lg`}
+                          className={`w-12 h-12 mx-auto mb-3 rounded-xl ${style.color} flex items-center justify-center`}
                         >
-                          <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d={style.icon}
-                            />
-                          </svg>
+                          {style.icon}
                         </div>
-                        <h4 className="font-bold text-xl text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                        <h4 className="font-semibold text-base text-gray-900 dark:text-white mb-1">
                           {style.name}
                         </h4>
-                        <p className="text-sm text-gray-500 dark:text-zinc-500 mt-2 group-hover:text-gray-600 dark:group-hover:text-zinc-400 transition-colors">
+                        <p className="text-xs text-gray-500 dark:text-zinc-500">
                           {style.desc}
                         </p>
                       </button>
@@ -1104,10 +1196,10 @@ export function ProductDetailClient({
                     <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-t-purple-600 rounded-full animate-spin" />
                   </div>
                   <div className="mt-8 text-center">
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                      Creating your styled saree...
+                    <p className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                      Creating your styled product...
                     </p>
-                    <p className="text-gray-500 dark:text-zinc-500">
+                    <p className="text-sm md:text-base text-gray-500 dark:text-zinc-500">
                       Our AI is working its magic ✨
                     </p>
                   </div>
@@ -1117,10 +1209,10 @@ export function ProductDetailClient({
               {stylistStep === "result" && styledImageUrl && (
                 <div className="space-y-8">
                   <div className="text-center">
-                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                      Your Transformed Saree
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                      Your Transformed Product
                     </h3>
-                    <p className="text-gray-600 dark:text-zinc-400">
+                    <p className="text-sm md:text-base text-gray-600 dark:text-zinc-400">
                       Compare the original design with your AI-styled version
                     </p>
                   </div>

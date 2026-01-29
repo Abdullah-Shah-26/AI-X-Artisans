@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ConnectionRequestCard } from "./ConnectionRequestCard";
 import { ConnectionCard } from "./ConnectionCard";
@@ -70,6 +71,7 @@ export function ConnectionsClient({
   conversations: initialConversations,
 }: ConnectionsClientProps) {
   const { t } = useLanguage();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"messages" | "requests">(
     "messages",
   );
@@ -90,8 +92,29 @@ export function ConnectionsClient({
   return (
     <div className="flex flex-col h-full space-y-4">
       {/* Header with Tabs */}
-      <div className="flex items-center justify-between shrink-0">
-        <div>
+      <div className="flex items-center gap-3 shrink-0">
+        {/* Back button */}
+        <button
+          onClick={() => router.back()}
+          className="p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition"
+          title="Go back"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+
+        <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             {t("connections.title")}
           </h1>
@@ -167,6 +190,7 @@ function MessagesView({
   const [searchQuery, setSearchQuery] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showChatOnMobile, setShowChatOnMobile] = useState(false); // New state for mobile view
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
@@ -448,10 +472,13 @@ function MessagesView({
 
   return (
     <div className="flex h-full bg-white dark:bg-zinc-900 rounded-2xl shadow-sm overflow-hidden border border-gray-100 dark:border-zinc-800">
-      {/* Sidebar */}
-      <div className="w-80 border-r border-gray-100 dark:border-zinc-800 flex flex-col bg-gray-50/50 dark:bg-zinc-900">
+      {/* Sidebar - Hidden on mobile when chat is open */}
+      <div
+        className={`w-full md:w-80 border-r border-gray-100 dark:border-zinc-800 flex flex-col bg-gray-50/50 dark:bg-zinc-900 ${showChatOnMobile ? "hidden md:flex" : "flex"}`}
+      >
         <div className="p-4 border-b border-gray-100 dark:border-zinc-800 bg-white dark:bg-black">
-          <div className="relative">
+          {/* Search - Hidden on mobile */}
+          <div className="relative hidden md:block">
             <svg
               className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
               fill="none"
@@ -480,7 +507,10 @@ function MessagesView({
             return (
               <button
                 key={conv.id}
-                onClick={() => setSelectedConversation(conv.id)}
+                onClick={() => {
+                  setSelectedConversation(conv.id);
+                  setShowChatOnMobile(true); // Show chat on mobile when conversation is selected
+                }}
                 className={`w-full px-4 py-3 flex items-center gap-3 transition text-left ${
                   isSelected
                     ? "bg-emerald-50 dark:bg-emerald-600/20 border-r-2 border-emerald-500"
@@ -532,12 +562,34 @@ function MessagesView({
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-white dark:bg-black">
+      {/* Chat Area - Full screen on mobile when chat is open */}
+      <div
+        className={`flex-1 flex flex-col bg-white dark:bg-black ${showChatOnMobile ? "flex" : "hidden md:flex"}`}
+      >
         {selectedConv ? (
           <>
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20">
+            <div className="px-3 md:px-6 py-3 md:py-4 border-b border-gray-100 dark:border-zinc-800 flex items-center gap-3">
+              {/* Back button - Mobile only */}
+              <button
+                onClick={() => setShowChatOnMobile(false)}
+                className="md:hidden p-2 -ml-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20">
                 {selectedConv.otherParticipant.avatar ? (
                   <img
                     src={selectedConv.otherParticipant.avatar}
@@ -600,7 +652,7 @@ function MessagesView({
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 border-t border-gray-100 dark:border-zinc-800">
+            <div className="p-3 md:p-4 border-t border-gray-100 dark:border-zinc-800 bg-white dark:bg-black">
               {/* Image Preview */}
               {selectedImage && (
                 <div className="mb-3 relative inline-block">
@@ -619,7 +671,10 @@ function MessagesView({
                 </div>
               )}
 
-              <form onSubmit={sendMessage} className="flex items-center gap-3">
+              <form
+                onSubmit={sendMessage}
+                className="flex items-center gap-2 md:gap-3"
+              >
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -631,7 +686,7 @@ function MessagesView({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingImage}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
+                  className="shrink-0 p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
                   title="Attach image"
                 >
                   {uploadingImage ? (
@@ -657,12 +712,12 @@ function MessagesView({
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder={t("chat.typeMessage")}
-                  className="flex-1 px-4 py-3 bg-gray-100 dark:bg-zinc-800 dark:text-white border-0 rounded-xl focus:ring-2 focus:ring-emerald-500"
+                  className="flex-1 min-w-0 px-3 md:px-4 py-2.5 md:py-3 bg-gray-100 dark:bg-zinc-800 dark:text-white border-0 rounded-xl text-sm md:text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
                 <button
                   type="submit"
                   disabled={loading || (!newMessage.trim() && !selectedImage)}
-                  className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50"
+                  className="shrink-0 p-2.5 md:p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition"
                 >
                   <svg
                     className="w-5 h-5"

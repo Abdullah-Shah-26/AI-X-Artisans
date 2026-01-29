@@ -32,7 +32,11 @@ export function AddToCartButton({
 
       if (response.ok) {
         setAdded(true);
-        setTimeout(() => setAdded(false), 2000);
+        setTimeout(() => {
+          setAdded(false);
+          // Refresh to update cart count
+          router.refresh();
+        }, 1000);
       }
     } catch (error) {
       console.error("Error adding to cart:", error);

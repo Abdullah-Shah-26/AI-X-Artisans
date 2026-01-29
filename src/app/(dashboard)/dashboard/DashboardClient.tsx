@@ -31,37 +31,6 @@ export function DashboardClient({
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Demo Mode Banner */}
-      {isDemo && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4 flex items-center gap-3">
-          <div className="p-2 bg-amber-100 dark:bg-amber-800 rounded-full">
-            <svg
-              className="w-5 h-5 text-amber-600 dark:text-amber-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-              Demo Mode - Exploring as{" "}
-              {userRole.charAt(0) + userRole.slice(1).toLowerCase()}
-            </p>
-            <p className="text-xs text-amber-600 dark:text-amber-400">
-              You&apos;re previewing with sample data. Sign up to create your
-              own!
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Welcome Banner */}
       <div className="relative overflow-hidden rounded-xl bg-linear-to-br from-emerald-600 via-teal-600 to-emerald-800 p-8 text-white shadow-xl shadow-emerald-900/20">
         <div className="absolute top-0 right-0 -mt-16 -mr-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
@@ -180,7 +149,7 @@ export function DashboardClient({
                 color="bg-blue-500"
               />
               <QuickAction
-                href="/dashboard/chat"
+                href="/dashboard/connections"
                 label={t("sidebar.messages")}
                 description="Chat with artisans"
                 icon={<MessageSquareIcon className="w-6 h-6" />}
@@ -229,7 +198,7 @@ function StatCard({
       className={cn(
         "relative overflow-hidden rounded-lg border bg-linear-to-br p-6 transition-all hover:shadow-lg",
         bgStyles,
-        "bg-white dark:bg-zinc-900"
+        "bg-white dark:bg-zinc-900",
       )}
     >
       <div className="flex items-start justify-between">
@@ -245,7 +214,7 @@ function StatCard({
         <div
           className={cn(
             "p-3 rounded-lg bg-white/50 dark:bg-white/10 backdrop-blur-sm shadow-sm",
-            bgStyles.split(" ")[2]
+            bgStyles.split(" ")[2],
           )}
         >
           {icon}
@@ -276,14 +245,14 @@ function QuickAction({
       <div
         className={cn(
           "absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300",
-          color
+          color,
         )}
       ></div>
 
       <div
         className={cn(
           "mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg text-white shadow-md transition-transform",
-          color
+          color,
         )}
       >
         {icon}

@@ -1,3 +1,3 @@
 export { Sidebar } from "./Sidebar";
-export { Header } from "./Header";
+export { Header, MobileSearchBar } from "./Header";
 export { DashboardLayout } from "./DashboardLayout";

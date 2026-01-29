@@ -7,7 +7,7 @@ import { ProfileClient } from "./ProfileClient";
 // Demo artisan profile
 const demoArtisanProfile = {
   id: "demo-artisan",
-  name: "Demo Artisan",
+  name: "Lakshmi Devi",
   email: "demo@artisan.com",
   avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
   role: "ARTISAN" as const,

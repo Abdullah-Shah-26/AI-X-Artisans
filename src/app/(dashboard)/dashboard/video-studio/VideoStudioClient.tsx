@@ -135,7 +135,7 @@ const videoStyles = [
 ];
 
 const aspectRatios = [
-  { id: "9:16", name: "Vertical", desc: "Reels, TikTok" },
+  { id: "9:16", name: "Vertical", desc: "TikTok" },
   { id: "1:1", name: "Square", desc: "Instagram" },
   { id: "16:9", name: "Horizontal", desc: "YouTube" },
 ];
@@ -494,25 +494,25 @@ export function VideoStudioClient() {
           </div>
 
           {/* Aspect Ratio */}
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 p-6">
-            <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 p-4 sm:p-6">
+            <h3 className="font-semibold text-gray-800 dark:text-white mb-3 sm:mb-4 text-sm sm:text-base">
               Aspect Ratio
             </h3>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {aspectRatios.map((ratio) => (
                 <button
                   key={ratio.id}
                   onClick={() => setSelectedRatio(ratio.id)}
-                  className={`p-4 rounded-xl border-2 transition-all text-center ${
+                  className={`p-3 sm:p-4 rounded-xl border-2 transition-all text-center ${
                     selectedRatio === ratio.id
                       ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
                       : "border-gray-200 dark:border-zinc-700 hover:border-emerald-400"
                   }`}
                 >
-                  <p className="font-semibold text-gray-800 dark:text-white text-sm">
+                  <p className="font-semibold text-gray-800 dark:text-white text-xs sm:text-sm">
                     {ratio.name}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-zinc-400">
+                  <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
                     {ratio.desc}
                   </p>
                 </button>
@@ -650,14 +650,14 @@ export function VideoStudioClient() {
                 <button
                   type="button"
                   onClick={handleVoiceInput}
-                  className={`text-xs flex items-center gap-1 font-medium transition-colors ${
+                  title={isListening ? "Listening..." : "Voice Input"}
+                  className={`p-1.5 rounded-lg transition-all ${
                     isListening
-                      ? "text-red-500 animate-pulse"
-                      : "text-emerald-600 hover:text-emerald-700"
+                      ? "text-red-500 bg-red-50 dark:bg-red-500/10 animate-pulse"
+                      : "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
                   }`}
                 >
                   <MicIcon />
-                  {isListening ? "Listening..." : "Voice Input"}
                 </button>
               </div>
               <button

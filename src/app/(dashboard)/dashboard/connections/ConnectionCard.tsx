@@ -31,7 +31,7 @@ export function ConnectionCard({ connection }: ConnectionCardProps) {
 
       if (res.ok) {
         const data = await res.json();
-        router.push(`/dashboard/chat?conversation=${data.id}`);
+        router.push(`/dashboard/connections?conversation=${data.id}`);
       } else {
         const data = await res.json();
         alert(data.error || "Failed to start conversation");

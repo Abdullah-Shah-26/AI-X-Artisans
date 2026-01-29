@@ -59,10 +59,10 @@ export function CollaborationsClient({
   >("active");
 
   const activeCollabs = collaborations.filter(
-    (c) => c.status === "IN_PROGRESS"
+    (c) => c.status === "IN_PROGRESS",
   );
   const completedCollabs = collaborations.filter(
-    (c) => c.status === "COMPLETED"
+    (c) => c.status === "COMPLETED",
   );
   const pendingApps = applications.filter((a) => a.status === "PENDING");
 
@@ -77,21 +77,21 @@ export function CollaborationsClient({
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
           My Work
         </h1>
-        <p className="text-gray-500 dark:text-zinc-400 mt-1">
+        <p className="text-gray-500 dark:text-zinc-400 mt-1 text-sm sm:text-base">
           Manage your collaborations and track your contributions
         </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 ring-1 ring-gray-200 dark:ring-zinc-800">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-100 dark:bg-blue-500/20 rounded-lg">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 ring-1 ring-gray-200 dark:ring-zinc-800">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-500/20 rounded-lg w-fit">
               <svg
-                className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -105,20 +105,20 @@ export function CollaborationsClient({
               </svg>
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {activeCollabs.length}
               </p>
-              <p className="text-sm text-gray-500 dark:text-zinc-500">
-                Active Projects
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-500">
+                Active
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 ring-1 ring-gray-200 dark:ring-zinc-800">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-emerald-100 dark:bg-emerald-500/20 rounded-lg">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 ring-1 ring-gray-200 dark:ring-zinc-800">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <div className="p-2 bg-emerald-100 dark:bg-emerald-500/20 rounded-lg w-fit">
               <svg
-                className="w-5 h-5 text-emerald-600 dark:text-emerald-400"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -132,20 +132,20 @@ export function CollaborationsClient({
               </svg>
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {completedCollabs.length}
               </p>
-              <p className="text-sm text-gray-500 dark:text-zinc-500">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-500">
                 Completed
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 ring-1 ring-gray-200 dark:ring-zinc-800">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-amber-100 dark:bg-amber-500/20 rounded-lg">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 ring-1 ring-gray-200 dark:ring-zinc-800">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <div className="p-2 bg-amber-100 dark:bg-amber-500/20 rounded-lg w-fit">
               <svg
-                className="w-5 h-5 text-amber-600 dark:text-amber-400"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -159,20 +159,20 @@ export function CollaborationsClient({
               </svg>
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {pendingApps.length}
               </p>
-              <p className="text-sm text-gray-500 dark:text-zinc-500">
-                Pending Apps
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-500">
+                Pending
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 ring-1 ring-gray-200 dark:ring-zinc-800">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-purple-100 dark:bg-purple-500/20 rounded-lg">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 ring-1 ring-gray-200 dark:ring-zinc-800">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <div className="p-2 bg-purple-100 dark:bg-purple-500/20 rounded-lg w-fit">
               <svg
-                className="w-5 h-5 text-purple-600 dark:text-purple-400"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -186,10 +186,10 @@ export function CollaborationsClient({
               </svg>
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {completedCollabs.filter((c) => c.certificate).length}
               </p>
-              <p className="text-sm text-gray-500 dark:text-zinc-500">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-500">
                 Certificates
               </p>
             </div>
@@ -198,33 +198,33 @@ export function CollaborationsClient({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-gray-200 dark:border-zinc-800">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl ring-1 ring-gray-200 dark:ring-zinc-800 p-1 flex gap-1">
         <button
           onClick={() => setActiveTab("active")}
-          className={`px-4 py-2.5 text-sm font-medium border-b-2 transition ${
+          className={`flex-1 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition ${
             activeTab === "active"
-              ? "border-emerald-500 text-emerald-600 dark:text-emerald-400"
-              : "border-transparent text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-white"
+              ? "bg-emerald-600 text-white shadow-sm"
+              : "text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800"
           }`}
         >
           Active ({activeCollabs.length})
         </button>
         <button
           onClick={() => setActiveTab("completed")}
-          className={`px-4 py-2.5 text-sm font-medium border-b-2 transition ${
+          className={`flex-1 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition ${
             activeTab === "completed"
-              ? "border-emerald-500 text-emerald-600 dark:text-emerald-400"
-              : "border-transparent text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-white"
+              ? "bg-emerald-600 text-white shadow-sm"
+              : "text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800"
           }`}
         >
           Completed ({completedCollabs.length})
         </button>
         <button
           onClick={() => setActiveTab("applications")}
-          className={`px-4 py-2.5 text-sm font-medium border-b-2 transition ${
+          className={`flex-1 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition ${
             activeTab === "applications"
-              ? "border-emerald-500 text-emerald-600 dark:text-emerald-400"
-              : "border-transparent text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-white"
+              ? "bg-emerald-600 text-white shadow-sm"
+              : "text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800"
           }`}
         >
           Applications ({applications.length})
@@ -306,7 +306,7 @@ export function CollaborationsClient({
                         Started {formatDate(collab.startDate)}
                       </span>
                       <Link
-                        href={`/dashboard/chat`}
+                        href={`/dashboard/connections`}
                         className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
                       >
                         <svg
@@ -517,8 +517,8 @@ export function CollaborationsClient({
                           app.status === "PENDING"
                             ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
                             : app.status === "ACCEPTED"
-                            ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
-                            : "bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400"
+                              ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                              : "bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400"
                         }`}
                       >
                         {app.status}

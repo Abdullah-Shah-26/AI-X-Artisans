@@ -120,17 +120,17 @@ export default function CrowdfundClient({
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-linear-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 text-white">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-4 sm:p-6 text-white">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold mb-1">Finance Hub</h1>
-            <p className="text-emerald-100">
+            <h1 className="text-xl sm:text-2xl font-bold mb-1">Finance Hub</h1>
+            <p className="text-emerald-100 text-sm sm:text-base">
               Fund your dreams, grow your craft
             </p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="bg-white text-emerald-600 px-5 py-2.5 rounded-lg font-medium hover:bg-emerald-50 transition flex items-center gap-2 self-start"
+            className="bg-white text-emerald-600 px-4 sm:px-5 py-2.5 rounded-lg font-medium hover:bg-emerald-50 transition flex items-center justify-center gap-2 text-sm sm:text-base"
           >
             <svg
               className="w-5 h-5"
@@ -150,42 +150,48 @@ export default function CrowdfundClient({
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/20">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/20">
           <div>
-            <p className="text-3xl font-bold">
+            <p className="text-xl sm:text-3xl font-bold">
               ₹{totalRaised.toLocaleString()}
             </p>
-            <p className="text-emerald-200 text-sm">Total Raised</p>
+            <p className="text-emerald-200 text-xs sm:text-sm mt-0.5">
+              Total Raised
+            </p>
           </div>
           <div>
-            <p className="text-3xl font-bold">{activeCampaigns}</p>
-            <p className="text-emerald-200 text-sm">Active Campaigns</p>
+            <p className="text-xl sm:text-3xl font-bold">{activeCampaigns}</p>
+            <p className="text-emerald-200 text-xs sm:text-sm mt-0.5">
+              Active Campaigns
+            </p>
           </div>
           <div>
-            <p className="text-3xl font-bold">{totalBackers}</p>
-            <p className="text-emerald-200 text-sm">Total Backers</p>
+            <p className="text-xl sm:text-3xl font-bold">{totalBackers}</p>
+            <p className="text-emerald-200 text-xs sm:text-sm mt-0.5">
+              Total Backers
+            </p>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-gray-200">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl ring-1 ring-gray-200 dark:ring-zinc-800 p-1 flex gap-1">
         <button
           onClick={() => setActiveTab("my")}
-          className={`px-4 py-2 font-medium border-b-2 transition -mb-px ${
+          className={`flex-1 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition ${
             activeTab === "my"
-              ? "border-emerald-600 text-emerald-600"
-              : "border-transparent text-gray-500 hover:text-gray-700"
+              ? "bg-emerald-600 text-white shadow-sm"
+              : "text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800"
           }`}
         >
           My Campaigns
         </button>
         <button
           onClick={() => setActiveTab("discover")}
-          className={`px-4 py-2 font-medium border-b-2 transition -mb-px ${
+          className={`flex-1 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition ${
             activeTab === "discover"
-              ? "border-emerald-600 text-emerald-600"
-              : "border-transparent text-gray-500 hover:text-gray-700"
+              ? "bg-emerald-600 text-white shadow-sm"
+              : "text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800"
           }`}
         >
           Discover
@@ -233,10 +239,10 @@ export default function CrowdfundClient({
 
 function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
   return (
-    <div className="bg-white rounded-2xl p-12 text-center">
-      <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+    <div className="bg-white dark:bg-zinc-900 rounded-2xl p-8 sm:p-12 text-center ring-1 ring-gray-200 dark:ring-zinc-800">
+      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
         <svg
-          className="w-10 h-10 text-emerald-600"
+          className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-600 dark:text-emerald-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -249,16 +255,16 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
           />
         </svg>
       </div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+      <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
         Launch Your First Campaign
       </h3>
-      <p className="text-gray-500 mb-6 max-w-md mx-auto">
+      <p className="text-gray-500 dark:text-zinc-400 text-sm sm:text-base mb-6 max-w-md mx-auto">
         Need funds for new equipment, materials, or workshop expansion? Start a
         funding campaign and let your community support your craft.
       </p>
       <button
         onClick={onCreateClick}
-        className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition font-medium"
+        className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition font-medium text-sm sm:text-base"
       >
         Create Your First Campaign
       </button>
@@ -339,10 +345,10 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition">
+    <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800 overflow-hidden hover:shadow-md transition">
       <div className="flex flex-col sm:flex-row">
         {/* Image */}
-        <div className="sm:w-48 h-48 sm:h-auto shrink-0">
+        <div className="w-full sm:w-48 h-48 sm:h-auto shrink-0">
           {campaign.imageUrl ? (
             <img
               src={campaign.imageUrl}
@@ -350,48 +356,50 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-emerald-100 flex items-center justify-center">
+            <div className="w-full h-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
               <span className="text-4xl">💰</span>
             </div>
           )}
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-5">
+        <div className="flex-1 p-4 sm:p-5">
           <div className="flex items-start justify-between gap-2 mb-2">
-            <h3 className="font-semibold text-gray-900 line-clamp-1">
+            <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 text-sm sm:text-base">
               {campaign.title}
             </h3>
             <span
               className={`text-xs px-2 py-1 rounded-full shrink-0 ${
                 campaign.status === "ACTIVE"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-gray-100 text-gray-600"
+                  ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                  : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400"
               }`}
             >
               {campaign.status}
             </span>
           </div>
 
-          <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+          <p className="text-gray-500 dark:text-zinc-400 text-xs sm:text-sm mb-4 line-clamp-2">
             {campaign.description}
           </p>
 
           {/* Progress */}
           <div className="mb-3">
-            <div className="flex justify-between text-sm mb-1">
-              <span className="font-semibold text-gray-900">
+            <div className="flex justify-between text-xs sm:text-sm mb-1">
+              <span className="font-semibold text-gray-900 dark:text-white">
                 ₹{campaign.currentAmount.toLocaleString()}
               </span>
-              <span className="text-emerald-600 font-medium">{progress}%</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                {progress}%
+              </span>
             </div>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-2 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-emerald-500 rounded-full transition-all"
                 style={{ width: `${Math.min(progress, 100)}%` }}
               />
             </div>
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mt-1">
               <span>of ₹{campaign.goalAmount.toLocaleString()}</span>
               <span>{daysLeft} days left</span>
             </div>
@@ -399,12 +407,12 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
 
           {/* Actions */}
           <div className="flex gap-2">
-            <button className="flex-1 bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition text-sm font-medium">
+            <button className="flex-1 bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition text-xs sm:text-sm font-medium">
               Manage
             </button>
             <button
               onClick={handleShare}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm flex items-center gap-1.5 font-medium"
+              className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs sm:text-sm flex items-center gap-1.5 font-medium"
             >
               <svg
                 className="w-4 h-4"
@@ -419,7 +427,7 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
                   d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
                 />
               </svg>
-              Share
+              <span className="hidden sm:inline">Share</span>
             </button>
             <div className="relative">
               {/* Share Menu Dropdown */}
@@ -532,14 +540,16 @@ function DiscoverSection() {
 
   return (
     <div className="space-y-4">
-      <p className="text-gray-600">Support fellow artisans in their journey</p>
+      <p className="text-gray-600 dark:text-zinc-400 text-sm sm:text-base">
+        Support fellow artisans in their journey
+      </p>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {otherCampaigns.map((camp) => {
           const progress = Math.round((camp.raised / camp.goal) * 100);
           return (
             <div
               key={camp.id}
-              className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition"
+              className="bg-white dark:bg-zinc-900 rounded-xl overflow-hidden shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800 hover:shadow-md transition"
             >
               <img
                 src={camp.image}
@@ -553,24 +563,28 @@ function DiscoverSection() {
                     alt={camp.artisan}
                     className="w-6 h-6 rounded-full"
                   />
-                  <span className="text-sm text-gray-500">{camp.artisan}</span>
+                  <span className="text-sm text-gray-500 dark:text-zinc-400">
+                    {camp.artisan}
+                  </span>
                 </div>
-                <h4 className="font-medium text-gray-900 mb-3 line-clamp-1">
+                <h4 className="font-medium text-gray-900 dark:text-white mb-3 line-clamp-1 text-sm sm:text-base">
                   {camp.title}
                 </h4>
-                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-2">
+                <div className="h-1.5 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden mb-2">
                   <div
                     className="h-full bg-emerald-500 rounded-full"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-900 font-medium">
+                  <span className="text-gray-900 dark:text-white font-medium">
                     ₹{camp.raised.toLocaleString()}
                   </span>
-                  <span className="text-gray-500">{progress}% funded</span>
+                  <span className="text-gray-500 dark:text-zinc-400">
+                    {progress}% funded
+                  </span>
                 </div>
-                <button className="w-full mt-3 py-2 border border-emerald-600 text-emerald-600 rounded-lg hover:bg-emerald-50 transition text-sm font-medium">
+                <button className="w-full mt-3 py-2 border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition text-sm font-medium">
                   Support
                 </button>
               </div>

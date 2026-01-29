@@ -13,6 +13,36 @@ interface HeaderProps {
   pendingRequestsCount?: number;
   pendingApplicationsCount?: number;
   isDemo?: boolean;
+  onMenuClick?: () => void;
+}
+
+export function MobileSearchBar() {
+  const { t } = useLanguage();
+
+  return (
+    <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-zinc-900 px-4 py-3">
+      <div className="relative w-full max-w-2xl mx-auto">
+        <svg
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <input
+          type="text"
+          placeholder={t("header.search")}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+      </div>
+    </div>
+  );
 }
 
 export function Header({
@@ -22,10 +52,12 @@ export function Header({
   pendingRequestsCount = 0,
   pendingApplicationsCount = 0,
   isDemo = false,
+  onMenuClick,
 }: HeaderProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [switching, setSwitching] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -44,7 +76,7 @@ export function Header({
   };
 
   const handleRoleSwitch = async (
-    newRole: "ARTISAN" | "VOLUNTEER" | "CUSTOMER"
+    newRole: "ARTISAN" | "VOLUNTEER" | "CUSTOMER",
   ) => {
     if (newRole === userRole) return;
     setSwitching(true);
@@ -84,12 +116,16 @@ export function Header({
   };
 
   return (
-    <header className="h-16 bg-white dark:bg-black border-b border-gray-200 dark:border-zinc-900 flex items-center justify-between px-6">
-      {/* Demo Mode Badge */}
-      {isDemo && (
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-linear-to-r from-purple-500/10 to-pink-500/10 rounded-full ring-1 ring-purple-500/30 mr-4">
+    <header className="h-16 bg-white dark:bg-black border-b border-gray-200 dark:border-zinc-900 flex items-center justify-between px-4 md:px-6">
+      {/* Hamburger menu button - mobile only, hidden for customers */}
+      {userRole !== "CUSTOMER" && (
+        <button
+          onClick={onMenuClick}
+          className="lg:hidden p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg mr-2"
+          aria-label="Open menu"
+        >
           <svg
-            className="w-4 h-4 text-purple-500"
+            className="w-6 h-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -98,19 +134,10 @@ export function Header({
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>
-          <span className="text-xs font-medium text-purple-600 dark:text-purple-400">
-            Demo Mode
-          </span>
-        </div>
+        </button>
       )}
 
       {/* Customer Navigation */}
@@ -139,34 +166,44 @@ export function Header({
         </nav>
       )}
 
-      {/* Search */}
-      <div className="flex-1 max-w-xl">
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <input
-            type="text"
-            placeholder={t("header.search")}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-          />
-        </div>
-      </div>
+      {/* Search - only for non-customers, hidden on mobile, hidden on chat/connections pages */}
+      {userRole !== "CUSTOMER" &&
+        !pathname?.includes("/chat") &&
+        !pathname?.includes("/connections") && (
+          <div className="hidden md:flex flex-1 max-w-xl">
+            <div className="relative w-full">
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                placeholder={t("header.search")}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+        )}
+
+      {/* Spacer for mobile */}
+      <div className="flex-1 md:hidden"></div>
+
+      {/* Spacer for desktop - pushes right side items to the right */}
+      <div className="hidden md:block md:flex-1"></div>
 
       {/* Right side */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         {/* Language Switcher */}
-        <div className="relative">
+        <div className="relative hidden sm:block">
           <button
             onClick={() => setShowLangDropdown(!showLangDropdown)}
             className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition"
@@ -253,7 +290,7 @@ export function Header({
             <button
               onClick={() => setShowRoleDropdown(!showRoleDropdown)}
               disabled={switching}
-              className="flex items-center gap-2 px-3 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition disabled:opacity-50"
+              className="flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition disabled:opacity-50"
             >
               <svg
                 className="w-4 h-4"
@@ -268,11 +305,11 @@ export function Header({
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
-              <span className="text-sm font-medium">
+              <span className="text-xs md:text-sm font-medium">
                 {roleLabels[userRole]}
               </span>
               <svg
-                className="w-4 h-4"
+                className="w-3 h-3 md:w-4 md:h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -324,38 +361,304 @@ export function Header({
         )}
 
         {/* Notifications */}
-        <Link
-          href={
-            userRole === "ARTISAN" && pendingApplicationsCount > 0
-              ? "/dashboard/volunteers"
-              : "/dashboard/connections"
-          }
-          className="relative p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg"
-          title={
-            userRole === "ARTISAN" && pendingApplicationsCount > 0
-              ? `${pendingApplicationsCount} new application(s)`
-              : `${pendingRequestsCount} notification(s)`
-          }
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <div className="relative">
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg"
+            title={
+              userRole === "ARTISAN" && pendingApplicationsCount > 0
+                ? `${pendingApplicationsCount} new application(s)`
+                : `${pendingRequestsCount} notification(s)`
+            }
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-            />
-          </svg>
-          {pendingRequestsCount > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
-              {pendingRequestsCount > 9 ? "9+" : pendingRequestsCount}
-            </span>
+            <svg
+              className="w-5 h-5 md:w-6 md:h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+            {pendingRequestsCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
+                {pendingRequestsCount > 9 ? "9+" : pendingRequestsCount}
+              </span>
+            )}
+          </button>
+
+          {showNotifications && (
+            <>
+              {/* Mobile centered dropdown */}
+              <div className="md:hidden fixed inset-x-4 top-20 w-auto bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-gray-200 dark:border-zinc-800 py-2 z-50 max-h-96 overflow-y-auto">
+                <div className="px-4 py-2 border-b border-gray-200 dark:border-zinc-800">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    Notifications
+                  </h3>
+                </div>
+
+                {/* Demo notifications based on user role */}
+                {userRole === "CUSTOMER" ? (
+                  <>
+                    {/* Customer notifications */}
+                    <Link
+                      href="/dashboard/connections"
+                      onClick={() => setShowNotifications(false)}
+                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
+                            R
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Ramesh Kumar
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
+                            The blue silk scarf is ready for shipping...
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
+                            45 mins ago
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/dashboard/connections"
+                      onClick={() => setShowNotifications(false)}
+                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
+                            S
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Sunita Devi
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
+                            Yes, I can certainly create a custom set...
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
+                            2 hours ago
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    {/* Artisan/Volunteer notifications */}
+                    <Link
+                      href="/dashboard/connections"
+                      onClick={() => setShowNotifications(false)}
+                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
+                          <img
+                            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200"
+                            alt="Ravi Kumar"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Ravi Kumar
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
+                            Thank you for connecting! I'd love to collaborate...
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
+                            30 mins ago
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/dashboard/connections"
+                      onClick={() => setShowNotifications(false)}
+                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
+                          <img
+                            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200"
+                            alt="Anita Sharma"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Anita Sharma
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
+                            I can help with the social media marketing...
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
+                            2 hours ago
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </>
+                )}
+
+                <div className="px-4 py-2 border-t border-gray-200 dark:border-zinc-800">
+                  <Link
+                    href="/dashboard/connections"
+                    onClick={() => setShowNotifications(false)}
+                    className="text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium"
+                  >
+                    View all messages →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Desktop right-aligned dropdown */}
+              <div className="hidden md:block absolute right-0 mt-2 w-80 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-gray-200 dark:border-zinc-800 py-2 z-50 max-h-96 overflow-y-auto">
+                <div className="px-4 py-2 border-b border-gray-200 dark:border-zinc-800">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    Notifications
+                  </h3>
+                </div>
+
+                {/* Demo notifications based on user role */}
+                {userRole === "CUSTOMER" ? (
+                  <>
+                    {/* Customer notifications */}
+                    <Link
+                      href="/dashboard/connections"
+                      onClick={() => setShowNotifications(false)}
+                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
+                            R
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Ramesh Kumar
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
+                            The blue silk scarf is ready for shipping...
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
+                            45 mins ago
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/dashboard/connections"
+                      onClick={() => setShowNotifications(false)}
+                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
+                            S
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Sunita Devi
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
+                            Yes, I can certainly create a custom set...
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
+                            2 hours ago
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    {/* Artisan/Volunteer notifications */}
+                    <Link
+                      href="/dashboard/connections"
+                      onClick={() => setShowNotifications(false)}
+                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
+                          <img
+                            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200"
+                            alt="Ravi Kumar"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Ravi Kumar
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
+                            Thank you for connecting! I'd love to collaborate...
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
+                            30 mins ago
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/dashboard/connections"
+                      onClick={() => setShowNotifications(false)}
+                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
+                          <img
+                            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200"
+                            alt="Anita Sharma"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            Anita Sharma
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
+                            I can help with the social media marketing...
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
+                            2 hours ago
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </>
+                )}
+
+                <div className="px-4 py-2 border-t border-gray-200 dark:border-zinc-800">
+                  <Link
+                    href="/dashboard/connections"
+                    onClick={() => setShowNotifications(false)}
+                    className="text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium"
+                  >
+                    View all messages →
+                  </Link>
+                </div>
+              </div>
+            </>
           )}
-        </Link>
+        </div>
 
         {/* User dropdown */}
         <div className="relative">
@@ -363,7 +666,7 @@ export function Header({
             onClick={() => setShowDropdown(!showDropdown)}
             className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg"
           >
-            <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center overflow-hidden">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-emerald-500 flex items-center justify-center overflow-hidden">
               {userAvatar ? (
                 <img
                   src={userAvatar}
@@ -377,7 +680,7 @@ export function Header({
               )}
             </div>
             <svg
-              className="w-4 h-4 text-gray-600 dark:text-zinc-400"
+              className="w-4 h-4 text-gray-600 dark:text-zinc-400 hidden sm:block"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -392,21 +695,162 @@ export function Header({
           </button>
 
           {showDropdown && (
-            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-zinc-800 py-1 z-50">
+            <div className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl py-1 z-50">
+              {/* User info header */}
+              <div className="px-3 py-2 border-b border-zinc-800">
+                <p className="text-sm font-medium text-white truncate">
+                  {userName}
+                </p>
+                <p className="text-xs text-zinc-500 capitalize">
+                  {userRole.toLowerCase()}
+                </p>
+              </div>
+
+              {/* Favorites - Only for Customers */}
+              {userRole === "CUSTOMER" && (
+                <Link
+                  href="/marketplace?view=favorites"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
+                  onClick={() => setShowDropdown(false)}
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                  Favorites
+                </Link>
+              )}
+
+              {/* Messages - Only for Customers */}
+              {userRole === "CUSTOMER" && (
+                <Link
+                  href="/dashboard/connections"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
+                  onClick={() => setShowDropdown(false)}
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                    />
+                  </svg>
+                  Messages
+                </Link>
+              )}
+
+              {/* My Offers - Only for Customers */}
+              {userRole === "CUSTOMER" && (
+                <Link
+                  href="/marketplace?view=offers"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
+                  onClick={() => setShowDropdown(false)}
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  My Offers
+                </Link>
+              )}
+
+              {userRole === "CUSTOMER" && (
+                <hr className="my-1 border-zinc-800" />
+              )}
+
+              {/* Profile link */}
               <Link
-                href="/profile"
-                className="block px-4 py-2 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                href={
+                  userRole === "CUSTOMER" ? "/profile" : "/dashboard/profile"
+                }
+                className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
                 onClick={() => setShowDropdown(false)}
               >
-                {t("header.myProfile")}
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                Profile
               </Link>
 
-              <hr className="my-1 border-gray-200 dark:border-zinc-800" />
+              {/* Dashboard - Only for non-customers */}
+              {userRole !== "CUSTOMER" && (
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
+                  onClick={() => setShowDropdown(false)}
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                    />
+                  </svg>
+                  Dashboard
+                </Link>
+              )}
+
+              <hr className="my-1 border-zinc-800" />
+
+              {/* Sign out */}
               <button
                 onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-zinc-800"
               >
-                {t("header.signOut")}
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                Sign Out
               </button>
             </div>
           )}

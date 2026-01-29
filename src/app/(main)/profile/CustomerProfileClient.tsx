@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { CustomerHeader } from "@/components/layout/CustomerHeader";
 
 interface User {
   id: string;
@@ -90,7 +91,7 @@ const demoBargains = [
     originalPrice: 1300,
     offerPrice: 1180,
     status: "Accepted",
-    image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=300", 
+    image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=300",
   },
   {
     id: "OFF-002",
@@ -98,7 +99,7 @@ const demoBargains = [
     originalPrice: 2500,
     offerPrice: 2100,
     status: "Pending",
-     image:
+    image:
       "https://coshal.com/cdn/shop/files/Dhokra_Brass_Elephant_With_Bells_CD88_4.png?v=1701164800&width=100",
   },
   {
@@ -117,12 +118,26 @@ export function CustomerProfileClient({
   favoritesCount,
 }: CustomerProfileClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<
     "profile" | "orders" | "favorites" | "settings" | "offers"
   >("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Handle URL parameter for tab navigation
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (
+      tab &&
+      ["profile", "orders", "favorites", "settings", "offers"].includes(tab)
+    ) {
+      setActiveTab(
+        tab as "profile" | "orders" | "favorites" | "settings" | "offers",
+      );
+    }
+  }, [searchParams]);
 
   // Form state
   const [name, setName] = useState(user.name);
@@ -157,67 +172,17 @@ export function CustomerProfileClient({
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <Link href="/marketplace" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg overflow-hidden border border-emerald-500/30">
-                <img
-                  src="/image.png"
-                  alt="AIxArtisans"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
-                AIxArtisans
-              </span>
-            </Link>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-2 text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg"
-              >
-                {theme === "dark" ? (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                    />
-                  </svg>
-                )}
-              </button>
-              <Link
-                href="/marketplace"
-                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
-              >
-                Back to Shop
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <CustomerHeader
+        user={{
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          role: user.role.toLowerCase(),
+        }}
+        cartCount={0}
+        favoritesCount={favoritesCount}
+        showViewToggle={false}
+      />
 
       <main className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-12 gap-6">
@@ -313,7 +278,7 @@ export function CustomerProfileClient({
                       d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                     />
                   </svg>
-                  <span className="font-medium text-sm">My Orders</span>
+                  <span className="font-medium text-sm">Orders</span>
                   <span className="ml-auto bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold px-2 py-0.5 rounded-full">
                     {ordersCount}
                   </span>
@@ -339,7 +304,7 @@ export function CustomerProfileClient({
                       d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                     />
                   </svg>
-                  <span className="font-medium text-sm">My Favorites</span>
+                  <span className="font-medium text-sm">Favorites</span>
                   <span className="ml-auto bg-pink-100 dark:bg-pink-500/20 text-pink-700 dark:text-pink-400 text-xs font-semibold px-2 py-0.5 rounded-full">
                     {favoritesCount || demoFavorites.length}
                   </span>
@@ -365,7 +330,7 @@ export function CustomerProfileClient({
                       d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
                     />
                   </svg>
-                  <span className="font-medium text-sm">My Offers</span>
+                  <span className="font-medium text-sm">Offers</span>
                   <span className="ml-auto bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold px-2 py-0.5 rounded-full">
                     {demoBargains.length}
                   </span>
@@ -447,7 +412,7 @@ export function CustomerProfileClient({
                     <h3 className="font-semibold text-gray-900 dark:text-white">
                       Profile Information
                     </h3>
-                    {(!isEditing && user.id !== "guest-user") && (
+                    {!isEditing && user.id !== "guest-user" && (
                       <button
                         onClick={() => setIsEditing(true)}
                         className="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition"
@@ -624,8 +589,8 @@ export function CustomerProfileClient({
                             order.status === "Delivered"
                               ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
                               : order.status === "In Transit"
-                              ? "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
-                              : "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                                ? "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
+                                : "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
                           }`}
                         >
                           {order.status}
@@ -673,7 +638,7 @@ export function CustomerProfileClient({
               <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800">
                 <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-800">
                   <h3 className="font-semibold text-gray-900 dark:text-white">
-                    My Favorites
+                    Favorites
                   </h3>
                 </div>
                 <div className="p-6">
@@ -719,80 +684,127 @@ export function CustomerProfileClient({
                 <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800">
                   <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-800">
                     <h3 className="font-semibold text-gray-900 dark:text-white">
-                      My Offers & Requests
+                      Offers & Requests
                     </h3>
                   </div>
-                  
+
                   <div className="p-6 space-y-8">
                     <div>
-                        <h4 className="font-medium text-gray-900 dark:text-white mb-4">Accepted Offers</h4>
-                        <div className="space-y-4">
-                            {demoBargains.filter(b => b.status === "Accepted").map(item => (
-                                <div key={item.id} className="flex flex-col sm:flex-row items-center justify-between p-4 bg-gray-50 dark:bg-zinc-800/50 rounded-xl border border-gray-100 dark:border-zinc-700 gap-4">
-                                    <div className="flex items-center gap-4 w-full sm:w-auto">
-                                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-zinc-700 flex-shrink-0">
-                                            <img src={item.image} alt={item.product} className="w-full h-full object-cover" />
-                                        </div>
-                                        <div>
-                                            <h5 className="font-semibold text-gray-900 dark:text-white">{item.product}</h5>
-                                            <div className="text-sm text-gray-500 dark:text-zinc-400 mt-1">
-                                                <span>Original: <span className="line-through">{formatPrice(item.originalPrice)}</span></span>
-                                                <span className="mx-2">•</span>
-                                                <span className="text-emerald-600 dark:text-emerald-400 font-medium">Your Offer: {formatPrice(item.offerPrice)}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                                        <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-full">
-                                            Accepted
-                                        </span>
-                                        <button className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition whitespace-nowrap">
-                                            Add to Cart
-                                        </button>
-                                    </div>
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-4">
+                        Accepted Offers
+                      </h4>
+                      <div className="space-y-4">
+                        {demoBargains
+                          .filter((b) => b.status === "Accepted")
+                          .map((item) => (
+                            <div
+                              key={item.id}
+                              className="flex flex-col sm:flex-row items-center justify-between p-4 bg-gray-50 dark:bg-zinc-800/50 rounded-xl border border-gray-100 dark:border-zinc-700 gap-4"
+                            >
+                              <div className="flex items-center gap-4 w-full sm:w-auto">
+                                <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-zinc-700 shrink-0">
+                                  <img
+                                    src={item.image}
+                                    alt={item.product}
+                                    className="w-full h-full object-cover"
+                                  />
                                 </div>
-                            ))}
-                             {demoBargains.filter(b => b.status === "Accepted").length === 0 && (
-                                <p className="text-gray-500 dark:text-zinc-500 text-sm">No accepted offers yet.</p>
-                            )}
-                        </div>
+                                <div>
+                                  <h5 className="font-semibold text-gray-900 dark:text-white">
+                                    {item.product}
+                                  </h5>
+                                  <div className="text-sm text-gray-500 dark:text-zinc-400 mt-1">
+                                    <span>
+                                      Original:{" "}
+                                      <span className="line-through">
+                                        {formatPrice(item.originalPrice)}
+                                      </span>
+                                    </span>
+                                    <span className="mx-2">•</span>
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                                      Your Offer: {formatPrice(item.offerPrice)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                                <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-full">
+                                  Accepted
+                                </span>
+                                <button className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition whitespace-nowrap">
+                                  Add to Cart
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        {demoBargains.filter((b) => b.status === "Accepted")
+                          .length === 0 && (
+                          <p className="text-gray-500 dark:text-zinc-500 text-sm">
+                            No accepted offers yet.
+                          </p>
+                        )}
+                      </div>
                     </div>
 
-                     <div>
-                        <h4 className="font-medium text-gray-900 dark:text-white mb-4">Offer History</h4>
-                        <div className="space-y-4">
-                            {demoBargains.filter(b => b.status !== "Accepted").map(item => (
-                                <div key={item.id} className="flex flex-col sm:flex-row items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-xl border border-gray-100 dark:border-zinc-800 gap-4">
-                                    <div className="flex items-center gap-4 w-full sm:w-auto">
-                                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-zinc-700 flex-shrink-0">
-                                            <img src={item.image} alt={item.product} className="w-full h-full object-cover" />
-                                        </div>
-                                        <div>
-                                            <h5 className="font-semibold text-gray-900 dark:text-white">{item.product}</h5>
-                                             <div className="text-sm text-gray-500 dark:text-zinc-400 mt-1">
-                                                <span>Original: <span className="line-through">{formatPrice(item.originalPrice)}</span></span>
-                                                <span className="mx-2">•</span>
-                                                <span className="text-emerald-600 dark:text-emerald-400 font-medium">Your Offer: {formatPrice(item.offerPrice)}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="w-full sm:w-auto flex justify-end">
-                                         <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                                            item.status === "Pending" 
-                                            ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
-                                            : "bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400"
-                                         }`}>
-                                            {item.status}
-                                        </span>
-                                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-4">
+                        Offer History
+                      </h4>
+                      <div className="space-y-4">
+                        {demoBargains
+                          .filter((b) => b.status !== "Accepted")
+                          .map((item) => (
+                            <div
+                              key={item.id}
+                              className="flex flex-col sm:flex-row items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-xl border border-gray-100 dark:border-zinc-800 gap-4"
+                            >
+                              <div className="flex items-center gap-4 w-full sm:w-auto">
+                                <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-zinc-700 shrink-0">
+                                  <img
+                                    src={item.image}
+                                    alt={item.product}
+                                    className="w-full h-full object-cover"
+                                  />
                                 </div>
-                            ))}
-                             {demoBargains.filter(b => b.status !== "Accepted").length === 0 && (
-                                <p className="text-gray-500 dark:text-zinc-500 text-sm">No offer history.</p>
-                            )}
-                        </div>
+                                <div>
+                                  <h5 className="font-semibold text-gray-900 dark:text-white">
+                                    {item.product}
+                                  </h5>
+                                  <div className="text-sm text-gray-500 dark:text-zinc-400 mt-1">
+                                    <span>
+                                      Original:{" "}
+                                      <span className="line-through">
+                                        {formatPrice(item.originalPrice)}
+                                      </span>
+                                    </span>
+                                    <span className="mx-2">•</span>
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                                      Your Offer: {formatPrice(item.offerPrice)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="w-full sm:w-auto flex justify-end">
+                                <span
+                                  className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                                    item.status === "Pending"
+                                      ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                                      : "bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400"
+                                  }`}
+                                >
+                                  {item.status}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        {demoBargains.filter((b) => b.status !== "Accepted")
+                          .length === 0 && (
+                          <p className="text-gray-500 dark:text-zinc-500 text-sm">
+                            No offer history.
+                          </p>
+                        )}
+                      </div>
                     </div>
-
                   </div>
                 </div>
               </div>

@@ -193,22 +193,22 @@ export function AuthCertificatesClient({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
             Authenticity Certificates
           </h1>
-          <p className="text-gray-500 dark:text-zinc-400">
+          <p className="text-sm sm:text-base text-gray-500 dark:text-zinc-400 mt-1">
             Create certificates to prove the authenticity of your handcrafted
             products
           </p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition flex items-center gap-2"
+          className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition flex items-center justify-center gap-2 text-sm sm:text-base shrink-0"
         >
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4 sm:w-5 sm:h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -234,11 +234,11 @@ export function AuthCertificatesClient({
               className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden hover:border-emerald-500/50 hover:shadow-lg transition cursor-pointer group"
             >
               {cert.image && (
-                <div className="h-40 overflow-hidden bg-gray-100 dark:bg-zinc-800">
+                <div className="h-56 overflow-hidden bg-gray-100 dark:bg-zinc-800 flex items-center justify-center">
                   <img
                     src={cert.image}
                     alt={cert.artworkName}
-                    className="w-full h-full object-cover group-hover:scale-105 transition"
+                    className="w-full h-full object-contain group-hover:scale-105 transition"
                   />
                 </div>
               )}
@@ -565,24 +565,24 @@ function CertificateViewModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto"
+        className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6 relative">
+        <div className="p-4 sm:p-6 relative">
           {/* Decorative Border */}
-          <div className="absolute inset-4 border-2 border-emerald-500/30 rounded-xl pointer-events-none" />
-          <div className="absolute inset-6 border border-emerald-500/20 rounded-lg pointer-events-none" />
+          <div className="absolute inset-3 sm:inset-4 border-2 border-emerald-500/30 rounded-xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-6 border border-emerald-500/20 rounded-lg pointer-events-none" />
 
           {/* Header */}
-          <div className="text-center mb-6 relative">
-            <div className="flex justify-center mb-3">
-              <div className="w-14 h-14 bg-emerald-500/20 rounded-full flex items-center justify-center">
+          <div className="text-center mb-4 sm:mb-6 relative">
+            <div className="flex justify-center mb-2 sm:mb-3">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-emerald-500/20 rounded-full flex items-center justify-center">
                 <svg
-                  className="w-7 h-7 text-emerald-400"
+                  className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -596,37 +596,37 @@ function CertificateViewModal({
                 </svg>
               </div>
             </div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-wide mb-1">
+            <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white tracking-wide mb-1">
               CERTIFICATE OF AUTHENTICITY
             </h1>
-            <p className="text-emerald-600 dark:text-emerald-400 text-xs font-medium tracking-widest uppercase">
+            <p className="text-emerald-600 dark:text-emerald-400 text-[10px] sm:text-xs font-medium tracking-widest uppercase">
               Handcrafted Heritage
             </p>
           </div>
 
           {/* Artwork Image */}
           {certificate.image && (
-            <div className="mb-4 rounded-xl overflow-hidden border-2 border-gray-200 dark:border-zinc-800">
+            <div className="mb-4 rounded-xl overflow-hidden border-2 border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-800">
               <img
                 src={certificate.image}
                 alt={certificate.artworkName}
-                className="w-full h-48 object-cover"
+                className="w-full h-80 sm:h-96 object-contain"
               />
             </div>
           )}
 
           {/* Main Content */}
           <div className="text-center mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">
               {certificate.artworkName}
             </h2>
-            <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-3">
+            <p className="text-sm sm:text-base text-emerald-600 dark:text-emerald-400 font-medium mb-3">
               {certificate.craftTradition}
             </p>
 
             {certificate.heritageStory && (
               <div className="bg-gray-50 dark:bg-zinc-800/50 border border-gray-200 dark:border-zinc-800 rounded-xl p-3 mb-3">
-                <p className="text-xs text-gray-700 dark:text-zinc-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-700 dark:text-zinc-300 leading-relaxed text-left">
                   {certificate.heritageStory}
                 </p>
               </div>
@@ -635,14 +635,14 @@ function CertificateViewModal({
 
           {/* QR Code & Verification */}
           <div className="bg-gray-50 dark:bg-zinc-800/50 border border-gray-200 dark:border-zinc-800 rounded-xl p-3 mb-4">
-            <div className="flex items-center gap-4">
-              <div className="bg-white p-2 rounded-lg">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+              <div className="bg-white p-2 rounded-lg shrink-0">
                 <QRCodeSVG value={verificationUrl} size={70} level="M" />
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
+              <div className="flex-1 text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
                   <svg
-                    className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
+                    className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -654,14 +654,14 @@ function CertificateViewModal({
                       d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                     />
                   </svg>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-medium text-xs">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-medium text-xs sm:text-sm">
                     Verified Authentic
                   </span>
                 </div>
-                <p className="text-gray-600 dark:text-zinc-400 text-xs mb-1">
+                <p className="text-gray-600 dark:text-zinc-400 text-[10px] sm:text-xs mb-1">
                   Scan QR code to verify authenticity
                 </p>
-                <p className="text-gray-500 dark:text-zinc-500 text-xs font-mono">
+                <p className="text-gray-500 dark:text-zinc-500 text-[10px] sm:text-xs font-mono break-all">
                   ID: {certificate.id.slice(0, 12).toUpperCase()}
                 </p>
               </div>
@@ -669,20 +669,20 @@ function CertificateViewModal({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-between items-end pt-4 border-t border-gray-200 dark:border-zinc-800">
-            <div className="text-left">
-              <p className="text-xs text-gray-500 dark:text-zinc-500 uppercase tracking-wide mb-1">
+          <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end gap-3 sm:gap-0 pt-3 sm:pt-4 border-t border-gray-200 dark:border-zinc-800">
+            <div className="text-center sm:text-left">
+              <p className="text-[10px] sm:text-xs text-gray-500 dark:text-zinc-500 uppercase tracking-wide mb-1">
                 Artisan
               </p>
-              <p className="text-gray-900 dark:text-white font-medium text-sm">
+              <p className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">
                 {userName}
               </p>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-gray-500 dark:text-zinc-500 uppercase tracking-wide mb-1">
+            <div className="text-center sm:text-right">
+              <p className="text-[10px] sm:text-xs text-gray-500 dark:text-zinc-500 uppercase tracking-wide mb-1">
                 Certified Date
               </p>
-              <p className="text-gray-900 dark:text-white font-medium text-sm">
+              <p className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">
                 {new Date(certificate.certifiedDate).toLocaleDateString(
                   "en-US",
                   {
@@ -697,13 +697,13 @@ function CertificateViewModal({
         </div>
 
         {/* Actions */}
-        <div className="bg-gray-50 dark:bg-zinc-800 border-t border-gray-200 dark:border-zinc-800 p-4 flex justify-center gap-3">
+        <div className="bg-gray-50 dark:bg-zinc-800 border-t border-gray-200 dark:border-zinc-800 p-3 sm:p-4 flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
           <button
             onClick={() => window.print()}
-            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition flex items-center gap-2 text-sm font-medium"
+            className="w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition flex items-center justify-center gap-2 text-xs sm:text-sm font-medium"
           >
             <svg
-              className="w-4 h-4"
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -719,7 +719,7 @@ function CertificateViewModal({
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 transition text-sm font-medium"
+            className="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 transition text-xs sm:text-sm font-medium"
           >
             Close
           </button>

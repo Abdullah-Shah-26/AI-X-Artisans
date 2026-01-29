@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { CustomerHeader } from "@/components/layout/CustomerHeader";
 
 interface CartItem {
   id: string;
@@ -34,10 +35,169 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
   const { theme, setTheme } = useTheme();
   const [items, setItems] = useState(initialItems);
   const [loading, setLoading] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Load cart from localStorage for guest users
+  useEffect(() => {
+    setMounted(true);
+    if (isGuest && typeof window !== "undefined") {
+      const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+
+      // All demo products
+      const demoProducts = [
+        {
+          id: "demo-1",
+          name: "Handwoven Basket",
+          price: 3500,
+          image:
+            "https://handmadecrafts.simdif.com/images/public/sd_64735c47e5d9c.jpg?no_cache=1685289084",
+          artisan: {
+            id: "demo-a1",
+            name: "Lakshmi Devi",
+            avatar:
+              "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
+          },
+        },
+        {
+          id: "demo-2",
+          name: "Brass Oil Lamp",
+          price: 850,
+          image:
+            "https://m.media-amazon.com/images/S/aplus-media/sc/600659ea-53c6-4da5-86d4-9ba14feea523.__CR0,210,1007,1007_PT0_SX300_V1___.jpg",
+          artisan: {
+            id: "demo-a2",
+            name: "Ravi Kumar",
+            avatar:
+              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
+          },
+        },
+        {
+          id: "demo-3",
+          name: "Ceramic Tea Set",
+          price: 3200,
+          image:
+            "https://siggyhandmade.com/cdn/shop/products/CeramicTeaSet.jpg?v=1663196891",
+          artisan: {
+            id: "demo-a3",
+            name: "Meena Sharma",
+            avatar:
+              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
+          },
+        },
+        {
+          id: "demo-4",
+          name: "Wooden Jewelry Box",
+          price: 2800,
+          image:
+            "https://i.etsystatic.com/37334871/r/il/7919ab/4350255523/il_570xN.4350255523_gv3a.jpg",
+          artisan: {
+            id: "demo-a4",
+            name: "Priya Singh",
+            avatar:
+              "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
+          },
+        },
+        {
+          id: "demo-5",
+          name: "Terracotta Planter",
+          price: 850,
+          image:
+            "https://m.media-amazon.com/images/I/71VhZ0bxLLL._AC_UF350,350_QL80_.jpg",
+          artisan: {
+            id: "demo-a5",
+            name: "Anjali Patel",
+            avatar:
+              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100",
+          },
+        },
+        {
+          id: "demo-6",
+          name: "Bamboo Basket Set",
+          price: 2800,
+          image:
+            "https://www.nicobar.com/cdn/shop/products/1518630607A46A7142_ea3907a7-1284-4616-973b-3aecb49cf199.jpg?v=1710310859",
+          artisan: {
+            id: "demo-a6",
+            name: "Gopal Das",
+            avatar:
+              "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100",
+          },
+        },
+        {
+          id: "demo-7",
+          name: "Handcrafted Clay Pot",
+          price: 650,
+          image:
+            "https://i.pinimg.com/736x/9f/1c/1e/9f1c1ed6528a3f362bacddc7cb181545.jpg",
+          artisan: {
+            id: "demo-a7",
+            name: "Kavita Reddy",
+            avatar:
+              "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100",
+          },
+        },
+        {
+          id: "demo-8",
+          name: "Handwoven Cotton Rug",
+          price: 4500,
+          image:
+            "https://images.unsplash.com/photo-1600166898405-da9535204843?w=500",
+          artisan: {
+            id: "demo-a8",
+            name: "Suresh Yadav",
+            avatar:
+              "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100",
+          },
+        },
+        {
+          id: "demo-9",
+          name: "Handwoven Silk Saree",
+          price: 15000,
+          image:
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500",
+          artisan: {
+            id: "demo-a1",
+            name: "Lakshmi Devi",
+            avatar:
+              "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
+          },
+        },
+        {
+          id: "demo-10",
+          name: "Block Printed Table Runner",
+          price: 980,
+          image:
+            "https://www.shopinnerchild.com/cdn/shop/files/ICstudio_-5.jpg?v=1749500538&width=2686",
+          artisan: {
+            id: "demo-a10",
+            name: "Ramesh Joshi",
+            avatar:
+              "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100",
+          },
+        },
+      ];
+
+      const cartItems = guestCart
+        .map((productId: string, index: number) => {
+          const product = demoProducts.find((p) => p.id === productId);
+          if (!product) return null;
+          return {
+            id: `guest-item-${index}`,
+            quantity: 1,
+            product,
+          };
+        })
+        .filter(Boolean);
+
+      if (cartItems.length > 0) {
+        setItems(cartItems as CartItem[]);
+      }
+    }
+  }, [isGuest]);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
-    0
+    0,
   );
   const shipping = subtotal > 0 ? 150 : 0;
   const tax = subtotal * 0.12;
@@ -46,7 +206,7 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
   const updateQuantity = async (productId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     setLoading(productId);
-    
+
     // Guest mode simulation
     if (isGuest) {
       setTimeout(() => {
@@ -54,8 +214,8 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
           prev.map((item) =>
             item.product.id === productId
               ? { ...item, quantity: newQuantity }
-              : item
-          )
+              : item,
+          ),
         );
         setLoading(null);
       }, 300);
@@ -72,8 +232,8 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
         prev.map((item) =>
           item.product.id === productId
             ? { ...item, quantity: newQuantity }
-            : item
-        )
+            : item,
+        ),
       );
     } catch (e) {
       console.error(e);
@@ -85,11 +245,19 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
   const removeItem = async (productId: string) => {
     setLoading(productId);
 
-    // Guest mode simulation
+    // Guest mode simulation - update localStorage
     if (isGuest) {
       setTimeout(() => {
-        setItems((prev) => prev.filter((item) => item.product.id !== productId));
+        setItems((prev) =>
+          prev.filter((item) => item.product.id !== productId),
+        );
+        // Update localStorage
+        const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+        const updatedCart = guestCart.filter((id: string) => id !== productId);
+        localStorage.setItem("guestCart", JSON.stringify(updatedCart));
         setLoading(null);
+        // Refresh to update cart count in header
+        router.refresh();
       }, 300);
       return;
     }
@@ -101,6 +269,8 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
         body: JSON.stringify({ productId }),
       });
       setItems((prev) => prev.filter((item) => item.product.id !== productId));
+      // Refresh to update cart count
+      router.refresh();
     } catch (e) {
       console.error(e);
     } finally {
@@ -113,23 +283,51 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800">
         <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <Link href="/marketplace" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg overflow-hidden border border-emerald-500/30">
-                <img
-                  src="/image.png"
-                  alt="AIxArtisans"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
-                AIxArtisans
-              </span>
-            </Link>
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Back button + Logo */}
+            <div className="flex items-center gap-3">
+              {/* Back button */}
+              <Link
+                href="/marketplace"
+                className="p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition"
+                title="Continue Shopping"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </Link>
+
+              {/* Logo */}
+              <Link href="/marketplace" className="flex items-center gap-2">
+                <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg overflow-hidden border border-emerald-500/30">
+                  <img
+                    src="/image.png"
+                    alt="AIxArtisans"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="text-base md:text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+                  AIxArtisans
+                </span>
+              </Link>
+            </div>
+
+            {/* Right: Theme toggle */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-2 text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg"
+                className="p-2 text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition"
+                title={theme === "dark" ? "Light Mode" : "Dark Mode"}
               >
                 {theme === "dark" ? (
                   <svg
@@ -161,25 +359,6 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
                   </svg>
                 )}
               </button>
-              <Link
-                href="/marketplace"
-                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-2"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                  />
-                </svg>
-                Continue Shopping
-              </Link>
             </div>
           </div>
         </div>
@@ -190,7 +369,14 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
           Shopping Cart
         </h1>
 
-        {items.length === 0 ? (
+        {!mounted ? (
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl p-12 text-center ring-1 ring-gray-200 dark:ring-zinc-800">
+            <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <p className="text-gray-500 dark:text-zinc-400">Loading cart...</p>
+          </div>
+        ) : items.length === 0 ? (
           <div className="bg-white dark:bg-zinc-900 rounded-2xl p-12 text-center ring-1 ring-gray-200 dark:ring-zinc-800">
             <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg

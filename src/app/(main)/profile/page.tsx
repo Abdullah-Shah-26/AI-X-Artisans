@@ -12,9 +12,10 @@ async function getUser() {
   if (isGuest && viewMode === "customer") {
     return {
       id: "guest-user",
-      name: "Guest Customer",
+      name: "Guest User",
       email: "guest@example.com",
-      avatar: null,
+      avatar:
+        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100",
       role: "CUSTOMER",
       createdAt: new Date(),
     };

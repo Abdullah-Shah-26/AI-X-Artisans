@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -31,16 +31,127 @@ const formatPrice = (price: number) =>
   }).format(price);
 
 export function CheckoutClient({
-  items,
+  items: initialItems,
   user,
   isDemo = false,
 }: CheckoutClientProps) {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [loading, setLoading] = useState(false);
+  const [items, setItems] = useState(initialItems);
   const [step, setStep] = useState<"shipping" | "payment" | "success">(
-    "shipping"
+    "shipping",
   );
+
+  // Load cart from localStorage for demo users
+  useEffect(() => {
+    if (isDemo && typeof window !== "undefined") {
+      const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+
+      // All demo products - must match CartClient
+      const demoProducts = [
+        {
+          id: "demo-1",
+          name: "Handwoven Basket",
+          price: 3500,
+          image:
+            "https://handmadecrafts.simdif.com/images/public/sd_64735c47e5d9c.jpg?no_cache=1685289084",
+          artisan: { id: "demo-a1", name: "Lakshmi Devi" },
+        },
+        {
+          id: "demo-2",
+          name: "Brass Oil Lamp",
+          price: 850,
+          image:
+            "https://m.media-amazon.com/images/S/aplus-media/sc/600659ea-53c6-4da5-86d4-9ba14feea523.__CR0,210,1007,1007_PT0_SX300_V1___.jpg",
+          artisan: { id: "demo-a2", name: "Ravi Kumar" },
+        },
+        {
+          id: "demo-3",
+          name: "Ceramic Tea Set",
+          price: 3200,
+          image:
+            "https://siggyhandmade.com/cdn/shop/products/CeramicTeaSet.jpg?v=1663196891",
+          artisan: { id: "demo-a3", name: "Meena Sharma" },
+        },
+        {
+          id: "demo-4",
+          name: "Wooden Jewelry Box",
+          price: 2800,
+          image:
+            "https://i.etsystatic.com/37334871/r/il/7919ab/4350255523/il_570xN.4350255523_gv3a.jpg",
+          artisan: { id: "demo-a4", name: "Priya Singh" },
+        },
+        {
+          id: "demo-5",
+          name: "Terracotta Planter",
+          price: 850,
+          image:
+            "https://m.media-amazon.com/images/I/71VhZ0bxLLL._AC_UF350,350_QL80_.jpg",
+          artisan: { id: "demo-a5", name: "Anjali Patel" },
+        },
+        {
+          id: "demo-6",
+          name: "Bamboo Basket Set",
+          price: 2800,
+          image:
+            "https://www.nicobar.com/cdn/shop/products/1518630607A46A7142_ea3907a7-1284-4616-973b-3aecb49cf199.jpg?v=1710310859",
+          artisan: { id: "demo-a6", name: "Gopal Das" },
+        },
+        {
+          id: "demo-7",
+          name: "Handcrafted Clay Pot",
+          price: 650,
+          image:
+            "https://i.pinimg.com/736x/9f/1c/1e/9f1c1ed6528a3f362bacddc7cb181545.jpg",
+          artisan: { id: "demo-a7", name: "Kavita Reddy" },
+        },
+        {
+          id: "demo-8",
+          name: "Handwoven Cotton Rug",
+          price: 4500,
+          image:
+            "https://images.unsplash.com/photo-1600166898405-da9535204843?w=500",
+          artisan: { id: "demo-a8", name: "Suresh Yadav" },
+        },
+        {
+          id: "demo-9",
+          name: "Handwoven Silk Saree",
+          price: 15000,
+          image:
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500",
+          artisan: { id: "demo-a1", name: "Lakshmi Devi" },
+        },
+        {
+          id: "demo-10",
+          name: "Block Printed Table Runner",
+          price: 980,
+          image:
+            "https://www.shopinnerchild.com/cdn/shop/files/ICstudio_-5.jpg?v=1749500538&width=2686",
+          artisan: { id: "demo-a10", name: "Ramesh Joshi" },
+        },
+      ];
+
+      const cartItems = guestCart
+        .map((productId: string, index: number) => {
+          const product = demoProducts.find((p) => p.id === productId);
+          if (!product) return null;
+          return {
+            id: `guest-item-${index}`,
+            quantity: 1,
+            product,
+          };
+        })
+        .filter(Boolean);
+
+      if (cartItems.length > 0) {
+        setItems(cartItems as CartItem[]);
+      } else {
+        // No items in cart, redirect back
+        router.push("/cart");
+      }
+    }
+  }, [isDemo, router]);
 
   // Form state
   const [fullName, setFullName] = useState(user?.name || "");
@@ -55,7 +166,7 @@ export function CheckoutClient({
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
-    0
+    0,
   );
   const shipping = 150;
   const tax = subtotal * 0.12;
@@ -73,7 +184,10 @@ export function CheckoutClient({
     await new Promise((r) => setTimeout(r, 2000));
 
     // Clear cart after "successful" payment
-    if (!isDemo) {
+    if (isDemo) {
+      // Clear localStorage cart for demo users
+      localStorage.removeItem("guestCart");
+    } else {
       try {
         await fetch("/api/cart", {
           method: "DELETE",
@@ -155,13 +269,6 @@ export function CheckoutClient({
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black">
-      {/* Demo Banner */}
-      {isDemo && (
-        <div className="bg-amber-500 text-black text-center py-2 px-4 text-sm font-medium">
-          Demo Mode - This is a simulated checkout. Sign up to place real
-          orders!
-        </div>
-      )}
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800">
         <div className="max-w-6xl mx-auto px-4 py-3">
@@ -432,7 +539,7 @@ export function CheckoutClient({
                       value={cardNumber}
                       onChange={(e) =>
                         setCardNumber(
-                          e.target.value.replace(/\D/g, "").slice(0, 16)
+                          e.target.value.replace(/\D/g, "").slice(0, 16),
                         )
                       }
                       required

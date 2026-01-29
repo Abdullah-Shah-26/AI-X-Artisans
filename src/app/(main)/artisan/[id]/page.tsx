@@ -2,9 +2,54 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
+import { BackButton } from "./BackButton";
 
 // Demo artisans matching the demo products
 const demoArtisans: Record<string, any> = {
+  "demo-artisan-1": {
+    id: "demo-artisan-1",
+    name: "Lakshmi Devi",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
+    artisanProfile: {
+      bio: "Traditional block printing artisan with 15 years of experience.",
+      location: "Jaipur, Rajasthan",
+      craftTypes: ["Block Printing", "Textiles"],
+      story:
+        "I am a traditional block printing artisan from Jaipur, specializing in creating beautiful textile designs using hand-carved wooden blocks and natural dyes. My work preserves the ancient art of block printing while creating contemporary designs for modern homes.",
+      yearsOfExperience: 15,
+    },
+    products: [],
+  },
+  "demo-artisan-2": {
+    id: "demo-artisan-2",
+    name: "Ravi Kumar",
+    avatar:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400",
+    artisanProfile: {
+      bio: "Master potter creating traditional and modern ceramic pieces.",
+      location: "Varanasi, UP",
+      craftTypes: ["Pottery", "Ceramics"],
+      story:
+        "I am a master potter from Varanasi, creating both traditional and modern ceramic pieces. My work combines ancient pottery techniques with contemporary designs, creating functional art for everyday use.",
+      yearsOfExperience: 18,
+    },
+    products: [],
+  },
+  "demo-artisan-3": {
+    id: "demo-artisan-3",
+    name: "Meena Sharma",
+    avatar:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
+    artisanProfile: {
+      bio: "Specializing in intricate brass artifacts and home decor.",
+      location: "Moradabad, UP",
+      craftTypes: ["Brass Work", "Metal Crafts"],
+      story:
+        "I specialize in creating intricate brass artifacts and home decor items. My work showcases the traditional metalworking techniques of Moradabad, creating beautiful pieces that blend tradition with modern aesthetics.",
+      yearsOfExperience: 12,
+    },
+    products: [],
+  },
   "demo-a1": {
     id: "demo-a1",
     name: "Lakshmi Devi",
@@ -202,44 +247,12 @@ export default async function ArtisanProfilePage({
             <Link href="/" className="text-2xl font-bold text-emerald-700">
               AIxArtisans
             </Link>
-            <Link
-              href="/marketplace"
-              className="text-gray-600 hover:text-emerald-600"
-            >
-              ← Back to Marketplace
-            </Link>
+            <BackButton />
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Demo Banner */}
-        {isDemo && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6 flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-              <svg
-                className="w-5 h-5 text-emerald-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <div>
-              <p className="font-medium text-emerald-800">Demo Profile</p>
-              <p className="text-sm text-emerald-600">
-                This is a sample artisan profile for demonstration.
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
           <div className="bg-linear-to-r from-emerald-600 to-teal-600 h-32" />

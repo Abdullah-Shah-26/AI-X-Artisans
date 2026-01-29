@@ -336,7 +336,8 @@ export default async function MarketplacePage({
             : null
       }
       favoriteIds={userData.favoriteIds}
-      cartCount={guestMode ? 1 : userData.cartCount}
+      cartCount={userData.cartCount}
+      isGuestMode={guestMode}
     />
   );
 }

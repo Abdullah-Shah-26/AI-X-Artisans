@@ -559,21 +559,21 @@ export function PhotoStudioClient() {
               <label className="font-semibold text-gray-900 dark:text-zinc-300 block mb-2">
                 {t("photoStudio.targetPlatform")}
               </label>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {platforms.map((platform) => {
                   const Icon = platform.icon;
                   return (
                     <button
                       key={platform.id}
                       onClick={() => setSelectedPlatform(platform.id)}
-                      className={`flex-1 p-3 rounded-xl border-2 transition-all duration-300 flex flex-col items-center gap-1.5 ${
+                      className={`p-3 rounded-xl border-2 transition-all duration-300 flex flex-col items-center gap-1.5 ${
                         selectedPlatform === platform.id
                           ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
                           : "border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:border-emerald-400"
                       }`}
                     >
                       <Icon />
-                      <span className="text-xs font-medium text-gray-700 dark:text-zinc-300">
+                      <span className="text-xs font-medium text-gray-700 dark:text-zinc-300 text-center">
                         {platform.name}
                       </span>
                     </button>
@@ -842,33 +842,19 @@ export function PhotoStudioClient() {
             {result && !isLoading && (
               <div className="space-y-4 p-4 bg-gray-50 dark:bg-zinc-800 rounded-xl">
                 {result.productName && (
-                  <div className="flex items-center justify-between">
+                  <div>
                     <h4 className="font-bold text-gray-800 dark:text-white text-lg">
                       {result.productName}
                     </h4>
-                    <button
-                      onClick={() => copyToClipboard(result.productName || "")}
-                      className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
-                    >
-                      Copy
-                    </button>
                   </div>
                 )}
 
                 {result.description && (
                   <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-600">
+                    <div className="mb-1">
+                      <span className="text-sm font-medium text-gray-600 dark:text-zinc-400">
                         Product Description
                       </span>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(result.description || "")
-                        }
-                        className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
-                      >
-                        Copy
-                      </button>
                     </div>
                     <p className="text-sm text-gray-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 p-3 rounded-lg border border-gray-200 dark:border-zinc-700">
                       {result.description}
@@ -878,19 +864,11 @@ export function PhotoStudioClient() {
 
                 {result.postContent && (
                   <div>
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="mb-1">
                       <span className="text-sm font-medium text-gray-600 dark:text-zinc-400">
                         {platforms.find((p) => p.id === selectedPlatform)?.name}{" "}
                         Post
                       </span>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(result.postContent || "")
-                        }
-                        className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
-                      >
-                        Copy
-                      </button>
                     </div>
                     <p className="text-sm text-gray-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 p-3 rounded-lg border border-gray-200 dark:border-zinc-700 whitespace-pre-wrap">
                       {result.postContent}
@@ -900,21 +878,10 @@ export function PhotoStudioClient() {
 
                 {result.hashtags && result.hashtags.length > 0 && (
                   <div>
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="mb-1">
                       <span className="text-sm font-medium text-gray-600 dark:text-zinc-400">
                         Hashtags
                       </span>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(
-                            result.hashtags?.map((t) => `#${t}`).join(" ") ||
-                              "",
-                          )
-                        }
-                        className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
-                      >
-                        Copy All
-                      </button>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {result.hashtags.map((tag, i) => (

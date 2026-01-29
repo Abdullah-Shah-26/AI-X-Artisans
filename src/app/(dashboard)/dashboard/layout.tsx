@@ -70,8 +70,8 @@ export default async function Layout({
     isDemo || !user
       ? 2
       : currentRole === "artisan"
-      ? getPendingApplicationsCount(user.id)
-      : 0,
+        ? getPendingApplicationsCount(user.id)
+        : 0,
   ]);
 
   // Total notifications = connection requests + project applications (for artisans)
@@ -81,18 +81,21 @@ export default async function Layout({
   const demoNames: Record<string, string> = {
     artisan: "Lakshmi Devi",
     volunteer: "Priya Sharma",
+    customer: "Guest User",
   };
   const demoAvatars: Record<string, string> = {
     artisan: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
     volunteer:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
+    customer:
+      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100",
   };
 
   return (
     <DashboardLayout
       user={{
         name: isDemo
-          ? demoNames[currentRole] || "Demo User"
+          ? demoNames[currentRole] || "Guest User"
           : user?.name || "User",
         avatar: isDemo
           ? demoAvatars[currentRole] || null

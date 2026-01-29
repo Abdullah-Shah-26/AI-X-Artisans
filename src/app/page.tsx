@@ -38,16 +38,16 @@ export default function LandingPage() {
     <div className="bg-white text-gray-900 font-sans">
       {/* Navigation */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100/50">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-xl group-hover:bg-emerald-700 transition">
+            <div className="w-7 h-7 md:w-8 md:h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-lg md:text-xl group-hover:bg-emerald-700 transition">
               A
             </div>
-            <span className="text-2xl font-bold text-gray-900 tracking-tight">
+            <span className="text-lg md:text-2xl font-bold text-gray-900 tracking-tight">
               AIx<span className="text-emerald-600">Artisans</span>
             </span>
           </Link>
-          <nav className="flex items-center gap-8">
+          <nav className="flex items-center gap-3 md:gap-8">
             <Link
               href="/marketplace"
               className="text-sm font-medium text-gray-600 hover:text-emerald-600 transition hidden sm:block"
@@ -56,13 +56,13 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/login"
-              className="text-sm font-medium text-gray-600 hover:text-emerald-600 transition"
+              className="text-sm font-medium text-gray-600 hover:text-emerald-600 transition hidden sm:block"
             >
               Sign In
             </Link>
             <Link
               href="/signup"
-              className="bg-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-emerald-700 transition shadow-lg shadow-emerald-600/20"
+              className="bg-emerald-600 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-sm font-medium hover:bg-emerald-700 transition shadow-lg shadow-emerald-600/20"
             >
               Get Started
             </Link>

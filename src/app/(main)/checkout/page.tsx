@@ -59,7 +59,7 @@ export default async function CheckoutPage() {
     redirect("/login");
   }
 
-  let cartItems;
+  let cartItems: string | any[];
   let profile;
 
   if (user) {
@@ -67,14 +67,14 @@ export default async function CheckoutPage() {
       getCartItems(user.id),
       getUserProfile(user.id),
     ]);
-  } else {
-    // Demo mode - use mock data
-    cartItems = DEMO_CART_ITEMS;
-    profile = { name: "Demo User", email: "demo@example.com" };
-  }
 
-  if (cartItems.length === 0) {
-    redirect("/cart");
+    if (cartItems.length === 0) {
+      redirect("/cart");
+    }
+  } else {
+    // Demo mode - CheckoutClient will load from localStorage
+    cartItems = [];
+    profile = { name: "Guest User", email: "guest@example.com" };
   }
 
   return (

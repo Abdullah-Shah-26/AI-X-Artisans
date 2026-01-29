@@ -19,26 +19,8 @@ async function getCartItems(userId: string) {
   });
 }
 
-// Mock items for guest mode
-const GUEST_CART_ITEMS = [
-  {
-    id: "guest-item-1",
-    quantity: 1,
-    product: {
-      id: "prod-1",
-      name: "Handwoven Silk Scarf",
-      price: 2500,
-      image:
-        "https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=800",
-      artisan: {
-        id: "art-1",
-        name: "Lakshmi Devi",
-        avatar:
-          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
-      },
-    },
-  },
-];
+// Mock items for guest mode - empty by default
+const GUEST_CART_ITEMS: any[] = [];
 
 export default async function CartPage() {
   const cookieStore = await cookies();

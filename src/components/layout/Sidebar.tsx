@@ -229,6 +229,22 @@ const LogoutIcon = () => (
   </svg>
 );
 
+const XIcon = () => (
+  <svg
+    className="w-6 h-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M6 18L18 6M6 6l12 12"
+    />
+  </svg>
+);
+
 const SunIcon = () => (
   <svg
     className="w-4 h-4"
@@ -339,6 +355,16 @@ const volunteerNavConfig: NavItemConfig[] = [
     icon: <UsersIcon />,
   },
   {
+    labelKey: "sidebar.findArtisans",
+    href: "/dashboard/artisans",
+    icon: <ArtisanIcon />,
+  },
+  {
+    labelKey: "sidebar.certificates",
+    href: "/dashboard/certificates",
+    icon: <CertificateIcon />,
+  },
+  {
     labelKey: "sidebar.connections",
     href: "/dashboard/connections",
     icon: <ChatIcon />,
@@ -368,6 +394,8 @@ interface SidebarProps {
   userName: string;
   userAvatar?: string | null;
   isDemo?: boolean;
+  isMobileMenuOpen?: boolean;
+  onClose?: () => void;
 }
 
 export function Sidebar({
@@ -375,6 +403,8 @@ export function Sidebar({
   userName,
   userAvatar,
   isDemo = false,
+  isMobileMenuOpen = false,
+  onClose,
 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -413,7 +443,23 @@ export function Sidebar({
   };
 
   return (
-    <aside className="fixed left-0 top-0 w-64 bg-white dark:bg-black border-r border-gray-100 dark:border-zinc-900 h-screen flex flex-col">
+    <aside
+      className={cn(
+        "fixed left-0 top-0 w-64 bg-white dark:bg-black border-r border-gray-100 dark:border-zinc-900 h-screen flex flex-col z-50",
+        "transform transition-transform duration-300 ease-in-out",
+        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+        "lg:translate-x-0",
+      )}
+    >
+      {/* Close button - mobile only */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 dark:text-zinc-500 dark:hover:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg lg:hidden"
+        aria-label="Close menu"
+      >
+        <XIcon />
+      </button>
+
       {/* Logo */}
       <div className="h-16 px-6 border-b border-gray-100 dark:border-zinc-900 flex items-center">
         <Link href="/" className="flex items-center gap-3">
