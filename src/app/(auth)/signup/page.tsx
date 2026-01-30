@@ -95,7 +95,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
       {/* Background Image */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-center"

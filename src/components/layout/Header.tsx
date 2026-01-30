@@ -154,14 +154,14 @@ export function Header({
             Marketplace
           </Link>
           <Link
-            href="/dashboard/connections"
+            href="/dashboard/chat"
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-              pathname?.startsWith("/dashboard/connections")
+              pathname?.startsWith("/dashboard/chat")
                 ? "bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm"
                 : "text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white"
             }`}
           >
-            Connections
+            Messages
           </Link>
         </nav>
       )}
@@ -290,7 +290,7 @@ export function Header({
             <button
               onClick={() => setShowRoleDropdown(!showRoleDropdown)}
               disabled={switching}
-              className="flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition disabled:opacity-50"
+              className="flex items-center gap-2 px-3 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition disabled:opacity-50"
             >
               <svg
                 className="w-4 h-4"
@@ -305,11 +305,11 @@ export function Header({
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
-              <span className="text-xs md:text-sm font-medium">
+              <span className="text-sm font-medium">
                 {roleLabels[userRole]}
               </span>
               <svg
-                className="w-3 h-3 md:w-4 md:h-4"
+                className="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -333,16 +333,49 @@ export function Header({
                     key={role}
                     onClick={() => handleRoleSwitch(role)}
                     disabled={role === userRole || switching}
-                    className={`block w-full text-left px-4 py-2 text-sm transition ${
+                    className={`flex items-center justify-between w-full text-left px-4 py-2.5 text-sm transition ${
                       role === userRole
                         ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium"
                         : "text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800"
                     } disabled:cursor-not-allowed`}
                   >
-                    {roleLabels[role]}
+                    <span className="flex items-center gap-2">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        {role === "ARTISAN" && (
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
+                        )}
+                        {role === "VOLUNTEER" && (
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        )}
+                        {role === "CUSTOMER" && (
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                          />
+                        )}
+                      </svg>
+                      {roleLabels[role]}
+                    </span>
                     {role === userRole && (
                       <svg
-                        className="inline w-4 h-4 ml-2"
+                        className="w-4 h-4"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -406,47 +439,24 @@ export function Header({
                   <>
                     {/* Customer notifications */}
                     <Link
-                      href="/dashboard/connections"
+                      href="/dashboard/chat"
                       onClick={() => setShowNotifications(false)}
                       className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
-                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
-                            R
-                          </span>
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
+                          <img
+                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200"
+                            alt="Arjun Verma"
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Ramesh Kumar
+                            Arjun Verma
                           </p>
                           <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
-                            The blue silk scarf is ready for shipping...
-                          </p>
-                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
-                            45 mins ago
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-
-                    <Link
-                      href="/dashboard/connections"
-                      onClick={() => setShowNotifications(false)}
-                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
-                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
-                            S
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Sunita Devi
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
-                            Yes, I can certainly create a custom set...
+                            When can we schedule the collaboration?
                           </p>
                           <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
                             2 hours ago
@@ -459,54 +469,27 @@ export function Header({
                   <>
                     {/* Artisan/Volunteer notifications */}
                     <Link
-                      href="/dashboard/connections"
+                      href="/dashboard/chat"
                       onClick={() => setShowNotifications(false)}
                       className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
                     >
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
                           <img
-                            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200"
-                            alt="Ravi Kumar"
+                            src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200"
+                            alt="Meera Patel"
                             className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Ravi Kumar
+                            Meera Patel
                           </p>
                           <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
-                            Thank you for connecting! I'd love to collaborate...
+                            I'd love to help with your marketing!
                           </p>
                           <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
-                            30 mins ago
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-
-                    <Link
-                      href="/dashboard/connections"
-                      onClick={() => setShowNotifications(false)}
-                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
-                          <img
-                            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200"
-                            alt="Anita Sharma"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Anita Sharma
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
-                            I can help with the social media marketing...
-                          </p>
-                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
-                            2 hours ago
+                            1 day ago
                           </p>
                         </div>
                       </div>
@@ -516,7 +499,7 @@ export function Header({
 
                 <div className="px-4 py-2 border-t border-gray-200 dark:border-zinc-800">
                   <Link
-                    href="/dashboard/connections"
+                    href="/dashboard/chat"
                     onClick={() => setShowNotifications(false)}
                     className="text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium"
                   >
@@ -538,47 +521,24 @@ export function Header({
                   <>
                     {/* Customer notifications */}
                     <Link
-                      href="/dashboard/connections"
+                      href="/dashboard/chat"
                       onClick={() => setShowNotifications(false)}
                       className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
-                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
-                            R
-                          </span>
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
+                          <img
+                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200"
+                            alt="Arjun Verma"
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Ramesh Kumar
+                            Arjun Verma
                           </p>
                           <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
-                            The blue silk scarf is ready for shipping...
-                          </p>
-                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
-                            45 mins ago
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-
-                    <Link
-                      href="/dashboard/connections"
-                      onClick={() => setShowNotifications(false)}
-                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
-                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
-                            S
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Sunita Devi
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
-                            Yes, I can certainly create a custom set...
+                            When can we schedule the collaboration?
                           </p>
                           <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
                             2 hours ago
@@ -591,54 +551,27 @@ export function Header({
                   <>
                     {/* Artisan/Volunteer notifications */}
                     <Link
-                      href="/dashboard/connections"
+                      href="/dashboard/chat"
                       onClick={() => setShowNotifications(false)}
                       className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
                     >
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
                           <img
-                            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200"
-                            alt="Ravi Kumar"
+                            src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200"
+                            alt="Meera Patel"
                             className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Ravi Kumar
+                            Meera Patel
                           </p>
                           <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
-                            Thank you for connecting! I'd love to collaborate...
+                            I'd love to help with your marketing!
                           </p>
                           <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
-                            30 mins ago
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-
-                    <Link
-                      href="/dashboard/connections"
-                      onClick={() => setShowNotifications(false)}
-                      className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-500/20 shrink-0">
-                          <img
-                            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200"
-                            alt="Anita Sharma"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Anita Sharma
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate">
-                            I can help with the social media marketing...
-                          </p>
-                          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
-                            2 hours ago
+                            1 day ago
                           </p>
                         </div>
                       </div>
@@ -648,7 +581,7 @@ export function Header({
 
                 <div className="px-4 py-2 border-t border-gray-200 dark:border-zinc-800">
                   <Link
-                    href="/dashboard/connections"
+                    href="/dashboard/chat"
                     onClick={() => setShowNotifications(false)}
                     className="text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium"
                   >
@@ -733,7 +666,7 @@ export function Header({
               {/* Messages - Only for Customers */}
               {userRole === "CUSTOMER" && (
                 <Link
-                  href="/dashboard/connections"
+                  href="/dashboard/chat"
                   className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
                   onClick={() => setShowDropdown(false)}
                 >

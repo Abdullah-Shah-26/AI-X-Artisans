@@ -1007,14 +1007,14 @@ export function ProductDetailClient({
 
       {/* AI Stylist Modal */}
       {isStylistOpen && (
-        <div className="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 animate-in fade-in duration-300">
-          <div className="bg-white dark:bg-zinc-900 rounded-t-3xl sm:rounded-3xl w-full max-w-5xl max-h-[92vh] sm:max-h-[90vh] overflow-hidden ring-1 ring-gray-200 dark:ring-zinc-800 shadow-2xl animate-in slide-in-from-bottom sm:zoom-in-95 duration-300">
-            {/* Compact Purple Header - Professional */}
-            <div className="bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-zinc-800">
+            {/* Clean Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
                   <svg
-                    className="w-5 h-5"
+                    className="w-6 h-6 text-white"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -1026,57 +1026,66 @@ export function ProductDetailClient({
                       d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
                     />
                   </svg>
-                  <div>
-                    <h2 className="text-base font-semibold">AI Stylist</h2>
-                    <p className="text-xs text-purple-100">
-                      Transform your product design with AI magic
-                    </p>
-                  </div>
                 </div>
-                <button
-                  onClick={handleCloseStylist}
-                  className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+                <div>
+                  <h2 className="text-lg font-semibold text-white">
+                    AI Stylist
+                  </h2>
+                  <p className="text-sm text-purple-100">
+                    Transform your product design with AI
+                  </p>
+                </div>
               </div>
+              <button
+                onClick={handleCloseStylist}
+                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
             </div>
 
-            <div className="p-4 sm:p-6 md:p-8 overflow-y-auto max-h-[calc(92vh-65px)] sm:max-h-[calc(90vh-65px)]">
+            <div className="p-5 overflow-y-auto max-h-[calc(90vh-88px)]">
               {stylistStep === "select" && (
                 <div className="space-y-6">
                   {stylistError && (
-                    <div className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-500/20">
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        {stylistError}
-                      </div>
+                    <div className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-500/20 flex items-start gap-3">
+                      <svg
+                        className="w-5 h-5 flex-shrink-0 mt-0.5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span>{stylistError}</span>
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Choose Your Style
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-zinc-400 mb-6">
+                      Select a design aesthetic to transform your product
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
                       {
                         id: "minimalist",
@@ -1170,14 +1179,14 @@ export function ProductDetailClient({
                       <button
                         key={style.id}
                         onClick={() => handleStyleSelect(style.id as StyleType)}
-                        className="group relative p-5 rounded-xl border-2 border-gray-200 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-lg text-center transition-all duration-200 bg-white dark:bg-zinc-800"
+                        className="group p-6 rounded-xl border-2 border-gray-200 dark:border-zinc-700 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-lg text-center transition-all duration-200 bg-white dark:bg-zinc-800"
                       >
                         <div
-                          className={`w-12 h-12 mx-auto mb-3 rounded-xl ${style.color} flex items-center justify-center`}
+                          className={`w-12 h-12 mx-auto mb-3 rounded-xl ${style.color} flex items-center justify-center transition-transform group-hover:scale-110`}
                         >
                           {style.icon}
                         </div>
-                        <h4 className="font-semibold text-base text-gray-900 dark:text-white mb-1">
+                        <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
                           {style.name}
                         </h4>
                         <p className="text-xs text-gray-500 dark:text-zinc-500">
@@ -1190,76 +1199,74 @@ export function ProductDetailClient({
               )}
 
               {stylistStep === "generating" && (
-                <div className="flex flex-col items-center justify-center py-20">
-                  <div className="relative">
-                    <div className="w-20 h-20 border-4 border-purple-200 dark:border-purple-800 rounded-full animate-spin" />
-                    <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-t-purple-600 rounded-full animate-spin" />
+                <div className="flex flex-col items-center justify-center py-24">
+                  <div className="relative mb-8">
+                    <div className="w-16 h-16 border-4 border-purple-200 dark:border-purple-800 rounded-full" />
+                    <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-purple-600 rounded-full animate-spin" />
                   </div>
-                  <div className="mt-8 text-center">
-                    <p className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                      Creating your styled product...
-                    </p>
-                    <p className="text-sm md:text-base text-gray-500 dark:text-zinc-500">
-                      Our AI is working its magic ✨
-                    </p>
-                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    Creating your styled product
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-zinc-500">
+                    This may take a moment...
+                  </p>
                 </div>
               )}
 
               {stylistStep === "result" && styledImageUrl && (
-                <div className="space-y-8">
+                <div className="space-y-4">
                   <div className="text-center">
-                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
                       Your Transformed Product
                     </h3>
-                    <p className="text-sm md:text-base text-gray-600 dark:text-zinc-400">
+                    <p className="text-xs text-gray-600 dark:text-zinc-400">
                       Compare the original design with your AI-styled version
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-center gap-2 mb-4">
-                        <div className="w-3 h-3 bg-gray-400 rounded-full" />
-                        <h4 className="font-bold text-lg text-gray-700 dark:text-zinc-300">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* Original Image */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full" />
+                        <h4 className="font-medium text-xs text-gray-700 dark:text-zinc-300">
                           Original Design
                         </h4>
                       </div>
-                      <div className="relative group">
+                      <div className="relative bg-gray-50 dark:bg-zinc-800 rounded-lg overflow-hidden border border-gray-200 dark:border-zinc-700">
                         <img
                           src={product.image}
                           alt="Original"
-                          className="rounded-2xl w-full aspect-square object-cover ring-4 ring-gray-200 dark:ring-zinc-700 shadow-lg group-hover:shadow-xl transition-shadow"
+                          className="w-full h-auto max-h-[50vh] object-contain"
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 rounded-2xl transition-colors" />
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-center gap-2 mb-4">
-                        <div className="w-3 h-3 bg-linear-to-r from-purple-500 to-pink-500 rounded-full" />
-                        <h4 className="font-bold text-lg text-purple-700 dark:text-purple-400">
+                    {/* Styled Image */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                        <h4 className="font-medium text-xs text-purple-700 dark:text-purple-400">
                           AI Styled Design
                         </h4>
                       </div>
-                      <div className="relative group">
+                      <div className="relative bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-500/5 dark:to-indigo-500/5 rounded-lg overflow-hidden border-2 border-purple-200 dark:border-purple-500/30">
                         <img
                           src={styledImageUrl}
                           alt="Styled"
-                          className="rounded-2xl w-full aspect-square object-cover ring-4 ring-purple-200 dark:ring-purple-500/30 shadow-lg shadow-purple-500/20 group-hover:shadow-xl group-hover:shadow-purple-500/30 transition-shadow"
+                          className="w-full h-auto max-h-[50vh] object-contain"
                         />
-                        <div className="absolute inset-0 bg-linear-to-t from-purple-500/0 to-purple-500/5 rounded-2xl" />
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row justify-center gap-4 pt-6 border-t border-gray-200 dark:border-zinc-800">
+                  <div className="flex flex-col sm:flex-row justify-center gap-3 pt-3 border-t border-gray-200 dark:border-zinc-800">
                     <button
                       onClick={() => setStylistStep("select")}
-                      className="px-8 py-3 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 rounded-xl hover:bg-gray-200 dark:hover:bg-zinc-700 font-semibold transition-colors flex items-center justify-center gap-2"
+                      className="px-5 py-2 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 font-medium transition-colors flex items-center justify-center gap-2 text-sm"
                     >
                       <svg
-                        className="w-5 h-5"
+                        className="w-4 h-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -1276,10 +1283,10 @@ export function ProductDetailClient({
                     <a
                       href={styledImageUrl}
                       download={`${product.name}-styled.png`}
-                      className="px-8 py-3 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 font-semibold transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                      className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 font-medium transition-all flex items-center justify-center gap-2 text-sm"
                     >
                       <svg
-                        className="w-5 h-5"
+                        className="w-4 h-4"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"

@@ -11,20 +11,35 @@ const demoArtisans: Record<string, any> = {
     name: "Lakshmi Devi",
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
     artisanProfile: {
-      bio: "Traditional block printing artisan with 15 years of experience.",
+      bio: "Traditional artisan specializing in handcrafted pottery and ceramics with over 15 years of experience.",
       location: "Jaipur, Rajasthan",
-      craftTypes: ["Block Printing", "Textiles"],
+      craftTypes: ["Pottery", "Ceramics", "Blue Pottery"],
       story:
-        "I am a traditional block printing artisan from Jaipur, specializing in creating beautiful textile designs using hand-carved wooden blocks and natural dyes. My work preserves the ancient art of block printing while creating contemporary designs for modern homes.",
+        "I learned this craft from my grandmother who was a master potter in our village. My work combines traditional techniques with contemporary designs, creating functional art pieces that bring beauty to everyday life.",
       yearsOfExperience: 15,
     },
-    products: [],
+    products: [
+      {
+        id: "demo-prod-1",
+        name: "Blue Pottery Vase",
+        price: 2800,
+        image:
+          "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400",
+      },
+      {
+        id: "demo-prod-2",
+        name: "Ceramic Bowl Set",
+        price: 1500,
+        image:
+          "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400",
+      },
+    ],
   },
   "demo-artisan-2": {
     id: "demo-artisan-2",
-    name: "Ravi Kumar",
+    name: "Arjun Verma",
     avatar:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
     artisanProfile: {
       bio: "Master potter creating traditional and modern ceramic pieces.",
       location: "Varanasi, UP",
@@ -37,9 +52,9 @@ const demoArtisans: Record<string, any> = {
   },
   "demo-artisan-3": {
     id: "demo-artisan-3",
-    name: "Meena Sharma",
+    name: "Kavita Singh",
     avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400",
     artisanProfile: {
       bio: "Specializing in intricate brass artifacts and home decor.",
       location: "Moradabad, UP",
@@ -239,12 +254,15 @@ export default async function ArtisanProfilePage({
   const isDemo = id.startsWith("demo-");
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white dark:bg-black border-b border-gray-200 dark:border-zinc-900">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-emerald-700">
+            <Link
+              href="/"
+              className="text-2xl font-bold text-emerald-700 dark:text-emerald-400"
+            >
               AIxArtisans
             </Link>
             <BackButton />
@@ -254,12 +272,12 @@ export default async function ArtisanProfilePage({
 
       <div className="container mx-auto px-4 py-8">
         {/* Profile Header */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm overflow-hidden mb-8 border border-gray-200 dark:border-zinc-800">
           <div className="bg-linear-to-r from-emerald-600 to-teal-600 h-32" />
           <div className="px-8 pb-8">
             <div className="flex flex-col md:flex-row md:items-end gap-6 -mt-16">
               {/* Avatar */}
-              <div className="w-32 h-32 rounded-2xl bg-white shadow-lg overflow-hidden border-4 border-white">
+              <div className="w-32 h-32 rounded-2xl bg-white dark:bg-zinc-800 shadow-lg overflow-hidden border-4 border-white dark:border-zinc-900">
                 {artisan.avatar ? (
                   <img
                     src={artisan.avatar}
@@ -267,8 +285,8 @@ export default async function ArtisanProfilePage({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-emerald-100 flex items-center justify-center">
-                    <span className="text-4xl font-bold text-emerald-700">
+                  <div className="w-full h-full bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center">
+                    <span className="text-4xl font-bold text-emerald-700 dark:text-emerald-400">
                       {artisan.name.charAt(0)}
                     </span>
                   </div>
@@ -277,11 +295,11 @@ export default async function ArtisanProfilePage({
 
               {/* Info */}
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {artisan.name}
                 </h1>
                 {artisan.artisanProfile?.location && (
-                  <p className="text-gray-500 flex items-center gap-1 mt-1">
+                  <p className="text-gray-500 dark:text-zinc-400 flex items-center gap-1 mt-1">
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -309,17 +327,21 @@ export default async function ArtisanProfilePage({
               {/* Stats */}
               <div className="flex gap-6">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {artisan.products?.length || 0}
                   </p>
-                  <p className="text-sm text-gray-500">Products</p>
+                  <p className="text-sm text-gray-500 dark:text-zinc-400">
+                    Products
+                  </p>
                 </div>
                 {artisan.artisanProfile?.yearsOfExperience && (
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {artisan.artisanProfile.yearsOfExperience}
                     </p>
-                    <p className="text-sm text-gray-500">Years Exp.</p>
+                    <p className="text-sm text-gray-500 dark:text-zinc-400">
+                      Years Exp.
+                    </p>
                   </div>
                 )}
               </div>
@@ -332,24 +354,28 @@ export default async function ArtisanProfilePage({
           <div className="lg:col-span-1 space-y-6">
             {/* Bio */}
             {artisan.artisanProfile?.bio && (
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <h2 className="font-semibold text-gray-900 mb-3">About</h2>
-                <p className="text-gray-600">{artisan.artisanProfile.bio}</p>
+              <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-zinc-800">
+                <h2 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  About
+                </h2>
+                <p className="text-gray-600 dark:text-zinc-400">
+                  {artisan.artisanProfile.bio}
+                </p>
               </div>
             )}
 
             {/* Craft Types */}
             {artisan.artisanProfile?.craftTypes &&
               artisan.artisanProfile.craftTypes.length > 0 && (
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                  <h2 className="font-semibold text-gray-900 mb-3">
+                <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-zinc-800">
+                  <h2 className="font-semibold text-gray-900 dark:text-white mb-3">
                     Specializations
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {artisan.artisanProfile.craftTypes.map((craft: string) => (
                       <span
                         key={craft}
-                        className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm"
+                        className="bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full text-sm"
                       >
                         {craft}
                       </span>
@@ -360,16 +386,18 @@ export default async function ArtisanProfilePage({
 
             {/* Story */}
             {artisan.artisanProfile?.story && (
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <h2 className="font-semibold text-gray-900 mb-3">My Story</h2>
-                <p className="text-gray-600 whitespace-pre-line">
+              <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-zinc-800">
+                <h2 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  My Story
+                </h2>
+                <p className="text-gray-600 dark:text-zinc-400 whitespace-pre-line">
                   {artisan.artisanProfile.story}
                 </p>
               </div>
             )}
 
             {/* Contact Button */}
-            <button className="w-full bg-emerald-600 text-white py-3 rounded-xl hover:bg-emerald-700 transition font-medium flex items-center justify-center gap-2">
+            <button className="w-full bg-emerald-600 dark:bg-emerald-500 text-white dark:text-black py-3 rounded-xl hover:bg-emerald-700 dark:hover:bg-emerald-400 transition font-medium flex items-center justify-center gap-2">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -389,8 +417,8 @@ export default async function ArtisanProfilePage({
 
           {/* Right Column - Products */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h2 className="font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-zinc-800">
+              <h2 className="font-semibold text-gray-900 dark:text-white mb-4">
                 Products by {artisan.name}
               </h2>
 
@@ -402,24 +430,24 @@ export default async function ArtisanProfilePage({
                       href={isDemo ? "#" : `/marketplace/${product.id}`}
                       className="group"
                     >
-                      <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-2">
+                      <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-zinc-800 mb-2">
                         <img
                           src={product.image || "/placeholder.jpg"}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition"
                         />
                       </div>
-                      <h3 className="font-medium text-gray-900 line-clamp-1 group-hover:text-emerald-600 transition">
+                      <h3 className="font-medium text-gray-900 dark:text-white line-clamp-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
                         {product.name}
                       </h3>
-                      <p className="text-emerald-600 font-semibold">
+                      <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
                         {formatPrice(product.price)}
                       </p>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-gray-500 dark:text-zinc-400">
                   <p>No products listed yet</p>
                 </div>
               )}

@@ -123,6 +123,11 @@ export default async function ProfilePage() {
   const currentRole = viewMode || originalRole;
   const isDemo = guestMode || (!!viewMode && viewMode !== originalRole);
 
+  // Redirect customers to their dedicated profile page
+  if (!isDemo && user && user.role.toUpperCase() === "CUSTOMER") {
+    redirect("/profile");
+  }
+
   // In demo/guest mode, show demo profile based on current role
   if (isDemo || !user) {
     let demoProfile;
@@ -131,7 +136,8 @@ export default async function ProfilePage() {
     } else if (currentRole === "volunteer") {
       demoProfile = demoVolunteerProfile;
     } else {
-      demoProfile = demoCustomerProfile;
+      // Customer in demo mode should also redirect
+      redirect("/profile");
     }
     return <ProfileClient user={demoProfile} isDemo={true} />;
   }

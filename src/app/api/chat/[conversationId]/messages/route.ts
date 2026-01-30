@@ -1,41 +1,44 @@
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
+// GET - Get all messages for a conversation
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ conversationId: string }> },
 ) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { conversationId } = await params;
-
   try {
-    // Verify user is part of conversation
-    const conversation = await prisma.conversation.findFirst({
-      where: {
-        id: conversationId,
-        OR: [{ participant1Id: user.id }, { participant2Id: user.id }],
-      },
+    const { conversationId } = await params;
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Verify user is part of this conversation
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
     });
 
-    if (!conversation) {
-      return NextResponse.json(
-        { error: "Conversation not found" },
-        { status: 404 },
-      );
+    if (
+      !conversation ||
+      (conversation.participant1Id !== user.id &&
+        conversation.participant2Id !== user.id)
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const messages = await prisma.message.findMany({
       where: { conversationId },
       orderBy: { timestamp: "asc" },
+      include: {
+        sender: {
+          select: { id: true, name: true, avatar: true },
+        },
+      },
     });
 
     return NextResponse.json(messages);
@@ -48,71 +51,67 @@ export async function GET(
   }
 }
 
+// POST - Send a new message
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ conversationId: string }> },
 ) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { conversationId } = await params;
-
   try {
-    const { text, imageUrl } = await request.json();
+    const { conversationId } = await params;
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    // Verify user is part of conversation
-    const conversation = await prisma.conversation.findFirst({
-      where: {
-        id: conversationId,
-        OR: [{ participant1Id: user.id }, { participant2Id: user.id }],
-      },
-    });
-
-    if (!conversation) {
-      return NextResponse.json(
-        { error: "Conversation not found" },
-        { status: 404 },
-      );
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Ensure at least text or image is provided
+    const { text, imageUrl } = await request.json();
+
     if (!text && !imageUrl) {
       return NextResponse.json(
-        { error: "Message must contain text or image" },
+        { error: "Message text or image required" },
         { status: 400 },
       );
     }
 
-    // Create message and update conversation
-    const lastMessageText = imageUrl
-      ? text
-        ? `${text} [Image]`
-        : "[Image]"
-      : text;
+    // Verify user is part of this conversation
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+    });
 
-    const [message] = await prisma.$transaction([
-      prisma.message.create({
-        data: {
-          text: text || null,
-          imageUrl: imageUrl || null,
-          senderId: user.id,
-          conversationId,
+    if (
+      !conversation ||
+      (conversation.participant1Id !== user.id &&
+        conversation.participant2Id !== user.id)
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // Create message
+    const message = await prisma.message.create({
+      data: {
+        text,
+        imageUrl,
+        senderId: user.id,
+        conversationId,
+      },
+      include: {
+        sender: {
+          select: { id: true, name: true, avatar: true },
         },
-      }),
-      prisma.conversation.update({
-        where: { id: conversationId },
-        data: {
-          lastMessageText,
-          lastMessageAt: new Date(),
-        },
-      }),
-    ]);
+      },
+    });
+
+    // Update conversation's last message
+    await prisma.conversation.update({
+      where: { id: conversationId },
+      data: {
+        lastMessageText: text || "Sent an image",
+        lastMessageAt: new Date(),
+      },
+    });
 
     return NextResponse.json(message);
   } catch (error) {

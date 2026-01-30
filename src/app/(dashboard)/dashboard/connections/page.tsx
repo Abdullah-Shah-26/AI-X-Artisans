@@ -12,13 +12,14 @@ const demoRequests = [
     timestamp: new Date(),
     isDemo: true,
     sender: {
-      id: "demo-artisan-1",
-      name: "Lakshmi Devi",
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
+      id: "demo-artisan-2",
+      name: "Meera Patel",
+      avatar:
+        "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200",
       role: "ARTISAN" as const,
       artisanProfile: {
-        location: "Jaipur, Rajasthan",
-        bio: "Traditional block printing artisan with 15 years of experience.",
+        location: "Ahmedabad, Gujarat",
+        bio: "Textile weaving specialist creating beautiful handloom fabrics.",
       },
     },
   },
@@ -44,80 +45,22 @@ const demoConnections = [
   },
 ];
 
-// Demo conversations
-const demoConversations = [
-  {
-    id: "demo-conv-1",
-    isDemo: true,
-    otherParticipant: {
-      id: "demo-user-1",
-      name: "Ravi Kumar",
-      avatar:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200",
-    },
-    lastMessage:
-      "Thank you for connecting! I'd love to collaborate on the website project.",
-    lastMessageAt: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
-  },
-  {
-    id: "demo-conv-2",
-    isDemo: true,
-    otherParticipant: {
-      id: "demo-user-2",
-      name: "Anita Sharma",
-      avatar:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200",
-    },
-    lastMessage:
-      "I can help with the social media marketing. When can we discuss?",
-    lastMessageAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-  },
-];
-
 const customerDemoConnections = [
   {
     id: "cust-demo-conn-1",
     name: "Ramesh Kumar",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
     role: "ARTISAN" as const,
     isDemo: true,
   },
   {
     id: "cust-demo-conn-2",
     name: "Sunita Devi",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
     role: "ARTISAN" as const,
     isDemo: true,
-  },
-];
-
-// Demo conversations for Customers
-const customerDemoConversations = [
-  {
-    id: "cust-demo-conv-1",
-    isDemo: true,
-    otherParticipant: {
-      id: "demo-artisan-1",
-      name: "Ramesh Kumar",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
-      role: "ARTISAN" as const,
-    },
-    lastMessage:
-      "The blue silk scarf is ready for shipping. It should reach you by Tuesday.",
-    lastMessageAt: new Date(Date.now() - 1000 * 60 * 45), // 45 mins ago
-  },
-  {
-    id: "cust-demo-conv-2",
-    isDemo: true,
-    otherParticipant: {
-      id: "demo-artisan-2",
-      name: "Sunita Devi",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
-      role: "ARTISAN" as const,
-    },
-    lastMessage:
-      "Yes, I can certainly create a custom set of 6 dinner plates with that pattern.",
-    lastMessageAt: new Date(Date.now() - 1000 * 60 * 60 * 3), // 3 hours ago
   },
 ];
 
@@ -166,20 +109,6 @@ async function getAcceptedConnections(userId: string) {
   });
 }
 
-async function getConversations(userId: string) {
-  return prisma.conversation.findMany({
-    where: {
-      OR: [{ participant1Id: userId }, { participant2Id: userId }],
-    },
-    include: {
-      participant1: { select: { id: true, name: true, avatar: true } },
-      participant2: { select: { id: true, name: true, avatar: true } },
-      messages: { orderBy: { timestamp: "desc" }, take: 1 },
-    },
-    orderBy: { lastMessageAt: "desc" },
-  });
-}
-
 export default async function ConnectionsPage() {
   const cookieStore = await cookies();
   const guestMode = cookieStore.get("guestMode")?.value === "true";
@@ -204,18 +133,14 @@ export default async function ConnectionsPage() {
         pendingRequests={isCustomer ? [] : demoRequests}
         myConnections={isCustomer ? customerDemoConnections : demoConnections}
         pastRequests={[]}
-        conversations={
-          isCustomer ? customerDemoConversations : demoConversations
-        }
         isDemo={true}
       />
     );
   }
 
-  const [requests, connections, conversations] = await Promise.all([
+  const [requests, connections] = await Promise.all([
     getConnectionRequests(user.id),
     getAcceptedConnections(user.id),
-    getConversations(user.id),
   ]);
 
   const dbPendingRequests = requests.filter((r) => r.status === "PENDING");
@@ -225,26 +150,12 @@ export default async function ConnectionsPage() {
   }));
   const pastRequests = requests.filter((r) => r.status !== "PENDING");
 
-  // Transform conversations
-  const transformedConversations = conversations.map((conv) => {
-    const otherParticipant =
-      conv.participant1Id === user.id ? conv.participant2 : conv.participant1;
-    return {
-      id: conv.id,
-      isDemo: false,
-      otherParticipant,
-      lastMessage: conv.lastMessageText,
-      lastMessageAt: conv.lastMessageAt,
-    };
-  });
-
   // Merge real data with demo data
   const pendingRequests = [
     ...dbPendingRequests.map((r) => ({ ...r, isDemo: false })),
     ...demoRequests,
   ];
   const myConnections = [...dbConnectionsList, ...demoConnections];
-  const allConversations = [...transformedConversations, ...demoConversations];
 
   return (
     <ConnectionsClient
@@ -253,7 +164,6 @@ export default async function ConnectionsPage() {
       pendingRequests={pendingRequests}
       myConnections={myConnections}
       pastRequests={pastRequests}
-      conversations={allConversations}
     />
   );
 }

@@ -13,15 +13,15 @@ const demoArtisans = [
     isDemo: true,
     artisanProfile: {
       location: "Jaipur, Rajasthan",
-      craftTypes: ["Block Printing", "Textiles"],
-      bio: "Traditional block printing artisan with 15 years of experience.",
+      craftTypes: ["Pottery", "Ceramics", "Blue Pottery"],
+      bio: "Traditional artisan specializing in handcrafted pottery and ceramics with over 15 years of experience.",
     },
   },
   {
     id: "demo-artisan-2",
-    name: "Ravi Kumar",
+    name: "Arjun Verma",
     avatar:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
     isDemo: true,
     artisanProfile: {
       location: "Varanasi, UP",
@@ -31,9 +31,9 @@ const demoArtisans = [
   },
   {
     id: "demo-artisan-3",
-    name: "Meena Sharma",
+    name: "Kavita Singh",
     avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200",
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200",
     isDemo: true,
     artisanProfile: {
       location: "Moradabad, UP",

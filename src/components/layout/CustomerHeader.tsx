@@ -160,7 +160,7 @@ export function CustomerHeader({
             {/* Messages - Hidden on mobile */}
             {user && (
               <Link
-                href="/dashboard/connections"
+                href="/dashboard/chat"
                 className="hidden md:block p-2 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition"
               >
                 <svg
@@ -500,7 +500,7 @@ export function CustomerHeader({
 
                       {/* Mobile-only: Messages */}
                       <Link
-                        href="/dashboard/connections"
+                        href="/dashboard/chat"
                         onClick={() => setShowProfileMenu(false)}
                         className="md:hidden flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
                       >
