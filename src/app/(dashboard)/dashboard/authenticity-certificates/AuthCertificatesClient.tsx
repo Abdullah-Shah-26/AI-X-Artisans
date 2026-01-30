@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import {
+  getDemoCertificates,
+  saveDemoCertificate,
+  type DemoCertificate,
+} from "@/lib/demoStorage";
 
 interface Certificate {
   id: string;
@@ -54,6 +59,38 @@ export function AuthCertificatesClient({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
   const [creating, setCreating] = useState(false);
+
+  // Load demo certificates from localStorage
+  useEffect(() => {
+    if (isDemo) {
+      const storedCerts = getDemoCertificates();
+      if (storedCerts.length > 0) {
+        // Convert stored certificates to Certificate format
+        const convertedCerts: Certificate[] = storedCerts.map(
+          (cert: DemoCertificate) => ({
+            id: cert.id,
+            artworkName: cert.productName,
+            craftTradition: cert.craftTradition,
+            heritageStory: cert.heritageStory,
+            certifiedDate: cert.createdAt,
+            image: null,
+            product: {
+              id: cert.productId,
+              name: cert.productName,
+            },
+          }),
+        );
+
+        // Merge with demo certificates
+        setCertificates([
+          ...demoCertificates,
+          ...convertedCerts,
+          ...initialCertificates,
+        ]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDemo]);
 
   // Form state - Autofilled with demo data
   const [image, setImage] = useState<string | null>(null);
@@ -120,8 +157,11 @@ export function AuthCertificatesClient({
     try {
       // Demo mode - create certificate locally
       if (isDemo) {
+        const certId = `demo-cert-${Date.now()}`;
+        const productId = `demo-product-${Date.now()}`;
+
         const newCert: Certificate = {
-          id: `demo-cert-${Date.now()}`,
+          id: certId,
           artworkName,
           craftTradition,
           heritageStory,
@@ -129,6 +169,16 @@ export function AuthCertificatesClient({
           certifiedDate: new Date(),
           product: null,
         };
+
+        // Save to localStorage
+        saveDemoCertificate({
+          id: certId,
+          productId,
+          productName: artworkName,
+          heritageStory,
+          craftTradition,
+          createdAt: new Date(),
+        });
 
         setCertificates([newCert, ...certificates]);
 

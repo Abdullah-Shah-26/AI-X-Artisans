@@ -198,11 +198,44 @@ export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
     setLoading(true);
 
     try {
-      // In demo mode, just show success message without API call
+      // In demo mode, save to localStorage
       if (isDemo) {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate API delay
+
+        // Dynamically import to avoid SSR issues
+        const { saveDemoProduct, saveDemoCertificate } =
+          await import("@/lib/demoStorage");
+
+        // Generate unique ID
+        const productId = `demo-${Date.now()}`;
+
+        // Save product to localStorage
+        saveDemoProduct({
+          id: productId,
+          name,
+          description,
+          longDescription,
+          price: parseFloat(price),
+          image,
+          category,
+          craftTradition,
+          dateAdded: new Date(),
+        });
+
+        // Save certificate if requested
+        if (createCertificate) {
+          saveDemoCertificate({
+            id: `cert-${productId}`,
+            productId,
+            productName: name,
+            heritageStory: longDescription || description || "",
+            craftTradition: craftTradition || "Traditional Craft",
+            createdAt: new Date(),
+          });
+        }
+
         alert(
-          "Demo Mode: Product preview created! In real mode, this would be saved to your store.",
+          `Product "${name}" created successfully!${createCertificate ? " Certificate generated." : ""}`,
         );
         router.push("/dashboard/products");
         router.refresh();

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CollaborationsClient } from "./CollaborationsClient";
+import { ArtisanProjectsClient } from "./ArtisanProjectsClient";
 
 // Demo collaborations data
 const demoCollaborations = [
@@ -96,10 +97,30 @@ async function getApplications(userId: string) {
   });
 }
 
-export default async function CollaborationsPage() {
+async function getArtisanProjects(userId: string) {
+  return prisma.project.findMany({
+    where: { postedById: userId },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+async function getUser() {
   const supabase = await createClient();
   const {
     data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  return prisma.user.findUnique({
+    where: { id: user.id },
+    select: { id: true, role: true },
+  });
+}
+
+export default async function CollaborationsPage() {
+  const supabase = await createClient();
+  const {
+    data: { user: authUser },
   } = await supabase.auth.getUser();
 
   const cookieStore = await cookies();
@@ -107,11 +128,43 @@ export default async function CollaborationsPage() {
   const viewMode = cookieStore.get("viewMode")?.value;
 
   // Allow access if logged in or in guest mode
-  if (!user && !guestMode) redirect("/login");
+  if (!authUser && !guestMode) redirect("/login");
 
-  const isDemo = guestMode || viewMode === "volunteer";
+  const user = authUser ? await getUser() : null;
+  const originalRole = user?.role?.toLowerCase() || "volunteer";
+  const currentRole = viewMode || originalRole;
+  const isDemo = guestMode || (!!viewMode && viewMode !== originalRole);
 
-  if (isDemo) {
+  // Artisan view - show their projects
+  if (currentRole === "artisan") {
+    if (isDemo || !user) {
+      return (
+        <ArtisanProjectsClient
+          projects={[
+            {
+              id: "demo-artisan-proj-1",
+              title: "Social Media Marketing Campaign",
+              description:
+                "Need help creating and managing social media presence for my pottery business. Looking for someone with content strategy and posting experience.",
+              skillsNeeded: ["Social Media", "Content Creation", "Marketing"],
+              status: "OPEN",
+              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
+              isDemo: true,
+            },
+          ]}
+          isDemo={true}
+        />
+      );
+    }
+
+    const projects = await getArtisanProjects(user.id);
+    return <ArtisanProjectsClient projects={projects} isDemo={false} />;
+  }
+
+  // Volunteer view - show collaborations
+  const isVolunteerDemo = isDemo || viewMode === "volunteer";
+
+  if (isVolunteerDemo) {
     return (
       <CollaborationsClient
         collaborations={demoCollaborations}
@@ -140,8 +193,8 @@ export default async function CollaborationsPage() {
   }
 
   const [collaborations, applications] = await Promise.all([
-    getCollaborations(user!.id),
-    getApplications(user!.id),
+    getCollaborations(authUser!.id),
+    getApplications(authUser!.id),
   ]);
 
   return (

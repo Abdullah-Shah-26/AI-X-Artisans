@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { getDemoCertificates, type DemoCertificate } from "@/lib/demoStorage";
 
 interface Certificate {
   id: string;
@@ -355,11 +356,47 @@ function CertificateModal({
 }
 
 export function CertificatesClient({
-  certificates,
+  certificates: initialCertificates,
   userRole,
   userName,
+  isDemo,
 }: CertificatesClientProps) {
   const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
+  const [certificates, setCertificates] = useState<Certificate[]>(initialCertificates);
+
+  useEffect(() => {
+    // Load demo certificates from localStorage if in demo mode
+    if (isDemo && userRole === "ARTISAN") {
+      const demoCerts = getDemoCertificates();
+      if (demoCerts.length > 0) {
+        // Convert demo certificates to Certificate format
+        const convertedCerts: Certificate[] = demoCerts.map((cert: DemoCertificate) => ({
+          id: cert.id,
+          title: `${cert.productName} - Authenticity Certificate`,
+          description: `Certificate of authenticity for ${cert.productName}`,
+          issuedAt: cert.createdAt,
+          isDemo: true,
+          collaboration: {
+            id: `collab-${cert.id}`,
+            rating: null,
+            project: {
+              id: cert.productId,
+              title: cert.productName,
+              skillsNeeded: [cert.craftTradition],
+            },
+          },
+          artisan: {
+            id: "demo-artisan",
+            name: userName,
+            avatar: null,
+          },
+        }));
+        
+        // Merge with initial certificates
+        setCertificates([...convertedCerts, ...initialCertificates]);
+      }
+    }
+  }, [isDemo, userRole, userName, initialCertificates]);
 
   return (
     <div className="space-y-4 sm:space-y-6">

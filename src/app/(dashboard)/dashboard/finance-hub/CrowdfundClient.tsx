@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ImageUpload } from "@/components/common/ImageUpload";
+import {
+  getDemoCampaigns,
+  saveDemoCampaign,
+  updateDemoCampaign,
+} from "@/lib/demoStorage";
 
 interface Campaign {
   id: string;
@@ -49,13 +54,27 @@ const mockCampaigns: Campaign[] = [
 
 export default function CrowdfundClient({
   campaigns: initialCampaigns,
+  isDemo,
 }: CrowdfundClientProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [campaigns] = useState<Campaign[]>(
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [campaigns, setCampaigns] = useState<Campaign[]>(
     initialCampaigns.length > 0 ? initialCampaigns : mockCampaigns,
   );
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"my" | "discover">("my");
+
+  // Load demo campaigns from localStorage
+  useEffect(() => {
+    if (isDemo) {
+      const demoCampaigns = getDemoCampaigns();
+      if (demoCampaigns.length > 0) {
+        // Merge with initial campaigns
+        setCampaigns([...demoCampaigns, ...initialCampaigns]);
+      }
+    }
+  }, [isDemo, initialCampaigns]);
 
   // Form state - autofilled with demo data
   const [title, setTitle] = useState("Traditional Pottery Wheel & Kiln Setup");
@@ -72,6 +91,91 @@ export default function CrowdfundClient({
   const activeCampaigns = campaigns.filter((c) => c.status === "ACTIVE").length;
   const totalBackers = 107; // Mock data
 
+  const handleManageCampaign = (campaign: Campaign) => {
+    setEditingCampaign(campaign);
+    setTitle(campaign.title);
+    setDescription(campaign.description);
+    setGoal(campaign.goalAmount.toString());
+    setImageUrl(campaign.imageUrl || "");
+    // Calculate remaining days
+    const daysLeft = Math.max(
+      0,
+      Math.ceil(
+        (new Date(campaign.endDate).getTime() - Date.now()) /
+          (1000 * 60 * 60 * 24),
+      ),
+    );
+    setDuration(daysLeft.toString());
+    setShowEditModal(true);
+  };
+
+  const handleUpdateCampaign = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCampaign) return;
+
+    setLoading(true);
+
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + parseInt(duration));
+
+    try {
+      // Demo mode - update in localStorage
+      if (isDemo) {
+        const updatedCampaign: Campaign = {
+          ...editingCampaign,
+          title,
+          description,
+          goalAmount: parseFloat(goal),
+          endDate: endDate.toISOString(),
+          imageUrl: imageUrl || null,
+        };
+
+        // Update in localStorage
+        updateDemoCampaign(editingCampaign.id, {
+          ...updatedCampaign,
+          createdAt: new Date(),
+        });
+
+        // Update in state
+        setCampaigns(
+          campaigns.map((c) =>
+            c.id === editingCampaign.id ? updatedCampaign : c,
+          ),
+        );
+
+        setShowEditModal(false);
+        setEditingCampaign(null);
+        resetForm();
+        setLoading(false);
+        return;
+      }
+
+      // Real mode - call API
+      const res = await fetch(`/api/crowdfund/${editingCampaign.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description,
+          goalAmount: goal,
+          endDate: endDate.toISOString(),
+          imageUrl: imageUrl || null,
+        }),
+      });
+
+      if (res.ok) {
+        setShowEditModal(false);
+        setEditingCampaign(null);
+        resetForm();
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error updating campaign:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCreateCampaign = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -80,6 +184,33 @@ export default function CrowdfundClient({
     endDate.setDate(endDate.getDate() + parseInt(duration));
 
     try {
+      // Demo mode - save to localStorage
+      if (isDemo) {
+        const campaignId = `demo-campaign-${Date.now()}`;
+        const newCampaign: Campaign = {
+          id: campaignId,
+          title,
+          description,
+          goalAmount: parseFloat(goal),
+          currentAmount: 0,
+          endDate: endDate.toISOString(),
+          imageUrl: imageUrl || null,
+          status: "ACTIVE",
+        };
+
+        // Save to localStorage
+        saveDemoCampaign({
+          ...newCampaign,
+          createdAt: new Date(),
+        });
+
+        setCampaigns([newCampaign, ...campaigns]);
+        setShowCreateModal(false);
+        resetForm();
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch("/api/crowdfund", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -120,7 +251,7 @@ export default function CrowdfundClient({
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-4 sm:p-6 text-white">
+      <div className="bg-linear-to-r from-emerald-600 to-teal-600 rounded-2xl p-4 sm:p-6 text-white">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold mb-1">Finance Hub</h1>
@@ -206,7 +337,11 @@ export default function CrowdfundClient({
           ) : (
             <div className="grid lg:grid-cols-2 gap-6">
               {campaigns.map((campaign) => (
-                <CampaignCard key={campaign.id} campaign={campaign} />
+                <CampaignCard
+                  key={campaign.id}
+                  campaign={campaign}
+                  onManage={handleManageCampaign}
+                />
               ))}
             </div>
           )}
@@ -231,6 +366,30 @@ export default function CrowdfundClient({
           setDuration={setDuration}
           imageUrl={imageUrl}
           setImageUrl={setImageUrl}
+        />
+      )}
+
+      {/* Edit Campaign Modal */}
+      {showEditModal && (
+        <CreateCampaignModal
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingCampaign(null);
+            resetForm();
+          }}
+          onSubmit={handleUpdateCampaign}
+          loading={loading}
+          title={title}
+          setTitle={setTitle}
+          description={description}
+          setDescription={setDescription}
+          goal={goal}
+          setGoal={setGoal}
+          duration={duration}
+          setDuration={setDuration}
+          imageUrl={imageUrl}
+          setImageUrl={setImageUrl}
+          isEdit={true}
         />
       )}
     </div>
@@ -272,7 +431,13 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
   );
 }
 
-function CampaignCard({ campaign }: { campaign: Campaign }) {
+function CampaignCard({
+  campaign,
+  onManage,
+}: {
+  campaign: Campaign;
+  onManage?: (campaign: Campaign) => void;
+}) {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -407,7 +572,10 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
 
           {/* Actions */}
           <div className="flex gap-2">
-            <button className="flex-1 bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition text-xs sm:text-sm font-medium">
+            <button
+              onClick={() => onManage?.(campaign)}
+              className="flex-1 bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition text-xs sm:text-sm font-medium"
+            >
               Manage
             </button>
             <button
@@ -610,6 +778,7 @@ function CreateCampaignModal({
   setDuration,
   imageUrl,
   setImageUrl,
+  isEdit = false,
 }: {
   onClose: () => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -624,6 +793,7 @@ function CreateCampaignModal({
   setDuration: (v: string) => void;
   imageUrl: string;
   setImageUrl: (v: string) => void;
+  isEdit?: boolean;
 }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -631,7 +801,7 @@ function CreateCampaignModal({
         <div className="p-6 border-b border-gray-200 dark:border-zinc-800 sticky top-0 bg-white dark:bg-zinc-900">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Start a Campaign
+              {isEdit ? "Edit Campaign" : "Start a Campaign"}
             </h2>
             <button
               onClick={onClose}
@@ -740,7 +910,13 @@ function CreateCampaignModal({
               disabled={loading}
               className="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 font-medium"
             >
-              {loading ? "Creating..." : "Launch Campaign"}
+              {loading
+                ? isEdit
+                  ? "Updating..."
+                  : "Creating..."
+                : isEdit
+                  ? "Update Campaign"
+                  : "Launch Campaign"}
             </button>
           </div>
         </form>

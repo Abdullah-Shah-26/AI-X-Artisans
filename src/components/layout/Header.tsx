@@ -765,6 +765,31 @@ export function Header({
 
               <hr className="my-1 border-zinc-800" />
 
+              {/* Language Switcher - Mobile only */}
+              <div className="sm:hidden px-3 py-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-300">Language</span>
+                  <button
+                    onClick={() => setLanguage(language === "en" ? "hi" : "en")}
+                    className="relative inline-flex h-6 w-11 items-center rounded-full bg-zinc-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        language === "hi" ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                    <span className="absolute left-1.5 text-[10px] font-medium text-zinc-400">
+                      EN
+                    </span>
+                    <span className="absolute right-1.5 text-[10px] font-medium text-zinc-400">
+                      HI
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <hr className="my-1 border-zinc-800 sm:hidden" />
+
               {/* Sign out */}
               <button
                 onClick={handleLogout}

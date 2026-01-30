@@ -213,13 +213,15 @@ function CollaborationCard({
 }
 
 export function VolunteerHubClient({
-  projects,
+  projects: initialProjects,
   volunteers,
   connectionMap,
+  isDemo = false,
 }: VolunteerHubClientProps) {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabType>("volunteers");
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [projects, setProjects] = useState(initialProjects);
   // Autofilled with demo data
   const [projectForm, setProjectForm] = useState({
     title: "Traditional Pottery Workshop Assistant Needed",
@@ -322,6 +324,34 @@ export function VolunteerHubClient({
     e.preventDefault();
     setPosting(true);
     try {
+      // In demo mode, just add to local state
+      if (isDemo) {
+        await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate API delay
+
+        const newProject: Project = {
+          id: `demo-p-${Date.now()}`,
+          title: projectForm.title,
+          description: projectForm.description,
+          skillsNeeded: projectForm.skills
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          status: "OPEN",
+          applications: [],
+        };
+
+        setProjects([newProject, ...projects]);
+        setShowProjectModal(false);
+        setProjectForm({
+          title: "Traditional Pottery Workshop Assistant Needed",
+          description:
+            "Looking for a skilled volunteer to help organize and conduct pottery workshops for local youth. You'll assist in teaching basic pottery techniques, managing materials, and documenting the learning process. Perfect for someone passionate about preserving traditional crafts and community education.",
+          skills: "Teaching, Pottery, Community Outreach",
+        });
+        alert(`Project "${newProject.title}" posted successfully!`);
+        return;
+      }
+
       const res = await fetch("/api/projects/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

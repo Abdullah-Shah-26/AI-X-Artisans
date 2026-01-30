@@ -102,7 +102,6 @@ Respond with ONLY a valid JSON object (no markdown, no explanation) with these e
     return JSON.parse(result);
   } catch {
     console.warn("⚠️ Groq Response Parsing Failed: Invalid JSON format");
-    // console.debug("Raw Groq response:", result); // Uncomment for debugging
     // Return fallback
     return {
       productName: "Artisan Creation",

@@ -148,6 +148,7 @@ export default async function CertificatesPage() {
       certificates={certificates}
       userRole={user?.role || "VOLUNTEER"}
       userName={user?.name || "Demo User"}
+      isDemo={isDemo}
     />
   );
 }
