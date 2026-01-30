@@ -75,9 +75,9 @@ export function CustomerHeader({
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800">
       <div className="max-w-[1800px] mx-auto px-4 py-3">
-        <div className="flex items-center gap-4">
-          {/* Left Section - Logo + All Products Label OR Back Button */}
-          <div className="flex items-center gap-3 shrink-0 md:w-64">
+        <div className="flex items-center justify-between gap-4">
+          {/* Left Section - Logo + Back Button/Label */}
+          <div className="flex items-center gap-3 shrink-0">
             {/* Back Button - Show when NOT on marketplace */}
             {!showViewToggle && (
               <Link
@@ -124,10 +124,10 @@ export function CustomerHeader({
             )}
           </div>
 
-          {/* Center Section - Desktop ONLY Search Bar (only on marketplace) */}
+          {/* Center Section - Desktop Search Bar (only on marketplace) */}
           {showViewToggle && (
-            <div className="hidden md:flex flex-1 justify-center">
-              <div className="relative w-full max-w-2xl">
+            <div className="hidden md:flex flex-1 max-w-2xl mx-4">
+              <div className="relative w-full">
                 <svg
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-zinc-500"
                   fill="none"
@@ -152,11 +152,11 @@ export function CustomerHeader({
             </div>
           )}
 
-          {/* Spacer for mobile */}
-          <div className="flex-1 md:hidden"></div>
+          {/* Spacer for mobile when no search */}
+          {!showViewToggle && <div className="flex-1 md:hidden"></div>}
 
           {/* Right Section - Actions */}
-          <div className="flex items-center gap-2 md:gap-1 shrink-0 md:w-64 justify-end">
+          <div className="flex items-center gap-1 shrink-0">
             {/* Messages - Hidden on mobile */}
             {user && (
               <Link
