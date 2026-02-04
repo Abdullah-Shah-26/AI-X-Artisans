@@ -2,17 +2,44 @@
 
 AI-Powered Marketplace Assistant for Local Artisans
 
-## Features
+## Features by User Role
 
-- **AI Photo Studio** - Style transfer, background removal, and image enhancement
-- **AI Video Studio** - Automated product video generation with multiple styles
-- **Voice-to-Product** - Create product listings using speech recognition
-- **Real-time Messaging** - Chat with image sharing between artisans and customers
-- **Digital Authenticity Certificates** - Verifiable certificates with QR codes and heritage stories
-- **Price Negotiation** - Built-in bargaining system with offer/counter-offer flow
-- **Finance Funding** - Project funding platform for artisan initiatives
-- **Volunteer Collaboration** - Connect volunteers with artisan projects
-- **Multi-language Support** - Interface available in multiple languages
+### For Artisans
+
+- **AI Photo Studio** - Professional product photography with style transfer, background removal, and image enhancement
+- **AI Video Studio** - Generate product videos with slideshow, rotation, and story styles using Vertex AI Veo
+- **Voice-to-Product** - Create complete product listings using speech recognition and AI
+- **AI Product Descriptions** - Generate compelling descriptions using Groq Llama 3.3 70B
+- **Product Management** - Create, edit, and manage product listings with certificates
+- **Digital Certificates** - Generate authenticity certificates with QR codes and heritage stories
+- **Price Negotiation** - Receive and respond to customer offers with accept/reject/counter options
+- **Crowdfunding** - Launch and manage funding campaigns for projects
+- **Project Posting** - Post collaboration projects and manage volunteer applications
+- **Real-time Chat** - Message customers and volunteers with image sharing
+
+### For Customers
+
+- **Product Marketplace** - Browse and purchase handcrafted items with advanced filtering
+- **AI Stylist** - Transform product designs (especially sarees) with different styles (minimalist, bohemian, extravagant, classic)
+- **Price Negotiation** - Make offers on products and negotiate with artisans
+- **Direct Artisan Contact** - Message artisans about custom product modifications and requests
+- **Certificate Verification** - View and verify product authenticity certificates
+- **Shopping Cart & Favorites** - Full e-commerce functionality with persistent wishlist
+- **Real-time Chat** - Communicate with artisans about customizations and orders
+
+### For Volunteers
+
+- **Project Discovery** - Browse and apply to artisan collaboration projects
+- **Skill Offering** - Provide marketing, photography, business development, and other professional skills
+- **Artisan Support** - Help artisans with digital marketing, pricing strategies, and business growth
+- **Real-time Collaboration** - Chat with artisans to coordinate project work
+
+### For Everyone
+
+- **Demo Mode** - Experience all features without registration using localStorage persistence
+- **Multi-language Support** - Interface available in English and Hindi
+- **Responsive Design** - Optimized for desktop, tablet, and mobile devices
+- **Dark/Light Mode** - Theme switching for better user experience
 
 ## Architecture
 
@@ -31,10 +58,10 @@ graph TB
     end
 
     subgraph "AI Services"
-        G[Google Gemini AI]
+        VA[Google Vertex AI]
         H[Groq - Llama 3]
-        I[Image Generation]
-        J[Video Generation]
+        I[Imagen - Image Gen]
+        J[Veo - Video Gen]
         K[Text Generation]
         SR[Speech Recognition]
     end
@@ -62,22 +89,25 @@ graph TB
     D --> N
     E --> N
     N --> M
-    D --> G
+    D --> VA
     D --> H
     D --> O
     D --> Q
     F --> P
     P --> M
-    G --> I
-    G --> J
+    VA --> I
+    VA --> J
     H --> K
     L --> SR
     SR --> K
     Q --> M
 
     style A fill:#10b981
-    style G fill:#4285f4
+    style VA fill:#4285f4
     style H fill:#ff6b6b
+    style L fill:#ffa500
+    style M fill:#3ecf8e
+    style P fill:#3ecf8e
     style L fill:#ffa500
     style M fill:#3ecf8e
     style P fill:#3ecf8e
@@ -85,19 +115,18 @@ graph TB
 
 ## Tech Stack
 
-| Category           | Technology          | Purpose                                            |
-| ------------------ | ------------------- | -------------------------------------------------- |
-| **Frontend**       | Next.js 16          | React framework with server-side rendering         |
-| **Styling**        | Tailwind CSS        | Utility-first CSS framework                        |
-| **Database**       | Supabase PostgreSQL | Cloud-hosted PostgreSQL database                   |
-| **ORM**            | Prisma              | Type-safe database client and schema management    |
-| **Authentication** | Supabase Auth       | User authentication and authorization              |
-| **File Storage**   | Supabase Storage    | Cloud storage for images and files                 |
-| **Real-time Chat** | Supabase Realtime   | WebSocket-based instant messaging                  |
-| **AI Services**    | Google Gemini       | AI-powered content generation and image processing |
-| **AI Services**    | Groq - Llama 3      | Text generation and natural language processing    |
-| **Language**       | TypeScript          | Type-safe JavaScript development                   |
-| **Deployment**     | Vercel              | Serverless deployment platform                     |
+| Category           | Technology          | Purpose                                               |
+| ------------------ | ------------------- | ----------------------------------------------------- |
+| **Frontend**       | Next.js 16          | React framework with server-side rendering            |
+| **Styling**        | Tailwind CSS        | Utility-first CSS framework                           |
+| **Database**       | Supabase PostgreSQL | Cloud-hosted PostgreSQL database                      |
+| **ORM**            | Prisma              | Type-safe database client and schema management       |
+| **Authentication** | Supabase Auth       | User authentication and authorization                 |
+| **File Storage**   | Supabase Storage    | Cloud storage for images and files                    |
+| **Real-time Chat** | Supabase Realtime   | WebSocket-based instant messaging                     |
+| **AI Services**    | Vertex AI + Groq    | Image/video generation (Imagen, Veo) + Text (Llama 3) |
+| **Language**       | TypeScript          | Type-safe JavaScript development                      |
+| **Deployment**     | Vercel              | Serverless deployment platform                        |
 
 ## Getting Started
 
@@ -126,28 +155,67 @@ NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 DATABASE_URL="postgresql://..."
 DIRECT_URL="postgresql://..."
-GOOGLE_AI_API_KEY=your-google-ai-key
+GEMINI_API_KEY=your-gemini-key
+GROQ_API_KEY=your-groq-key
+
+# Optional: For real AI image/video generation (uses demo files by default)
+GOOGLE_CLOUD_PROJECT_ID=your-project-id
+GOOGLE_APPLICATION_CREDENTIALS=./credentials/service-account-key.json
 ```
 
-### 4. Push Database Schema
+### 4. Enable Supabase Realtime (for real-time chat)
+
+In your Supabase dashboard:
+
+1. Go to Database > Replication
+2. Enable realtime for these tables:
+   - `Message`
+   - `Conversation`
+3. Or run this SQL in the SQL Editor:
+
+```sql
+-- Enable realtime for chat tables
+ALTER PUBLICATION supabase_realtime ADD TABLE "Message";
+ALTER PUBLICATION supabase_realtime ADD TABLE "Conversation";
+```
+
+### 5. Push Database Schema
 
 ```bash
 npm run db:push
 ```
 
-### 5. Generate Prisma Client
+### 6. Generate Prisma Client
 
 ```bash
 npm run db:generate
 ```
 
-### 6. Run Development Server
+### 7. Run Development Server
 
 ```bash
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+## Testing Real-Time Chat
+
+To test the real-time messaging system:
+
+1. **Open two browsers** (Chrome + Firefox)
+2. **Sign up as different users:**
+   - Browser 1: Sign up as Artisan, create a product
+   - Browser 2: Sign up as Customer
+3. **Start conversation:**
+   - Customer: Go to marketplace, find artisan's product
+   - Customer: Click "Message Artisan" button
+4. **Test real-time messaging:**
+   - Both users can now chat in real-time
+   - Messages appear instantly without page refresh
+   - Image sharing works in both directions
+
+**Note:** Demo mode uses pre-filled conversations and doesn't require real-time setup.
 
 ## Project Structure
 
