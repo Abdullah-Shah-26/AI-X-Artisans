@@ -7,7 +7,7 @@ import { formatPrice } from "@/lib/utils";
 import { useLanguage } from "@/lib/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
-interface Offer {
+export interface Offer {
   id: string;
   offerAmount: number;
   status: string;

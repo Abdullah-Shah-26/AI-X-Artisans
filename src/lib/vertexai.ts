@@ -11,13 +11,19 @@ export async function generateVideo(
   );
 }
 
-export async function generateImage(prompt: string): Promise<any> {
+export async function generateImage(
+  prompt: string,
+  style?: string,
+): Promise<any> {
   throw new Error(
     "Vertex AI not configured. Please add your Google Cloud credentials.",
   );
 }
 
-export async function analyzeImage(imageUrl: string): Promise<any> {
+export async function analyzeImage(
+  imageUrl: string,
+  orientation?: string,
+): Promise<any> {
   throw new Error(
     "Vertex AI not configured. Please add your Google Cloud credentials.",
   );

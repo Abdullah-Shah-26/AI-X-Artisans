@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { NegotiationsClient } from "./NegotiationsClient";
+import { NegotiationsClient, Offer } from "./NegotiationsClient";
 
 async function getOffers(userId: string) {
   return prisma.priceOffer.findMany({
@@ -26,9 +26,9 @@ export default async function NegotiationsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let offers = [];
+  let offers: Offer[] = [];
   if (user && !guestMode) {
-    offers = await getOffers(user.id);
+    offers = (await getOffers(user.id)) as any;
   } else if (guestMode || (user && guestMode)) {
     // Demo offers for Lakshmi Devi
     offers = [
@@ -49,8 +49,8 @@ export default async function NegotiationsPage() {
           avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
         },
       }
-    ];
+    ] as any;
   }
 
-  return <NegotiationsClient initialOffers={offers as any} isDemo={guestMode} />;
+  return <NegotiationsClient initialOffers={offers} isDemo={guestMode} />;
 }

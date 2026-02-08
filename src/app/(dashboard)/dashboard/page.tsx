@@ -10,7 +10,7 @@ export default async function DashboardPage() {
   const currentRole = cookieStore.get("viewMode")?.value || "artisan";
 
   if (guestMode) {
-    const demoNames = {
+    const demoNames: Record<string, string> = {
       artisan: "Lakshmi Devi",
       volunteer: "Priya Sharma",
       customer: "Demo Customer",
