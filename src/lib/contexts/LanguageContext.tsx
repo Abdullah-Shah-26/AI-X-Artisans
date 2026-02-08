@@ -147,6 +147,18 @@ const translations: Record<Language, Record<string, string>> = {
     "photoStudio.price": "Product Price",
     "photoStudio.priceHint":
       "Price will be included when sharing to social media",
+
+    // Negotiations
+    "negotiations.title": "Negotiations",
+    "negotiations.subtitle": "Manage price offers and bargain with your customers",
+    "negotiations.noNegotiations": "No active negotiations",
+    "negotiations.noNegotiationsDesc": "When customers send offers for your products, they will appear here.",
+    "negotiations.customerOffered": "Customer Offered",
+    "negotiations.discountRequested": "discount requested",
+    "negotiations.counter": "Counter",
+    "negotiations.accept": "Accept",
+    "negotiations.reject": "Reject",
+    "negotiations.viewProfile": "View Profile",
   },
   hi: {
     // Header
@@ -188,7 +200,7 @@ const translations: Record<Language, Record<string, string>> = {
     "dashboard.artisanMessage":
       "अपनी कला को दुनिया को दिखाने के लिए तैयार हैं?",
     "dashboard.volunteerMessage": "प्रोजेक्ट खोजें और कारीगरों की मदद करें!",
-    "dashboard.customerMessage": "अनूठे हस्तनिर्मित खजाने खोजें!",
+    "dashboard.customerMessage": "Discover unique handcrafted treasures!",
     "dashboard.productsListed": "सूचीबद्ध उत्पाद",
     "dashboard.activeProjects": "सक्रिय प्रोजेक्ट",
     "dashboard.messages": "संदेश",
@@ -284,6 +296,18 @@ const translations: Record<Language, Record<string, string>> = {
     "photoStudio.price": "उत्पाद मूल्य",
     "photoStudio.priceHint":
       "सोशल मीडिया पर शेयर करते समय मूल्य शामिल किया जाएगा",
+
+    // Negotiations
+    "negotiations.title": "सौदेबाजी",
+    "negotiations.subtitle": "कीमत के प्रस्तावों को प्रबंधित करें और अपने ग्राहकों के साथ सौदेबाजी करें",
+    "negotiations.noNegotiations": "कोई सक्रिय सौदेबाजी नहीं",
+    "negotiations.noNegotiationsDesc": "जब ग्राहक आपके उत्पादों के लिए प्रस्ताव भेजेंगे, तो वे यहाँ दिखाई देंगे।",
+    "negotiations.customerOffered": "ग्राहक ने प्रस्ताव दिया",
+    "negotiations.discountRequested": "छूट का अनुरोध किया गया",
+    "negotiations.counter": "जवाबी प्रस्ताव",
+    "negotiations.accept": "स्वीकार करें",
+    "negotiations.reject": "अस्वीकार करें",
+    "negotiations.viewProfile": "प्रोफ़ाइल देखें",
   },
 };
 

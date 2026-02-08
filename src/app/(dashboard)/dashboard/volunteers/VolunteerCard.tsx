@@ -29,19 +29,6 @@ interface VolunteerCardProps {
 
 const demoCompletedProjects = [
   {
-    id: "cp1",
-    name: "Mobile App Development",
-    artisan: "Lakshmi Devi",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
-  },
-  {
-    id: "cp2",
-    name: "Cross-Platform App",
-    artisan: "Ramesh Kumar",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
-  },
-  {
     id: "cp3",
     name: "E-commerce App",
     artisan: "Anita Sharma",
@@ -55,7 +42,7 @@ export function VolunteerCard({
   connectionStatus,
 }: VolunteerCardProps) {
   const [status, setStatus] = useState<string | null>(
-    volunteer.isDemo ? "DEMO" : connectionStatus
+    volunteer.isDemo ? "DEMO" : connectionStatus,
   );
   const [loading, setLoading] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -211,10 +198,10 @@ export function VolunteerCard({
                 status === "PENDING"
                   ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
                   : status === "ACCEPTED"
-                  ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
-                  : status === "REJECTED"
-                  ? "bg-gray-100 text-gray-500"
-                  : "bg-emerald-600 text-white hover:bg-emerald-700"
+                    ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                    : status === "REJECTED"
+                      ? "bg-gray-100 text-gray-500"
+                      : "bg-emerald-600 text-white hover:bg-emerald-700"
               }`}
             >
               {loading ? (
@@ -493,15 +480,15 @@ export function VolunteerCard({
                   status === "PENDING"
                     ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
                     : status === "ACCEPTED"
-                    ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
-                    : "bg-emerald-600 text-white hover:bg-emerald-700"
+                      ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                      : "bg-emerald-600 text-white hover:bg-emerald-700"
                 }`}
               >
                 {status === "PENDING"
                   ? "Request Pending"
                   : status === "ACCEPTED"
-                  ? "Already Connected"
-                  : "Send Connection Request"}
+                    ? "Already Connected"
+                    : "Send Connection Request"}
               </button>
             </div>
           </div>

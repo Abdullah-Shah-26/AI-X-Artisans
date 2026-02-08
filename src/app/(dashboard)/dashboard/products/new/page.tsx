@@ -38,15 +38,12 @@ export default async function NewProductPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Add New Product</h1>
-      {(isDemo || !user) && (
-        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
-          <p className="text-sm text-amber-700 dark:text-amber-300">
-            Demo Mode: Products created here won&apos;t be saved.
-          </p>
-        </div>
-      )}
       <ProductForm
-        artisanStory={user?.artisanProfile?.story || ""}
+        artisanStory={
+          isDemo || !user
+            ? "I learned the art of Banarasi weaving from my grandmother who was a master weaver in our family tradition spanning four generations."
+            : user?.artisanProfile?.story || ""
+        }
         isDemo={isDemo || !user}
       />
     </div>

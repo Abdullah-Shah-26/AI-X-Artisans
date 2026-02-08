@@ -37,10 +37,10 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  // Load cart from localStorage for guest users
+  // Load cart from localStorage
   useEffect(() => {
     setMounted(true);
-    if (isGuest && typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
       const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
 
       // All demo products
@@ -177,10 +177,15 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
         },
       ];
 
-      const cartItems = guestCart
+      const guestItems = guestCart
         .map((productId: string, index: number) => {
+          // Check if it's a demo product
           const product = demoProducts.find((p) => p.id === productId);
-          if (!product) return null;
+          if (!product) {
+            // If it's a real product ID in guest cart, we'd ideally fetch it, 
+            // but for now we only support demo products in guest storage
+            return null;
+          }
           return {
             id: `guest-item-${index}`,
             quantity: 1,
@@ -189,11 +194,16 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
         })
         .filter(Boolean);
 
-      if (cartItems.length > 0) {
-        setItems(cartItems as CartItem[]);
+      if (guestItems.length > 0) {
+        setItems((prev: CartItem[]) => {
+          // Filter out guest items that might already be in prev by product id
+          const prevProductIds = new Set(prev.map(item => item.product.id));
+          const newItems = (guestItems as CartItem[]).filter(item => !prevProductIds.has(item.product.id));
+          return [...prev, ...newItems];
+        });
       }
     }
-  }, [isGuest]);
+  }, []);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -327,9 +337,9 @@ export function CartClient({ initialItems, isGuest = false }: CartClientProps) {
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="p-2 text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition"
-                title={theme === "dark" ? "Light Mode" : "Dark Mode"}
+                title={mounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
               >
-                {theme === "dark" ? (
+                {mounted && theme === "dark" ? (
                   <svg
                     className="w-5 h-5"
                     fill="none"

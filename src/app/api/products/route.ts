@@ -72,35 +72,11 @@ export async function POST(request: Request) {
 
     // Create certificate if requested
     if (createCertificate && craftTradition) {
-      // Generate heritage story using AI
-      let heritageStory = null;
-      try {
-        const storyResponse = await fetch(
-          `${request.url.replace("/api/products", "/api/ai/generate-heritage-story")}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              productName: name,
-              craftTradition,
-              description: longDescription || description,
-            }),
-          },
-        );
-        if (storyResponse.ok) {
-          const storyData = await storyResponse.json();
-          heritageStory = storyData.story;
-        }
-      } catch (error) {
-        console.error("Error generating heritage story:", error);
-      }
-
-      // Create the certificate
+      // Create the certificate without heritage story
       const certificate = await prisma.certificate.create({
         data: {
           artworkName: name,
           craftTradition,
-          heritageStory,
           image,
           artistId: user.id,
         },

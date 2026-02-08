@@ -32,16 +32,16 @@ export default async function CartPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && !(guestMode && viewMode === "customer")) {
+  if (!user && !guestMode) {
     redirect("/login");
   }
 
   let cartItems = [];
-  if (user) {
-    cartItems = await getCartItems(user.id);
-  } else if (guestMode) {
+  if (guestMode) {
     cartItems = GUEST_CART_ITEMS as any;
+  } else if (user) {
+    cartItems = await getCartItems(user.id);
   }
 
-  return <CartClient initialItems={cartItems} isGuest={!user && guestMode} />;
+  return <CartClient initialItems={cartItems} isGuest={guestMode} />;
 }

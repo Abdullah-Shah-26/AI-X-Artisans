@@ -67,9 +67,10 @@ const demoProducts = [
     category: "Home Decor",
     craftTradition: "Basket Weaving",
     artisan: {
-      id: "demo-a1",
-      name: "Lakshmi Devi",
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
+      id: "demo-a3",
+      name: "Meena Sharma",
+      avatar:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
     },
     hasCertificate: true,
     isDemo: true,
@@ -101,10 +102,9 @@ const demoProducts = [
     category: "Pottery",
     craftTradition: "Ceramic Art",
     artisan: {
-      id: "demo-a3",
-      name: "Meena Sharma",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
+      id: "demo-a1",
+      name: "Lakshmi Devi",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
     },
     hasCertificate: true,
     isDemo: true,
@@ -197,7 +197,7 @@ const demoProducts = [
   },
   {
     id: "demo-9",
-    name: "Handwoven Silk Saree",
+    name: "Kanjivaram Silk Saree",
     description:
       "Exquisite handwoven silk saree with traditional zari work and intricate patterns",
     price: 15000,
@@ -305,7 +305,7 @@ export default async function MarketplacePage({
 
   // Guest user data
   const guestUserData = {
-    id: "guest",
+    id: "guest-user",
     name: "Guest User",
     avatar:
       "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100",

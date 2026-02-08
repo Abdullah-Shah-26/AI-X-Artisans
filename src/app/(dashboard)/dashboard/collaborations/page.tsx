@@ -8,38 +8,6 @@ import { ArtisanProjectsClient } from "./ArtisanProjectsClient";
 // Demo collaborations data
 const demoCollaborations = [
   {
-    id: "demo-collab-1",
-    status: "IN_PROGRESS",
-    startDate: new Date("2024-11-15"),
-    project: {
-      id: "demo-proj-1",
-      title: "Product Photography for Pottery Collection",
-      description:
-        "Help photograph 20 pottery items for online marketplace listing",
-    },
-    artisan: {
-      id: "demo-artisan-1",
-      name: "Lakshmi Devi",
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
-    },
-  },
-  {
-    id: "demo-collab-2",
-    status: "IN_PROGRESS",
-    startDate: new Date("2024-12-01"),
-    project: {
-      id: "demo-proj-2",
-      title: "Social Media Marketing Campaign",
-      description: "Create and manage Instagram content for handloom products",
-    },
-    artisan: {
-      id: "demo-artisan-2",
-      name: "Ravi Kumar",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
-    },
-  },
-  {
     id: "demo-collab-3",
     status: "COMPLETED",
     startDate: new Date("2024-10-01"),
@@ -138,23 +106,7 @@ export default async function CollaborationsPage() {
   // Artisan view - show their projects
   if (currentRole === "artisan") {
     if (isDemo || !user) {
-      return (
-        <ArtisanProjectsClient
-          projects={[
-            {
-              id: "demo-artisan-proj-1",
-              title: "Social Media Marketing Campaign",
-              description:
-                "Need help creating and managing social media presence for my pottery business. Looking for someone with content strategy and posting experience.",
-              skillsNeeded: ["Social Media", "Content Creation", "Marketing"],
-              status: "OPEN",
-              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-              isDemo: true,
-            },
-          ]}
-          isDemo={true}
-        />
-      );
+      return <ArtisanProjectsClient projects={[]} isDemo={true} />;
     }
 
     const projects = await getArtisanProjects(user.id);

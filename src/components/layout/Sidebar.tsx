@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/lib/contexts/LanguageContext";
 
 type NavItem = {
   label: string;
@@ -213,6 +213,19 @@ const CertificateIcon = () => (
   </svg>
 );
 
+const BargainIcon = () => (
+  <svg
+    className="w-5 h-5"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.121 15.536c-1.171 1.952-3.07 1.952-4.242 0-1.172-.879-1.172-2.303 0-3.182C10.536 11.219 11.268 11 12 11c.725 0 1.45-.22 2.003-.659 1.106-.879 1.106-2.303 0-3.182s-2.9-.879-4.006 0l-.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h8" />
+  </svg>
+);
+
 const LogoutIcon = () => (
   <svg
     className="w-5 h-5"
@@ -324,6 +337,11 @@ const artisanNavConfig: NavItemConfig[] = [
     labelKey: "sidebar.connections",
     href: "/dashboard/connections",
     icon: <LinkIcon />,
+  },
+  {
+    labelKey: "sidebar.negotiations",
+    href: "/dashboard/negotiations",
+    icon: <BargainIcon />,
   },
   {
     labelKey: "sidebar.financeHub",
@@ -567,7 +585,7 @@ export function Sidebar({
             <div className="space-y-1.5">
               <div className="flex items-baseline gap-1">
                 <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {role === "ARTISAN" ? "₹12,450" : "24"}
+                  {role === "ARTISAN" ? "₹12,450" : "3"}
                 </span>
                 <span className="text-xs text-gray-600 dark:text-zinc-300">
                   {role === "ARTISAN" ? "this month" : "projects"}
@@ -588,7 +606,7 @@ export function Sidebar({
                   />
                 </svg>
                 <span className="text-green-600 dark:text-green-400 font-medium">
-                  +23%
+                  +50%
                 </span>
                 <span className="text-gray-600 dark:text-zinc-300">
                   vs last month

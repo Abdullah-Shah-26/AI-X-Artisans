@@ -12,21 +12,9 @@ const demoArtisans = [
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
     isDemo: true,
     artisanProfile: {
-      location: "Jaipur, Rajasthan",
-      craftTypes: ["Pottery", "Ceramics", "Blue Pottery"],
-      bio: "Traditional artisan specializing in handcrafted pottery and ceramics with over 15 years of experience.",
-    },
-  },
-  {
-    id: "demo-artisan-2",
-    name: "Arjun Verma",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
-    isDemo: true,
-    artisanProfile: {
-      location: "Varanasi, UP",
-      craftTypes: ["Pottery", "Ceramics"],
-      bio: "Master potter creating traditional and modern ceramic pieces.",
+      location: "Varanasi, Uttar Pradesh",
+      craftTypes: ["Silk Weaving", "Banarasi Sarees", "Handloom Textiles"],
+      bio: "Master weaver specializing in traditional Banarasi silk sarees with over 15 years of experience in handloom weaving.",
     },
   },
   {

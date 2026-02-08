@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { VolunteerCard } from "./VolunteerCard";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/lib/contexts/LanguageContext";
 
 interface Collaboration {
   id: string;
@@ -230,6 +230,8 @@ export function VolunteerHubClient({
     skills: "Teaching, Pottery, Community Outreach",
   });
   const [posting, setPosting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   // Complete collaboration modal state
   const [showCompleteModal, setShowCompleteModal] = useState(false);
@@ -348,7 +350,9 @@ export function VolunteerHubClient({
             "Looking for a skilled volunteer to help organize and conduct pottery workshops for local youth. You'll assist in teaching basic pottery techniques, managing materials, and documenting the learning process. Perfect for someone passionate about preserving traditional crafts and community education.",
           skills: "Teaching, Pottery, Community Outreach",
         });
-        alert(`Project "${newProject.title}" posted successfully!`);
+        setToastMessage(`Project "${newProject.title}" posted successfully!`);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
         return;
       }
 
@@ -546,28 +550,6 @@ export function VolunteerHubClient({
                           >
                             {project.status.replace("_", " ")}
                           </span>
-                          <button
-                            onClick={() => {
-                              setProjectToDelete(project.id);
-                              setShowDeleteModal(true);
-                            }}
-                            className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition"
-                            title="Delete project"
-                          >
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                              />
-                            </svg>
-                          </button>
                         </div>
                       </div>
                       <p className="text-gray-500 dark:text-zinc-400 text-sm line-clamp-2 mb-3">
@@ -684,9 +666,30 @@ export function VolunteerHubClient({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-                  {t("volunteers.description")}
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">
+                    {t("volunteers.description")}
+                  </label>
+                  <button
+                    type="button"
+                    className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 p-1.5 rounded-lg transition"
+                    title="Voice input (Demo feature)"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                      />
+                    </svg>
+                  </button>
+                </div>
                 <textarea
                   value={projectForm.description}
                   onChange={(e) =>
@@ -926,6 +929,51 @@ export function VolunteerHubClient({
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className="bg-emerald-600 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 min-w-[300px]">
+            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-sm">Success!</p>
+              <p className="text-sm text-emerald-50">{toastMessage}</p>
+            </div>
+            <button
+              onClick={() => setShowToast(false)}
+              className="text-white/80 hover:text-white transition"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       )}

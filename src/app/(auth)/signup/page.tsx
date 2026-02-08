@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -17,81 +16,52 @@ export default function SignupPage() {
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const handleDemoMode = async (demoRole: string) => {
     setDemoLoading(true);
-    try {
-      await fetch("/api/guest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: demoRole }),
-      });
-      // Navigate based on role
-      if (demoRole === "customer") {
-        router.push("/marketplace");
-      } else {
-        router.push("/dashboard");
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setDemoLoading(false);
-      setShowDemoModal(false);
-    }
+    await fetch("/api/guest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: demoRole }),
+    });
+    router.push(demoRole === "customer" ? "/marketplace" : "/dashboard");
+    setDemoLoading(false);
+    setShowDemoModal(false);
   };
 
   const handleGoogleSignup = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/profile-setup`,
-      },
+
+    // Set demo mode with selected role
+    const demoRole = role.toLowerCase();
+    await fetch("/api/guest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: demoRole }),
     });
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    }
+
+    router.push(demoRole === "customer" ? "/marketplace" : "/dashboard");
+    setLoading(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name,
-          role,
-        },
-      },
-    });
-
-    if (signUpError) {
-      setError(signUpError.message);
-      setLoading(false);
+    if (!name || !email || !password) {
+      setError("Please fill in all fields");
       return;
     }
+    setLoading(true);
 
-    if (data.user) {
-      await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: data.user.id,
-          email,
-          name,
-          role,
-        }),
-      });
+    // Set demo mode with selected role
+    const demoRole = role.toLowerCase();
+    await fetch("/api/guest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: demoRole }),
+    });
 
-      router.push("/profile-setup");
-      router.refresh();
-    }
+    router.push(demoRole === "customer" ? "/marketplace" : "/dashboard");
+    setLoading(false);
   };
 
   return (

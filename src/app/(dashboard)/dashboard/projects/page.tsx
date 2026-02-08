@@ -8,17 +8,6 @@ import { ProjectsClient } from "./ProjectsClient";
 const demoArtisans = [
   {
     id: "demo-artisan-1",
-    name: "Lakshmi Devi",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
-    isDemo: true,
-    artisanProfile: {
-      location: "Jaipur, Rajasthan",
-      craftTypes: ["Block Printing", "Textiles"],
-      bio: "Traditional block printing artisan with 15 years of experience.",
-    },
-  },
-  {
-    id: "demo-artisan-2",
     name: "Ravi Kumar",
     avatar:
       "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200",
@@ -30,7 +19,7 @@ const demoArtisans = [
     },
   },
   {
-    id: "demo-artisan-3",
+    id: "demo-artisan-2",
     name: "Meena Sharma",
     avatar:
       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200",
@@ -59,24 +48,6 @@ const demoProjects = [
       name: "Lakshmi Devi",
       avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
       artisanProfile: { location: "Jaipur, Rajasthan" },
-    },
-    applications: [],
-  },
-  {
-    id: "demo-proj-2",
-    title: "Social Media Marketing Campaign",
-    description:
-      "Looking for a volunteer to help create and manage social media presence for my pottery business. Need help with content strategy and posting.",
-    skillsNeeded: ["Social Media", "Content Creation", "Marketing"],
-    status: "OPEN",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-    isDemo: true,
-    postedBy: {
-      id: "demo-artisan-2",
-      name: "Ravi Kumar",
-      avatar:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200",
-      artisanProfile: { location: "Varanasi, UP" },
     },
     applications: [],
   },
@@ -241,32 +212,6 @@ const demoApplications = [
 // Demo collaborations for demo mode
 const demoCollaborations = [
   {
-    id: "demo-collab-1",
-    status: "IN_PROGRESS",
-    startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-    endDate: null,
-    rating: null,
-    feedback: null,
-    project: {
-      id: "demo-proj-2",
-      title: "Social Media Marketing Campaign",
-      description:
-        "Looking for a volunteer to help create and manage social media presence.",
-      postedBy: {
-        id: "demo-artisan-2",
-        name: "Ravi Kumar",
-        avatar:
-          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200",
-      },
-    },
-    artisan: {
-      id: "demo-artisan-2",
-      name: "Ravi Kumar",
-      avatar:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200",
-    },
-  },
-  {
     id: "demo-collab-2",
     status: "COMPLETED",
     startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45),
@@ -313,8 +258,8 @@ export default async function ProjectsPage() {
   if (isDemo || !user) {
     const demoUser = {
       id: "demo-volunteer",
-      name: "Demo Volunteer",
-      email: "demo@volunteer.com",
+      name: "Priya Sharma",
+      email: "priyasharma@gmail.com",
       role: "VOLUNTEER" as const,
       avatar:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
@@ -346,7 +291,7 @@ export default async function ProjectsPage() {
     ]);
 
   const connectionMap = Object.fromEntries(
-    sentConnections.map((c) => [c.receiverId, c.status])
+    sentConnections.map((c) => [c.receiverId, c.status]),
   );
 
   // Merge real projects with demo projects

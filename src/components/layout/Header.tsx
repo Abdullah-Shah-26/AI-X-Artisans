@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, usePathname } from "next/navigation";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/lib/contexts/LanguageContext";
 
 interface HeaderProps {
   userName: string;

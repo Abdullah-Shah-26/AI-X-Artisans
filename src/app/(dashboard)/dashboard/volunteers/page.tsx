@@ -15,7 +15,7 @@ const demoVolunteers = [
     volunteerProfile: {
       skills: ["Social Media Marketing", "Photography", "Content Writing"],
       bio: "Digital marketing specialist passionate about promoting traditional crafts.",
-      projectsCompleted: 12,
+      projectsCompleted: 2,
     },
   },
   {
@@ -27,23 +27,7 @@ const demoVolunteers = [
     volunteerProfile: {
       skills: ["Web Development", "UI/UX Design", "SEO"],
       bio: "Full-stack developer helping artisans build their online presence.",
-      projectsCompleted: 8,
-    },
-  },
-  {
-    id: "demo-v3",
-    name: "Meera Krishnan",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200",
-    isDemo: true,
-    volunteerProfile: {
-      skills: [
-        "Business Strategy",
-        "Financial Planning",
-        "Export Documentation",
-      ],
-      bio: "MBA graduate helping artisans scale their businesses internationally.",
-      projectsCompleted: 15,
+      projectsCompleted: 3,
     },
   },
 ];
@@ -57,15 +41,6 @@ const demoProjects = [
       "Need help building a professional e-commerce website to sell my handwoven textiles globally.",
     skillsNeeded: ["Web Development", "E-commerce", "Payment Integration"],
     status: "OPEN",
-    applications: [],
-  },
-  {
-    id: "demo-p2",
-    title: "Social Media Marketing Campaign",
-    description:
-      "Looking for someone to help create and manage social media presence for my pottery business.",
-    skillsNeeded: ["Social Media", "Content Creation", "Photography"],
-    status: "IN_PROGRESS",
     applications: [],
   },
 ];
@@ -173,7 +148,7 @@ export default async function VolunteersPage() {
 
   // Convert to object for client component
   const connectionMap = Object.fromEntries(
-    sentConnections.map((c) => [c.receiverId, c.status])
+    sentConnections.map((c) => [c.receiverId, c.status]),
   );
 
   return (

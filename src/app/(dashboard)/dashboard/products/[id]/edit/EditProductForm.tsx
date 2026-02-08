@@ -86,7 +86,12 @@ export function EditProductForm({
     // If demo mode, try to load from localStorage
     if (isDemo) {
       const demoProducts = getDemoProducts();
+      console.log("Demo products:", demoProducts);
+      console.log("Looking for product ID:", productId);
+
       const demoProduct = demoProducts.find((p) => p.id === productId);
+      console.log("Found demo product:", demoProduct);
+
       if (demoProduct) {
         productToLoad = demoProduct;
       }
@@ -94,6 +99,7 @@ export function EditProductForm({
 
     // Populate form fields if we have a product
     if (productToLoad) {
+      console.log("Loading product:", productToLoad);
       setProduct(productToLoad);
       setName(productToLoad.name);
       setDescription(productToLoad.description || "");
@@ -102,6 +108,8 @@ export function EditProductForm({
       setImage(productToLoad.image || "");
       setCategory(productToLoad.category || "");
       setCraftTradition(productToLoad.craftTradition || "");
+    } else {
+      console.log("No product found to load");
     }
   }, [isDemo, productId, initialProduct]);
 
@@ -199,7 +207,8 @@ export function EditProductForm({
     }
   };
 
-  if (!product && !isDemo) {
+  // Only show "not found" in non-demo mode when no product exists
+  if (!isDemo && !product) {
     return (
       <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 text-center">
         <p className="text-gray-500 dark:text-zinc-400">Product not found</p>

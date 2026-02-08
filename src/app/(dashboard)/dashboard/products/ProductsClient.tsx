@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/lib/contexts/LanguageContext";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { getDemoProducts } from "@/lib/demoStorage";
 
@@ -15,6 +15,8 @@ interface Product {
   craftTradition: string | null;
   image: string | null;
   dateAdded: Date;
+  certificateId?: string | null;
+  certificate?: { id: string; artworkName: string } | null;
 }
 
 interface ProductsClientProps {
@@ -28,6 +30,25 @@ export function ProductsClient({
 }: ProductsClientProps) {
   const { t } = useLanguage();
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [uploadedProducts, setUploadedProducts] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const handleMarketplaceUpload = async (productId: string) => {
+    setUploadingId(productId);
+    try {
+      // Dummy marketplace upload - simulates uploading to marketplace
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setUploadedProducts((prev) => new Set([...prev, productId]));
+      alert("Product successfully uploaded to marketplace!");
+    } catch (error) {
+      console.error("Error uploading to marketplace:", error);
+      alert("Failed to upload product to marketplace");
+    } finally {
+      setUploadingId(null);
+    }
+  };
 
   useEffect(() => {
     // Load demo products from localStorage if in demo mode
@@ -121,6 +142,70 @@ export function ProductsClient({
                   {t("products.view")}
                 </Link>
               </div>
+
+              {/* Marketplace Upload Section - Only show if product has certificate */}
+              {product.certificate && (
+                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-zinc-800">
+                  {uploadedProducts.has(product.id) ? (
+                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm">
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span>Uploaded to Marketplace</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleMarketplaceUpload(product.id)}
+                      disabled={uploadingId === product.id}
+                      className="w-full py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition text-sm font-medium flex items-center justify-center gap-2"
+                    >
+                      {uploadingId === product.id ? (
+                        <>
+                          <svg
+                            className="w-4 h-4 animate-spin"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
+                          </svg>
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                            />
+                          </svg>
+                          Upload to Marketplace
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         ))}

@@ -7,25 +7,13 @@ import CrowdfundClient from "./CrowdfundClient";
 // Demo campaigns for demo mode
 const demoCampaigns = [
   {
-    id: "demo-campaign-1",
-    title: "Expand My Pottery Workshop",
-    description:
-      "Help me purchase a new kiln and pottery wheel to increase production capacity and train more apprentices.",
-    goalAmount: 50000,
-    currentAmount: 32500,
-    endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
-    imageUrl:
-      "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800",
-    status: "ACTIVE",
-  },
-  {
     id: "demo-campaign-2",
     title: "Traditional Weaving Loom",
     description:
       "Funding for a traditional handloom to preserve ancient weaving techniques and create authentic textiles.",
     goalAmount: 25000,
     currentAmount: 25000,
-    endDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
+    endDate: "2026-01-27T00:00:00.000Z", // Fixed date
     imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
     status: "COMPLETED",
   },

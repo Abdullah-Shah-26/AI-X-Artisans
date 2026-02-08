@@ -53,45 +53,24 @@ async function getCertificates(userId: string, role: string) {
 const demoCertificates = [
   {
     id: "demo-cert-1",
-    title: "Mobile App Development - Completion Certificate",
-    description: "Successfully completed the project Mobile App Development",
-    issuedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
+    title: "E-commerce Website Development - Completion Certificate",
+    description:
+      "Successfully completed the project E-commerce Website Development",
+    issuedAt: new Date("2026-01-07T00:00:00.000Z"), // Date object
     isDemo: true,
     collaboration: {
       id: "demo-collab-1",
       rating: 5,
       project: {
         id: "demo-proj-1",
-        title: "Mobile App Development",
-        skillsNeeded: ["Flutter", "React Native", "App Development"],
+        title: "E-commerce Website Development",
+        skillsNeeded: ["Web Development", "React", "Next.js", "E-commerce"],
       },
     },
     artisan: {
       id: "demo-artisan-1",
       name: "Lakshmi Devi",
       avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
-    },
-  },
-  {
-    id: "demo-cert-2",
-    title: "E-commerce Website - Completion Certificate",
-    description: "Successfully completed the project E-commerce Website",
-    issuedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60),
-    isDemo: true,
-    collaboration: {
-      id: "demo-collab-2",
-      rating: 4,
-      project: {
-        id: "demo-proj-2",
-        title: "E-commerce Website",
-        skillsNeeded: ["Web Development", "React", "Next.js"],
-      },
-    },
-    artisan: {
-      id: "demo-artisan-2",
-      name: "Ravi Kumar",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
     },
   },
 ];
@@ -116,7 +95,7 @@ export default async function CertificatesPage() {
       <CertificatesClient
         certificates={demoCertificates}
         userRole="VOLUNTEER"
-        userName="Demo User"
+        userName="Priya Sharma"
         isDemo={true}
       />
     );
@@ -147,7 +126,7 @@ export default async function CertificatesPage() {
     <CertificatesClient
       certificates={certificates}
       userRole={user?.role || "VOLUNTEER"}
-      userName={user?.name || "Demo User"}
+      userName={user?.name || "Priya Sharma"}
       isDemo={isDemo}
     />
   );

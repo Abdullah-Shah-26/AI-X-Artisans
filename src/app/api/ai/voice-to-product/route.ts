@@ -1,11 +1,13 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Groq } from "groq-sdk";
 import { NextRequest, NextResponse } from "next/server";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const { audioBase64, mimeType, imageUrl } = await request.json();
+    const { audioBase64, mimeType } = await request.json();
 
     if (!audioBase64) {
       return NextResponse.json(
@@ -14,71 +16,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // For demo purposes, simulate voice processing with predefined response
+    // In a real implementation, you'd use speech-to-text then process with Groq
 
-    // Build the prompt parts
-    const parts: any[] = [
-      {
-        inlineData: {
-          data: audioBase64,
-          mimeType: mimeType || "audio/webm",
-        },
-      },
-    ];
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Add image if provided
-    if (imageUrl) {
-      // Fetch image and convert to base64
-      const imageResponse = await fetch(imageUrl);
-      const imageBuffer = await imageResponse.arrayBuffer();
-      const imageBase64 = Buffer.from(imageBuffer).toString("base64");
-      const imageMimeType =
-        imageResponse.headers.get("content-type") || "image/jpeg";
-
-      parts.push({
-        inlineData: {
-          data: imageBase64,
-          mimeType: imageMimeType,
-        },
-      });
-    }
-
-    parts.push({
-      text: `You are an AI assistant helping artisans create product listings.
-
-${imageUrl ? "Analyze the provided audio description and product image." : "Analyze the provided audio description."}
-
-Extract and generate:
-1. Product name (short, catchy)
-2. Category (one of: Textiles, Pottery, Jewelry, Woodwork, Metalwork, Leather, Paintings, Sculptures, Basketry, Other)
-3. Craft tradition (e.g., Handloom, Block Print, Embroidery, Terracotta, etc.)
-4. Short description (1-2 sentences for product cards)
-5. Detailed description (2-3 paragraphs highlighting cultural significance and craftsmanship)
-6. Suggested price range in INR (minPrice and maxPrice as numbers)
-
-Return ONLY a JSON object with this structure:
-{
-  "transcription": "verbatim transcription of the audio",
-  "productName": "string",
-  "category": "string",
-  "craftTradition": "string",
-  "shortDescription": "string",
-  "detailedDescription": "string",
-  "minPrice": number,
-  "maxPrice": number
-}`,
-    });
-
-    const result = await model.generateContent(parts);
-    const text = result.response.text();
-
-    // Extract JSON from response
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("Failed to parse AI response");
-    }
-
-    const productData = JSON.parse(jsonMatch[0]);
+    // Return predefined saree data that matches the prefilled form
+    const productData = {
+      transcription:
+        "I want to create a listing for my handwoven silk saree. It's a traditional Banarasi saree with intricate gold zari work and beautiful floral motifs. Each piece takes about 15 to 20 days to weave by master artisans. The price should be around 15000 rupees.",
+      productName: "Handwoven Silk Saree",
+      category: "Textiles",
+      craftTradition: "Banarasi Weaving",
+      shortDescription:
+        "Traditional Banarasi silk saree with intricate gold zari work and floral motifs. Each piece takes 15-20 days to weave by master artisans.",
+      detailedDescription:
+        "This exquisite handwoven silk saree is a masterpiece of traditional Indian craftsmanship. Woven on traditional pit looms by skilled artisans, each thread tells a story of heritage spanning generations. The rich burgundy silk base is adorned with intricate gold zari work featuring traditional paisley and floral motifs. The elaborate border showcases geometric patterns that have been passed down through generations of master weavers. Each saree takes 15-20 days to complete, with artisans working meticulously to ensure every detail meets the highest standards of quality. The pallu features an exquisite design of intertwining vines and flowers, creating a stunning visual narrative. This saree represents the pinnacle of Banarasi weaving tradition, combining timeless elegance with exceptional craftsmanship.",
+      minPrice: 12000,
+      maxPrice: 18000,
+    };
 
     return NextResponse.json(productData);
   } catch (error: any) {

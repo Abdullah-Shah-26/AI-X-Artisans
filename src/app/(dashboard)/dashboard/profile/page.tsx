@@ -8,7 +8,7 @@ import { ProfileClient } from "./ProfileClient";
 const demoArtisanProfile = {
   id: "demo-artisan",
   name: "Lakshmi Devi",
-  email: "demo@artisan.com",
+  email: "lakshmidevi@gmail.com",
   avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
   role: "ARTISAN" as const,
   profileComplete: true,
@@ -16,28 +16,28 @@ const demoArtisanProfile = {
   artisanProfile: {
     id: "demo-artisan-profile",
     userId: "demo-artisan",
-    bio: "Traditional artisan specializing in handcrafted pottery and ceramics with over 15 years of experience.",
-    location: "Jaipur, Rajasthan",
-    craftTypes: ["Pottery", "Ceramics", "Blue Pottery"],
+    bio: "Master weaver specializing in traditional Banarasi silk sarees with 1 year of experience in handloom weaving.",
+    location: "Varanasi, Uttar Pradesh",
+    craftTypes: ["Silk Weaving", "Banarasi Sarees", "Handloom Textiles"],
     story:
-      "I learned this craft from my grandmother who was a master potter in our village.",
-    yearsOfExperience: 15,
+      "I learned the art of Banarasi weaving from my grandmother who was a master weaver in our family tradition spanning four generations.",
+    yearsOfExperience: 1,
   },
   volunteerProfile: null,
   products: [
     {
       id: "demo-prod-1",
-      name: "Blue Pottery Vase",
-      price: 2800,
+      name: "Handwoven Silk Saree",
+      price: 15000,
       image:
-        "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400",
+        "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400",
     },
     {
-      id: "demo-prod-2",
-      name: "Ceramic Bowl Set",
-      price: 1500,
+      id: "demo-prod-kanjivaram",
+      name: "Traditional Kanjivaram Silk Saree",
+      price: 18500,
       image:
-        "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400",
+        "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c2lsayUyMHNhcmVlfGVufDB8fDB8fHww",
     },
   ],
 };
@@ -45,8 +45,8 @@ const demoArtisanProfile = {
 // Demo volunteer profile
 const demoVolunteerProfile = {
   id: "demo-volunteer",
-  name: "Demo Volunteer",
-  email: "demo@volunteer.com",
+  name: "Priya Sharma",
+  email: "priyasharma@gmail.com",
   avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
   role: "VOLUNTEER" as const,
   profileComplete: true,

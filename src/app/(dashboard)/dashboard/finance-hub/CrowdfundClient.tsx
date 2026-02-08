@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ImageUpload } from "@/components/common/ImageUpload";
-import {
-  getDemoCampaigns,
-  saveDemoCampaign,
-  updateDemoCampaign,
-} from "@/lib/demoStorage";
+import { getDemoCampaigns, saveDemoCampaign } from "@/lib/demoStorage";
 
 interface Campaign {
   id: string;
@@ -33,7 +29,7 @@ const mockCampaigns: Campaign[] = [
       "Help me upgrade my workshop with a professional electric kiln to create larger terracotta pieces and meet the growing demand for authentic handcrafted pottery.",
     goalAmount: 50000,
     currentAmount: 32500,
-    endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 12).toISOString(),
+    endDate: "2026-02-18T00:00:00.000Z", // Fixed date instead of Date.now()
     imageUrl:
       "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=300&fit=crop",
     status: "ACTIVE",
@@ -45,7 +41,7 @@ const mockCampaigns: Campaign[] = [
       "Expanding my weaving workshop with two new traditional looms to train young artisans and preserve our ancestral Banarasi weaving patterns for future generations.",
     goalAmount: 75000,
     currentAmount: 48000,
-    endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 8).toISOString(),
+    endDate: "2026-02-14T00:00:00.000Z", // Fixed date instead of Date.now()
     imageUrl:
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
     status: "ACTIVE",
@@ -57,13 +53,12 @@ export default function CrowdfundClient({
   isDemo,
 }: CrowdfundClientProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>(
     initialCampaigns.length > 0 ? initialCampaigns : mockCampaigns,
   );
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"my" | "discover">("my");
+  const [generatingDescription, setGeneratingDescription] = useState(false);
 
   // Load demo campaigns from localStorage
   useEffect(() => {
@@ -76,105 +71,57 @@ export default function CrowdfundClient({
     }
   }, [isDemo, initialCampaigns]);
 
-  // Form state - autofilled with demo data
-  const [title, setTitle] = useState("Traditional Pottery Wheel & Kiln Setup");
-  const [description, setDescription] = useState(
-    "I'm raising funds to set up a modern electric pottery wheel and a small kiln for firing terracotta and ceramic pieces. This equipment will help me scale production of traditional earthenware while maintaining authentic craftsmanship and creating employment for 2 local artisans.",
-  );
-  const [goal, setGoal] = useState("55000");
-  const [duration, setDuration] = useState("45");
-  const [imageUrl, setImageUrl] = useState(
-    "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&h=300&fit=crop",
-  );
+  // Form state - empty by default
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [goal, setGoal] = useState("");
+  const [duration, setDuration] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+
+  const handleGenerateDescription = async () => {
+    if (!title.trim()) {
+      alert("Please enter a campaign title first");
+      return;
+    }
+
+    setGeneratingDescription(true);
+    try {
+      const res = await fetch("/api/ai/generate-campaign-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const text = await res.text();
+      if (!text) {
+        throw new Error("Empty response from server");
+      }
+
+      const data = JSON.parse(text);
+
+      if (data.description) {
+        setDescription(data.description);
+      } else {
+        alert("Failed to generate description. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error generating description:", error);
+      // Use a simple fallback
+      setDescription(
+        `Help me fund this important project: ${title}. Your support will enable me to grow my craft and continue preserving traditional artisan techniques.`,
+      );
+    } finally {
+      setGeneratingDescription(false);
+    }
+  };
 
   const totalRaised = campaigns.reduce((sum, c) => sum + c.currentAmount, 0);
   const activeCampaigns = campaigns.filter((c) => c.status === "ACTIVE").length;
   const totalBackers = 107; // Mock data
-
-  const handleManageCampaign = (campaign: Campaign) => {
-    setEditingCampaign(campaign);
-    setTitle(campaign.title);
-    setDescription(campaign.description);
-    setGoal(campaign.goalAmount.toString());
-    setImageUrl(campaign.imageUrl || "");
-    // Calculate remaining days
-    const daysLeft = Math.max(
-      0,
-      Math.ceil(
-        (new Date(campaign.endDate).getTime() - Date.now()) /
-          (1000 * 60 * 60 * 24),
-      ),
-    );
-    setDuration(daysLeft.toString());
-    setShowEditModal(true);
-  };
-
-  const handleUpdateCampaign = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingCampaign) return;
-
-    setLoading(true);
-
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + parseInt(duration));
-
-    try {
-      // Demo mode - update in localStorage
-      if (isDemo) {
-        const updatedCampaign: Campaign = {
-          ...editingCampaign,
-          title,
-          description,
-          goalAmount: parseFloat(goal),
-          endDate: endDate.toISOString(),
-          imageUrl: imageUrl || null,
-        };
-
-        // Update in localStorage
-        updateDemoCampaign(editingCampaign.id, {
-          ...updatedCampaign,
-          createdAt: new Date(),
-        });
-
-        // Update in state
-        setCampaigns(
-          campaigns.map((c) =>
-            c.id === editingCampaign.id ? updatedCampaign : c,
-          ),
-        );
-
-        setShowEditModal(false);
-        setEditingCampaign(null);
-        resetForm();
-        setLoading(false);
-        return;
-      }
-
-      // Real mode - call API
-      const res = await fetch(`/api/crowdfund/${editingCampaign.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description,
-          goalAmount: goal,
-          endDate: endDate.toISOString(),
-          imageUrl: imageUrl || null,
-        }),
-      });
-
-      if (res.ok) {
-        setShowEditModal(false);
-        setEditingCampaign(null);
-        resetForm();
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error("Error updating campaign:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCreateCampaign = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,16 +183,11 @@ export default function CrowdfundClient({
   };
 
   const resetForm = () => {
-    // Reset to demo data instead of empty
-    setTitle("Traditional Pottery Wheel & Kiln Setup");
-    setDescription(
-      "I'm raising funds to set up a modern electric pottery wheel and a small kiln for firing terracotta and ceramic pieces. This equipment will help me scale production of traditional earthenware while maintaining authentic craftsmanship and creating employment for 2 local artisans.",
-    );
-    setGoal("55000");
-    setDuration("45");
-    setImageUrl(
-      "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&h=300&fit=crop",
-    );
+    setTitle("");
+    setDescription("");
+    setGoal("");
+    setDuration("");
+    setImageUrl("");
   };
 
   return (
@@ -337,11 +279,7 @@ export default function CrowdfundClient({
           ) : (
             <div className="grid lg:grid-cols-2 gap-6">
               {campaigns.map((campaign) => (
-                <CampaignCard
-                  key={campaign.id}
-                  campaign={campaign}
-                  onManage={handleManageCampaign}
-                />
+                <CampaignCard key={campaign.id} campaign={campaign} />
               ))}
             </div>
           )}
@@ -366,30 +304,8 @@ export default function CrowdfundClient({
           setDuration={setDuration}
           imageUrl={imageUrl}
           setImageUrl={setImageUrl}
-        />
-      )}
-
-      {/* Edit Campaign Modal */}
-      {showEditModal && (
-        <CreateCampaignModal
-          onClose={() => {
-            setShowEditModal(false);
-            setEditingCampaign(null);
-            resetForm();
-          }}
-          onSubmit={handleUpdateCampaign}
-          loading={loading}
-          title={title}
-          setTitle={setTitle}
-          description={description}
-          setDescription={setDescription}
-          goal={goal}
-          setGoal={setGoal}
-          duration={duration}
-          setDuration={setDuration}
-          imageUrl={imageUrl}
-          setImageUrl={setImageUrl}
-          isEdit={true}
+          onGenerateDescription={handleGenerateDescription}
+          generatingDescription={generatingDescription}
         />
       )}
     </div>
@@ -431,13 +347,7 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
   );
 }
 
-function CampaignCard({
-  campaign,
-  onManage,
-}: {
-  campaign: Campaign;
-  onManage?: (campaign: Campaign) => void;
-}) {
+function CampaignCard({ campaign }: { campaign: Campaign }) {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -572,10 +482,7 @@ function CampaignCard({
 
           {/* Actions */}
           <div className="flex gap-2">
-            <button
-              onClick={() => onManage?.(campaign)}
-              className="flex-1 bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition text-xs sm:text-sm font-medium"
-            >
+            <button className="flex-1 bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition text-xs sm:text-sm font-medium">
               Manage
             </button>
             <button
@@ -672,17 +579,6 @@ function CampaignCard({
 function DiscoverSection() {
   const otherCampaigns = [
     {
-      id: "other-1",
-      artisan: "Meera Devi",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=face",
-      title: "Traditional Block Printing Workshop",
-      raised: 28000,
-      goal: 40000,
-      image:
-        "https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=300&h=200&fit=crop",
-    },
-    {
       id: "other-2",
       artisan: "Rajan Kumar",
       avatar:
@@ -778,7 +674,8 @@ function CreateCampaignModal({
   setDuration,
   imageUrl,
   setImageUrl,
-  isEdit = false,
+  onGenerateDescription,
+  generatingDescription,
 }: {
   onClose: () => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -793,7 +690,8 @@ function CreateCampaignModal({
   setDuration: (v: string) => void;
   imageUrl: string;
   setImageUrl: (v: string) => void;
-  isEdit?: boolean;
+  onGenerateDescription: () => void;
+  generatingDescription: boolean;
 }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -801,7 +699,7 @@ function CreateCampaignModal({
         <div className="p-6 border-b border-gray-200 dark:border-zinc-800 sticky top-0 bg-white dark:bg-zinc-900">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              {isEdit ? "Edit Campaign" : "Start a Campaign"}
+              Start a Campaign
             </h2>
             <button
               onClick={onClose}
@@ -840,9 +738,32 @@ function CreateCampaignModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">
-              Description
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">
+                Description
+              </label>
+              <button
+                type="button"
+                onClick={onGenerateDescription}
+                disabled={generatingDescription || !title.trim()}
+                className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg
+                  className={`w-3.5 h-3.5 ${generatingDescription ? "animate-spin" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                {generatingDescription ? "Generating..." : "Generate with AI"}
+              </button>
+            </div>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -910,13 +831,7 @@ function CreateCampaignModal({
               disabled={loading}
               className="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 font-medium"
             >
-              {loading
-                ? isEdit
-                  ? "Updating..."
-                  : "Creating..."
-                : isEdit
-                  ? "Update Campaign"
-                  : "Launch Campaign"}
+              {loading ? "Creating..." : "Launch Campaign"}
             </button>
           </div>
         </form>

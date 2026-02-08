@@ -59,28 +59,31 @@ const demoOrders = [
 
 const demoFavorites = [
   {
-    id: "1",
-    name: "Madhubani Painting",
-    price: 4500,
-    image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=300",
+    id: "demo-10",
+    name: "Block Printed Table Runner",
+    price: 980,
+    image:
+      "https://www.shopinnerchild.com/cdn/shop/files/ICstudio_-5.jpg?v=1749500538&width=2686",
   },
   {
-    id: "2",
-    name: "Silver Filigree Earrings",
-    price: 2200,
-    image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300",
+    id: "demo-2",
+    name: "Brass Oil Lamp",
+    price: 850,
+    image:
+      "https://m.media-amazon.com/images/S/aplus-media/sc/600659ea-53c6-4da5-86d4-9ba14feea523.__CR0,210,1007,1007_PT0_SX300_V1___.jpg",
   },
   {
-    id: "3",
-    name: "Wooden Carved Box",
-    price: 1500,
-    image: "https://m.media-amazon.com/images/I/91rJ0saK2QL.jpg",
+    id: "demo-4",
+    name: "Wooden Jewelry Box",
+    price: 2800,
+    image:
+      "https://i.etsystatic.com/37334871/r/il/7919ab/4350255523/il_570xN.4350255523_gv3a.jpg",
   },
   {
-    id: "4",
-    name: "Ceramic Vase",
-    price: 2500,
-    image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300",
+    id: "demo-9",
+    name: "Handwoven Silk Saree",
+    price: 15000,
+    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500",
   },
 ];
 
@@ -145,6 +148,74 @@ export function CustomerProfileClient({
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [cartCount, setCartCount] = useState(0);
+
+  // Initialize from props and localStorage
+  useEffect(() => {
+    // Guest mode
+    if (user.id === "guest-user") {
+      const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+      setCartCount(guestCart.length);
+      const guestFavorites = JSON.parse(
+        localStorage.getItem("guestFavorites") || "[]",
+      );
+      // Merge with demo favorites for display if needed, but for now just use storage
+      setFavorites(guestFavorites);
+    }
+  }, [user.id]);
+
+  const handleAddToCart = async (productId: string) => {
+    if (user.id === "guest-user" || productId.startsWith("demo-")) {
+      const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+      if (!guestCart.includes(productId)) {
+        guestCart.push(productId);
+        localStorage.setItem("guestCart", JSON.stringify(guestCart));
+        setCartCount(guestCart.length);
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, quantity: 1 }),
+      });
+      if (res.ok) {
+        setCartCount((prev) => prev + 1);
+        router.refresh();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleToggleFavorite = async (productId: string) => {
+    const isFav = favorites.includes(productId);
+    const newFavorites = isFav
+      ? favorites.filter((id) => id !== productId)
+      : [...favorites, productId];
+
+    setFavorites(newFavorites);
+
+    if (user.id === "guest-user" || productId.startsWith("demo-")) {
+      localStorage.setItem("guestFavorites", JSON.stringify(newFavorites));
+      return;
+    }
+
+    try {
+      await fetch("/api/favorites", {
+        method: isFav ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId }),
+      });
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+      setFavorites(favorites); // Revert
+    }
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -179,8 +250,8 @@ export function CustomerProfileClient({
           avatar: user.avatar,
           role: user.role.toLowerCase(),
         }}
-        cartCount={0}
-        favoritesCount={favoritesCount}
+        cartCount={cartCount}
+        favoritesCount={favorites.length || favoritesCount}
         showViewToggle={false}
       />
 
@@ -655,7 +726,15 @@ export function CustomerProfileClient({
                             alt={item.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition"
                           />
-                          <button className="absolute top-2 right-2 p-1.5 bg-white dark:bg-zinc-900 rounded-full text-red-500 shadow-sm">
+                          <button
+                            onClick={() => handleToggleFavorite(item.id)}
+                            className={`absolute top-2 right-2 p-1.5 rounded-full shadow-sm transition ${
+                              favorites.includes(item.id) ||
+                              user.id === "guest-user"
+                                ? "bg-red-500 text-white"
+                                : "bg-white dark:bg-zinc-900 text-gray-400"
+                            }`}
+                          >
                             <svg
                               className="w-4 h-4"
                               fill="currentColor"
@@ -731,7 +810,16 @@ export function CustomerProfileClient({
                                 <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-full">
                                   Accepted
                                 </span>
-                                <button className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition whitespace-nowrap">
+                                <button
+                                  onClick={() =>
+                                    handleAddToCart(
+                                      item.product === "Handwoven Silk Saree"
+                                        ? "demo-9"
+                                        : "demo-5",
+                                    )
+                                  }
+                                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition whitespace-nowrap"
+                                >
                                   Add to Cart
                                 </button>
                               </div>

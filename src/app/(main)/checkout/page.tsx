@@ -53,7 +53,7 @@ export default async function CheckoutPage() {
   } = await supabase.auth.getUser();
 
   // Allow demo mode customers to checkout
-  const isDemo = !user && guestMode && viewMode === "customer";
+  const isDemo = guestMode;
 
   if (!user && !isDemo) {
     redirect("/login");
@@ -62,7 +62,7 @@ export default async function CheckoutPage() {
   let cartItems: string | any[];
   let profile;
 
-  if (user) {
+  if (user && !guestMode) {
     [cartItems, profile] = await Promise.all([
       getCartItems(user.id),
       getUserProfile(user.id),

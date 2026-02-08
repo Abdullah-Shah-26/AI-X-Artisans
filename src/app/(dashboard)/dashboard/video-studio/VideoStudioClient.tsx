@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/lib/contexts/LanguageContext";
 import { Sparkles, Lightbulb, Coins, Wand2, Info } from "lucide-react";
 
 // Social Media Icons
@@ -754,59 +754,79 @@ export function VideoStudioClient() {
               }`}
             >
               {isGenerating ? (
-                <div className="flex flex-col items-center justify-center h-full space-y-4">
-                  {/* Animated gradient background */}
-                  <div className="absolute inset-0 bg-linear-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950 dark:via-pink-950 dark:to-orange-950 animate-pulse"></div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
+                  {/* Subtle animated background gradient - full coverage */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 animate-pulse"></div>
 
-                  {/* Film reel animation */}
-                  <div className="relative z-10">
-                    <div className="absolute inset-0 blur-xl bg-purple-400 opacity-30 animate-pulse"></div>
-                    <svg
-                      className="animate-spin h-16 w-16 text-purple-600 dark:text-purple-400 relative z-10"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="3"
+                  {/* Decorative corner elements */}
+                  <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-br-full"></div>
+                  <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-pink-500/10 to-transparent rounded-tl-full"></div>
+
+                  {/* Main content centered */}
+                  <div className="relative z-10 flex flex-col items-center justify-center space-y-12">
+                    {/* Large elegant spinner */}
+                    <div className="relative">
+                      <svg
+                        className="animate-spin h-24 w-24"
+                        viewBox="0 0 24 24"
                         fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
+                      >
+                        <circle
+                          className="opacity-10"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                        <path
+                          className="text-purple-600 dark:text-purple-400"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                      {/* Subtle glow effect */}
+                      <div className="absolute inset-0 blur-2xl bg-purple-500/20 animate-pulse"></div>
+                    </div>
+
+                    {/* Clean text with more presence */}
+                    <div className="relative text-center space-y-3 max-w-md">
+                      <p className="text-2xl font-semibold text-gray-800 dark:text-zinc-200">
+                        Creating your video
+                      </p>
+                      <p className="text-base text-gray-500 dark:text-zinc-400">
+                        Applying {selectedStyle} style...
+                      </p>
+                    </div>
+
+                    {/* Minimal progress dots */}
+                    <div className="flex gap-3">
+                      <div
+                        className="w-3 h-3 bg-purple-600 dark:bg-purple-400 rounded-full animate-bounce"
+                        style={{
+                          animationDelay: "0ms",
+                          animationDuration: "1s",
+                        }}
+                      ></div>
+                      <div
+                        className="w-3 h-3 bg-purple-600 dark:bg-purple-400 rounded-full animate-bounce"
+                        style={{
+                          animationDelay: "200ms",
+                          animationDuration: "1s",
+                        }}
+                      ></div>
+                      <div
+                        className="w-3 h-3 bg-purple-600 dark:bg-purple-400 rounded-full animate-bounce"
+                        style={{
+                          animationDelay: "400ms",
+                          animationDuration: "1s",
+                        }}
+                      ></div>
+                    </div>
                   </div>
 
-                  {/* Animated text */}
-                  <div className="relative z-10 text-center space-y-2">
-                    <p className="text-gray-700 dark:text-zinc-300 font-semibold text-lg animate-pulse">
-                      Creating your video...
-                    </p>
-                    <p className="text-gray-500 dark:text-zinc-400 text-sm">
-                      Applying {selectedStyle} style
-                    </p>
-                  </div>
-
-                  {/* Progress dots */}
-                  <div className="relative z-10 flex gap-2">
-                    <div
-                      className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0ms" }}
-                    ></div>
-                    <div
-                      className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "150ms" }}
-                    ></div>
-                    <div
-                      className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "300ms" }}
-                    ></div>
-                  </div>
+                  {/* Bottom decorative line */}
+                  <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent rounded-full"></div>
                 </div>
               ) : videoResult ? (
                 <video

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -13,27 +12,17 @@ export default function LoginPage() {
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const handleDemoMode = async (demoRole: string) => {
     setDemoLoading(true);
-    try {
-      await fetch("/api/guest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: demoRole }),
-      });
-      if (demoRole === "customer") {
-        router.push("/marketplace");
-      } else {
-        router.push("/dashboard");
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setDemoLoading(false);
-      setShowDemoModal(false);
-    }
+    await fetch("/api/guest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: demoRole }),
+    });
+    router.push(demoRole === "customer" ? "/marketplace" : "/dashboard");
+    setDemoLoading(false);
+    setShowDemoModal(false);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,32 +30,39 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    if (email && password) {
+      // Determine role from email or default to artisan
+      const role = email.includes("volunteer")
+        ? "volunteer"
+        : email.includes("customer")
+          ? "customer"
+          : "artisan";
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-      return;
+      await fetch("/api/guest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role }),
+      });
+
+      router.push(role === "customer" ? "/marketplace" : "/dashboard");
+    } else {
+      setError("Please enter email and password");
     }
-
-    router.push("/dashboard");
-    router.refresh();
+    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+    setLoading(true);
+
+    // Set demo mode as artisan by default
+    await fetch("/api/guest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: "artisan" }),
     });
 
-    if (error) {
-      setError(error.message);
-    }
+    router.push("/dashboard");
+    setLoading(false);
   };
 
   return (
@@ -252,6 +248,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
               className="w-full px-4 py-2 border border-gray-300 bg-white text-black rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"
               required
             />
@@ -265,6 +262,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
               className="w-full px-4 py-2 border border-gray-300 bg-white text-black rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"
               required
             />
@@ -283,9 +281,7 @@ export default function LoginPage() {
 
         <div className="my-6 flex items-center">
           <div className="flex-1 border-t border-gray-300 dark:border-zinc-700"></div>
-          <span className="px-4 text-black dark:text-zinc-400 text-sm">
-            or
-          </span>
+          <span className="px-4 text-black dark:text-zinc-400 text-sm">or</span>
           <div className="flex-1 border-t border-gray-300 dark:border-zinc-700"></div>
         </div>
 

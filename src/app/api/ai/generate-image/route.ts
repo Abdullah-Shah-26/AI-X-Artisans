@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { HfInference } from "@huggingface/inference";
+import { generateImage } from "@/lib/vertexai";
+
+// DEMO MODE - Set to false to use real Vertex AI (requires credentials)
+const DEMO_MODE = true;
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,56 +15,65 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const hfToken = process.env.HUGGINGFACE_API_KEY;
-    if (!hfToken) {
+    // DEMO MODE: Return pre-generated images based on style
+    if (DEMO_MODE) {
+      const styleMap: Record<string, string> = {
+        product: "clean-1.png",
+        artistic: "artistic-1.png",
+        realistic: "rustic-1.png",
+        traditional: "festive-1.png",
+      };
+
+      const imageFile = styleMap[style] || "clean-1.png";
+      const demoImageUrl = `/demo/${imageFile}`;
+
+      console.log(
+        `[DEMO MODE] Returning image: ${demoImageUrl} for style: ${style}`,
+      );
+
+      return NextResponse.json({
+        success: true,
+        imageUrl: demoImageUrl,
+        message: "Image generated successfully (Demo Mode)",
+      });
+    }
+
+    // REAL VERTEX AI MODE: Check for credentials
+    if (!process.env.GOOGLE_CLOUD_PROJECT_ID) {
       return NextResponse.json(
-        { error: "Hugging Face API key not configured" },
+        {
+          error:
+            "Google Cloud Project ID not configured. See VERTEX_AI_SETUP.md for setup instructions.",
+        },
         { status: 500 },
       );
     }
 
-    // Initialize Hugging Face client
-    const hf = new HfInference(hfToken);
+    // Use Vertex AI for image generation
+    const result = await generateImage(prompt, style);
 
-    // Style-specific prompt enhancements
-    const stylePrompts: Record<string, string> = {
-      product:
-        "professional product photography, studio lighting, white background, high quality, 4k",
-      artistic:
-        "artistic, handcrafted, traditional art style, cultural heritage, detailed",
-      realistic: "photorealistic, detailed, high resolution, natural lighting",
-      traditional:
-        "traditional Indian art style, cultural motifs, handcrafted aesthetic, heritage",
-    };
+    // Extract image data from Vertex AI response
+    const imageData = result.candidates?.[0]?.content?.parts?.[0];
 
-    const enhancedPrompt = `${prompt}, ${stylePrompts[style] || stylePrompts.product}`;
-
-    // Using Stable Diffusion for text-to-image
-    const result = await hf.textToImage({
-      model: "stabilityai/stable-diffusion-2-1",
-      inputs: enhancedPrompt,
-    });
-
-    // Result is a Blob
-    const arrayBuffer = await (result as unknown as Blob).arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const dataUrl = `data:image/png;base64,${base64}`;
+    if (!imageData) {
+      throw new Error("No image generated");
+    }
 
     return NextResponse.json({
       success: true,
-      imageUrl: dataUrl,
+      imageUrl: `data:image/png;base64,${imageData}`,
       message: "Image generated successfully",
     });
   } catch (error: any) {
     console.error("Image generation error:", error);
 
-    if (error.message?.includes("loading") || error.message?.includes("503")) {
+    if (error.message?.includes("quota") || error.message?.includes("limit")) {
       return NextResponse.json(
         {
-          error: "Model is loading, please try again in 30 seconds",
-          loading: true,
+          error: "API quota exceeded, please try again later",
+          quota: true,
         },
-        { status: 503 },
+        { status: 429 },
       );
     }
 

@@ -27,6 +27,7 @@ export function ArtisanProjectsClient({
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -42,6 +43,39 @@ export function ArtisanProjectsClient({
       }
     }
   }, [isDemo, initialProjects]);
+
+  const handleVoiceInput = async () => {
+    if (
+      !("webkitSpeechRecognition" in window) &&
+      !("SpeechRecognition" in window)
+    ) {
+      alert("Speech Recognition not supported in your browser");
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setDescription((prev) => (prev ? prev + " " + transcript : transcript));
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -314,9 +348,36 @@ export function ArtisanProjectsClient({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">
-                  Description *
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">
+                    Description *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleVoiceInput}
+                    disabled={isListening}
+                    className={`${isListening ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"} hover:text-emerald-700 dark:hover:text-emerald-300 p-1 transition`}
+                    title={
+                      isListening
+                        ? "Listening..."
+                        : "Generate description using voice"
+                    }
+                  >
+                    <svg
+                      className={`w-5 h-5 ${isListening ? "animate-pulse" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 14.828v2.828m0 0v2.828M12 17.656a3 3 0 100-6 3 3 0 000 6zm0-12a6 6 0 00-6 6v3h12v-3a6 6 0 00-6-6z"
+                      />
+                    </svg>
+                  </button>
+                </div>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}

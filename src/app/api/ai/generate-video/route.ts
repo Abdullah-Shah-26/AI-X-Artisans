@@ -1,25 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
-// DEMO MODE - Set to true to use pre-generated videos
-const DEMO_MODE = true;
+// Check if real credentials exist
+function hasRealCredentials(): boolean {
+  try {
+    const credPath = path.join(
+      process.cwd(),
+      "credentials",
+      "service-account-key.json",
+    );
+    if (!fs.existsSync(credPath)) return false;
+
+    const credContent = fs.readFileSync(credPath, "utf-8");
+    const creds = JSON.parse(credContent);
+
+    // Check if it's a real service account (not placeholder)
+    return (
+      creds.type === "service_account" &&
+      creds.project_id &&
+      creds.private_key &&
+      !creds.project_id.includes("your-project") &&
+      !creds.private_key.includes("PLACEHOLDER")
+    );
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { imageUrl, style } = await request.json();
+    const { imageUrl, style, prompt } = await request.json();
 
-    if (!imageUrl) {
+    if (!imageUrl && !prompt) {
       return NextResponse.json(
-        { error: "Image URL required" },
+        { error: "Image URL or prompt required" },
         { status: 400 },
       );
     }
 
-    // DEMO MODE: Return pre-generated videos based on style
-    if (DEMO_MODE) {
-      // Map style to specific demo video file (no random picking)
+    // Use demo mode if no real credentials
+    const useDemo = !hasRealCredentials();
+
+    if (useDemo) {
       const styleMap: Record<string, string> = {
         slideshow: "slideshow-1.mp4",
-        zoom: "zoom-1.mp4",
+        zoom: "slideshow-1.mp4", // Using slideshow as fallback
         rotate: "rotate-1.mp4",
         story: "story-1.mp4",
       };
@@ -34,17 +60,81 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         status: "completed",
         videoUrl: demoVideoUrl,
-        message: `${style} video generated successfully`,
+        message: `${style} video generated successfully (Demo Mode)`,
       });
     }
 
-    // Video generation disabled - requires paid credits
-    return NextResponse.json(
-      { error: "Video generation is currently unavailable" },
-      { status: 503 },
-    );
+    // REAL VERTEX AI MODE: Check for credentials
+    if (!process.env.GOOGLE_CLOUD_PROJECT_ID) {
+      return NextResponse.json(
+        {
+          error:
+            "Google Cloud Project ID not configured. See VERTEX_AI_SETUP.md for setup instructions.",
+        },
+        { status: 500 },
+      );
+    }
+
+    // Dynamically import vertexai only when needed
+    try {
+      const { generateVideo } = await import("@/lib/vertexai");
+
+      // Use Vertex AI for video generation
+      const result = await generateVideo(
+        prompt || "Create a video",
+        imageUrl,
+        style,
+      );
+
+      // Extract video data from Vertex AI response
+      const videoData = result.candidates?.[0]?.content?.parts?.[0];
+
+      if (!videoData) {
+        throw new Error("No video generated");
+      }
+
+      // Return the video URL or base64 data
+      const videoUrl = videoData.text?.includes("http")
+        ? videoData.text
+        : `data:video/mp4;base64,${videoData}`;
+
+      return NextResponse.json({
+        status: "completed",
+        videoUrl: videoUrl,
+        message: `${style} video generated successfully`,
+      });
+    } catch (importError: any) {
+      // If vertexai module doesn't exist, fall back to demo mode
+      if (importError.code === "MODULE_NOT_FOUND") {
+        console.log("[FALLBACK] Vertex AI module not found, using demo mode");
+        const styleMap: Record<string, string> = {
+          slideshow: "slideshow-1.mp4",
+          zoom: "slideshow-1.mp4",
+          rotate: "rotate-1.mp4",
+          story: "story-1.mp4",
+        };
+        const videoFile = styleMap[style] || "story-1.mp4";
+        return NextResponse.json({
+          status: "completed",
+          videoUrl: `/demo/${videoFile}`,
+          message: `${style} video generated successfully (Demo Mode)`,
+        });
+      }
+      throw importError;
+    }
   } catch (error: any) {
     console.error("Video generation error:", error);
+
+    if (error.message?.includes("quota") || error.message?.includes("limit")) {
+      return NextResponse.json(
+        {
+          error: "API quota exceeded, please try again later",
+          quota: true,
+        },
+        { status: 429 },
+      );
+    }
+
     return NextResponse.json(
       { error: error.message || "Failed to generate video" },
       { status: 500 },

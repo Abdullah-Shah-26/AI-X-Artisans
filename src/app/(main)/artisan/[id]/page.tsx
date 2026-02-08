@@ -11,44 +11,29 @@ const demoArtisans: Record<string, any> = {
     name: "Lakshmi Devi",
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
     artisanProfile: {
-      bio: "Traditional artisan specializing in handcrafted pottery and ceramics with over 15 years of experience.",
-      location: "Jaipur, Rajasthan",
-      craftTypes: ["Pottery", "Ceramics", "Blue Pottery"],
+      bio: "Master weaver specializing in traditional Banarasi silk sarees with 1 year of experience in handloom weaving.",
+      location: "Varanasi, Uttar Pradesh",
+      craftTypes: ["Silk Weaving", "Banarasi Sarees", "Handloom Textiles"],
       story:
-        "I learned this craft from my grandmother who was a master potter in our village. My work combines traditional techniques with contemporary designs, creating functional art pieces that bring beauty to everyday life.",
-      yearsOfExperience: 15,
+        "I learned the art of Banarasi weaving from my grandmother who was a master weaver in our family tradition spanning four generations. My work preserves ancient techniques while creating timeless pieces that celebrate India's rich textile heritage.",
+      yearsOfExperience: 1,
     },
     products: [
       {
         id: "demo-prod-1",
-        name: "Blue Pottery Vase",
-        price: 2800,
+        name: "Handwoven Silk Saree",
+        price: 15000,
         image:
-          "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400",
+          "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400",
       },
       {
-        id: "demo-prod-2",
-        name: "Ceramic Bowl Set",
-        price: 1500,
+        id: "demo-prod-kanjivaram",
+        name: "Traditional Kanjivaram Silk Saree",
+        price: 18500,
         image:
-          "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400",
+          "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c2lsayUyMHNhcmVlfGVufDB8fDB8fHww",
       },
     ],
-  },
-  "demo-artisan-2": {
-    id: "demo-artisan-2",
-    name: "Arjun Verma",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
-    artisanProfile: {
-      bio: "Master potter creating traditional and modern ceramic pieces.",
-      location: "Varanasi, UP",
-      craftTypes: ["Pottery", "Ceramics"],
-      story:
-        "I am a master potter from Varanasi, creating both traditional and modern ceramic pieces. My work combines ancient pottery techniques with contemporary designs, creating functional art for everyday use.",
-      yearsOfExperience: 18,
-    },
-    products: [],
   },
   "demo-artisan-3": {
     id: "demo-artisan-3",
@@ -61,7 +46,7 @@ const demoArtisans: Record<string, any> = {
       craftTypes: ["Brass Work", "Metal Crafts"],
       story:
         "I specialize in creating intricate brass artifacts and home decor items. My work showcases the traditional metalworking techniques of Moradabad, creating beautiful pieces that blend tradition with modern aesthetics.",
-      yearsOfExperience: 12,
+      yearsOfExperience: 1,
     },
     products: [],
   },
@@ -70,7 +55,7 @@ const demoArtisans: Record<string, any> = {
     name: "Lakshmi Devi",
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
     artisanProfile: {
-      bio: "Master silk weaver with 25 years of experience in traditional Banarasi sarees and basket weaving.",
+      bio: "Master silk weaver with 1 year of experience in traditional Banarasi sarees and basket weaving.",
       location: "Varanasi, India",
       craftTypes: [
         "Silk Weaving",
@@ -80,9 +65,17 @@ const demoArtisans: Record<string, any> = {
       ],
       story:
         "Born into a family of traditional weavers in Varanasi, I learned the art of silk weaving from my grandmother. I specialize in creating intricate Banarasi sarees using traditional pit looms and authentic zari work techniques passed down through generations. I also create beautiful handwoven baskets using natural fibers.",
-      yearsOfExperience: 25,
+      yearsOfExperience: 1,
     },
-    products: [],
+    products: [
+      {
+        id: "demo-prod-kanjivaram",
+        name: "Traditional Kanjivaram Silk Saree",
+        price: 18500,
+        image:
+          "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c2lsayUyMHNhcmVlfGVufDB8fDB8fHww",
+      },
+    ],
   },
   "demo-a2": {
     id: "demo-a2",
@@ -96,126 +89,6 @@ const demoArtisans: Record<string, any> = {
       story:
         "My family has been working with brass for three generations. I specialize in creating traditional diyas and decorative brass items using ancient techniques.",
       yearsOfExperience: 15,
-    },
-    products: [],
-  },
-  "demo-a3": {
-    id: "demo-a3",
-    name: "Meena Sharma",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
-    artisanProfile: {
-      bio: "Ceramic artist known for intricate hand-painted designs and traditional pottery techniques.",
-      location: "Rajasthan, India",
-      craftTypes: ["Ceramic Art", "Pottery"],
-      story:
-        "I create beautiful ceramic pieces using traditional pottery techniques. Each piece is hand-painted with intricate designs inspired by our rich cultural heritage.",
-      yearsOfExperience: 12,
-    },
-    products: [],
-  },
-  "demo-a4": {
-    id: "demo-a4",
-    name: "Priya Singh",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
-    artisanProfile: {
-      bio: "Expert wood carver specializing in decorative boxes and furniture with brass inlay work.",
-      location: "Karnataka, India",
-      craftTypes: ["Wood Carving", "Brass Inlay"],
-      story:
-        "I specialize in creating intricate wooden jewelry boxes and decorative items. My work combines traditional wood carving with beautiful brass inlay patterns.",
-      yearsOfExperience: 18,
-    },
-    products: [],
-  },
-  "demo-a5": {
-    id: "demo-a5",
-    name: "Anjali Patel",
-    avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400",
-    artisanProfile: {
-      bio: "Terracotta specialist creating functional and decorative pottery using traditional methods.",
-      location: "Gujarat, India",
-      craftTypes: ["Terracotta", "Clay Work"],
-      story:
-        "I work with terracotta clay to create both functional and decorative pieces. My planters and pottery items are made using traditional techniques that have been in my family for generations.",
-      yearsOfExperience: 14,
-    },
-    products: [],
-  },
-  "demo-a6": {
-    id: "demo-a6",
-    name: "Gopal Das",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
-    artisanProfile: {
-      bio: "Bamboo craftsman creating sustainable and eco-friendly products using traditional techniques.",
-      location: "Assam, India",
-      craftTypes: ["Bamboo Craft", "Eco-friendly Products"],
-      story:
-        "I create beautiful and functional bamboo products that are both sustainable and artistic. My work promotes eco-friendly living while preserving traditional bamboo crafting techniques.",
-      yearsOfExperience: 16,
-    },
-    products: [],
-  },
-  "demo-a7": {
-    id: "demo-a7",
-    name: "Kavita Reddy",
-    avatar:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400",
-    artisanProfile: {
-      bio: "Traditional potter specializing in functional clay cookware and decorative items.",
-      location: "Telangana, India",
-      craftTypes: ["Clay Pottery", "Traditional Cookware"],
-      story:
-        "I create traditional clay pots and cookware that are both beautiful and functional. My work preserves ancient pottery techniques while creating items for modern kitchens.",
-      yearsOfExperience: 22,
-    },
-    products: [],
-  },
-  "demo-a8": {
-    id: "demo-a8",
-    name: "Suresh Yadav",
-    avatar:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400",
-    artisanProfile: {
-      bio: "Master weaver creating traditional dhurries and rugs using handloom techniques.",
-      location: "Rajasthan, India",
-      craftTypes: ["Weaving", "Handloom"],
-      story:
-        "I am a master weaver specializing in traditional dhurries and cotton rugs. Each piece is woven on traditional handlooms using techniques passed down through generations.",
-      yearsOfExperience: 25,
-    },
-    products: [],
-  },
-  "demo-a9": {
-    id: "demo-a9",
-    name: "Ramesh Joshi",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
-    artisanProfile: {
-      bio: "Master silk weaver with 25 years of experience in traditional Banarasi sarees and silk textiles.",
-      location: "Varanasi, India",
-      craftTypes: ["Silk Weaving", "Zari Work", "Banarasi Sarees"],
-      story:
-        "Born into a family of traditional weavers in Varanasi, I learned the art of silk weaving from my grandfather. I specialize in creating intricate Banarasi sarees using traditional pit looms and authentic zari work techniques passed down through generations. Each saree I create is a masterpiece that takes weeks to complete.",
-      yearsOfExperience: 25,
-    },
-    products: [],
-  },
-  "demo-a10": {
-    id: "demo-a10",
-    name: "Ramesh Joshi",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
-    artisanProfile: {
-      bio: "Block printing expert using traditional wooden blocks and natural dyes for textile art.",
-      location: "Rajasthan, India",
-      craftTypes: ["Block Printing", "Natural Dyes", "Textile Art"],
-      story:
-        "I am an expert in traditional block printing techniques using hand-carved wooden blocks and natural dyes. My work preserves the ancient art of block printing while creating beautiful textile pieces for modern homes.",
-      yearsOfExperience: 20,
     },
     products: [],
   },

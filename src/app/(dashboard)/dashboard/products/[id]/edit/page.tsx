@@ -14,7 +14,10 @@ export default async function EditProductPage({
   } = await supabase.auth.getUser();
 
   // Check if demo mode - allow access without authentication
-  const isDemo = !user || user.email?.includes("demo");
+  const isDemo =
+    !user ||
+    user.email?.includes("demo") ||
+    user.email === "lakshmidevi@gmail.com";
 
   // Try to fetch product from database
   let product = null;

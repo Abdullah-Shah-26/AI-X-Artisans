@@ -199,23 +199,30 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
-## Testing Real-Time Chat
+## Real-Time Chat
 
-To test the real-time messaging system:
+The chat system uses Supabase Realtime for instant messaging between users. Messages appear instantly without page refresh, and the system supports image sharing across all user roles (artisans, customers, volunteers).
 
-1. **Open two browsers** (Chrome + Firefox)
-2. **Sign up as different users:**
-   - Browser 1: Sign up as Artisan, create a product
-   - Browser 2: Sign up as Customer
-3. **Start conversation:**
-   - Customer: Go to marketplace, find artisan's product
-   - Customer: Click "Message Artisan" button
-4. **Test real-time messaging:**
-   - Both users can now chat in real-time
-   - Messages appear instantly without page refresh
-   - Image sharing works in both directions
+### Troubleshooting Real-Time Issues
 
-**Note:** Demo mode uses pre-filled conversations and doesn't require real-time setup.
+If real-time messaging isn't working:
+
+1. **Verify Supabase Realtime is Enabled:**
+   - Go to your Supabase Dashboard > Database > Replication
+   - Ensure `Message` and `Conversation` tables are enabled for realtime
+   - Or run: `ALTER PUBLICATION supabase_realtime ADD TABLE "Message", "Conversation";`
+
+2. **Check Environment Variables:**
+
+   ```bash
+   # Ensure these are set in .env
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   ```
+
+3. **Database Connection:**
+   - Ensure your Supabase project is active and not paused
+   - Check if you've exceeded your project limits
 
 ## Project Structure
 

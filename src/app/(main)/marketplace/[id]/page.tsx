@@ -20,16 +20,16 @@ const demoProducts = [
     stock: 5,
     dateAdded: new Date(),
     artisan: {
-      id: "demo-a1",
-      name: "Lakshmi Devi",
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
+      id: "demo-a3",
+      name: "Meena Sharma",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
       artisanProfile: {
-        bio: "Master basket weaver with 20 years of experience in traditional craft",
-        craftSpecialty: "Basket Weaving",
+        bio: "Master ceramic artist with 15 years of experience in traditional pottery",
+        craftSpecialty: "Pottery",
         location: "Rajasthan, India",
         story:
-          "I learned the art of basket weaving from my grandmother. Each basket I create uses traditional techniques and natural fibers, preserving our cultural heritage while creating functional art pieces.",
-        craftTypes: ["Basket Weaving", "Natural Fiber Work"],
+          "I specialize in creating beautiful handcrafted baskets and pottery, merging traditional weaving techniques with ceramic art.",
+        craftTypes: ["Ceramic Art", "Basket Weaving"],
         yearsOfExperience: null,
       },
       _count: { products: 8 },
@@ -278,7 +278,7 @@ const demoProducts = [
   },
   {
     id: "demo-9",
-    name: "Handwoven Silk Saree",
+    name: " Silk Saree",
     description:
       "Exquisite handwoven silk saree with traditional zari work and intricate patterns. Perfect for weddings and special occasions.",
     longDescription:
@@ -294,10 +294,10 @@ const demoProducts = [
       name: "Lakshmi Devi",
       avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
       artisanProfile: {
-        location: "Varanasi, India",
-        bio: "Master silk weaver with 25 years of experience in traditional Banarasi sarees",
+        location: "Kanchipuram, India",
+        bio: "Master silk weaver with 25 years of experience in traditional Kanjivaram sarees",
         story:
-          "Born into a family of traditional weavers in Varanasi, I learned the art of silk weaving from my grandmother. I specialize in creating intricate Banarasi sarees using traditional pit looms and authentic zari work techniques passed down through generations.",
+          "Born into a family of traditional weavers in Kanchipuram, I learned the art of silk weaving from my grandmother. I specialize in creating intricate Kanjivaram sarees using traditional pit looms and authentic zari work techniques passed down through generations.",
         craftSpecialty: "Silk Weaving",
         craftTypes: ["Silk Weaving", "Zari Work"],
         yearsOfExperience: 25,
@@ -451,30 +451,28 @@ export default async function ProductPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  let userOffer = null;
-  let isFavorite = false;
+  let userId = null;
   let userRole = null;
-  let userId = user?.id;
 
-  if (user) {
+  if (guestMode) {
+    userId = "guest-user";
+    userRole = viewMode || "customer";
+  } else if (user) {
+    userId = user.id;
     const dbUser = await prisma.user.findUnique({
       where: { id: user.id },
       select: { role: true },
     });
     userRole = dbUser?.role?.toLowerCase() || null;
-  } else if (guestMode || viewMode === "customer") {
-    // Guest/Demo mode handling
-    userId = "guest-user";
-    userRole = viewMode || "customer";
   }
 
-  // Only fetch data if we have a valid user and it's not the guest user (unless we want to support mock data later)
-  if (userId && userId !== "guest-user") {
-    [userOffer, isFavorite] = await Promise.all([
-      getUserOffer(product.id, userId),
-      checkFavorite(product.id, userId),
-    ]);
-  }
+  const [userOffer, isFavorite] =
+    userId && userId !== "guest-user"
+      ? await Promise.all([
+          getUserOffer(product.id, userId),
+          checkFavorite(product.id, userId),
+        ])
+      : [null, false];
 
   return (
     <ProductDetailClient

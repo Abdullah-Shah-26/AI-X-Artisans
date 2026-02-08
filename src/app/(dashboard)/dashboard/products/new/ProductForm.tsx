@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ImageUpload } from "@/components/common/ImageUpload";
 
@@ -18,6 +18,7 @@ const categories = [
 ];
 
 const craftTraditions = [
+  "Banarasi Weaving",
   "Handloom",
   "Block Print",
   "Embroidery",
@@ -41,21 +42,19 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
-  // Pre-fill with demo data if in demo mode
-  const [name, setName] = useState(isDemo ? "Hand-woven Silk Saree" : "");
+  // Pre-fill with demo data if in demo mode (no hardcoded image or descriptions)
+  const [name, setName] = useState(isDemo ? "Handwoven Silk Saree" : "");
   const [description, setDescription] = useState(
-    isDemo ? "Exquisite handloom silk saree with traditional motifs" : "",
-  );
-  const [longDescription, setLongDescription] = useState(
     isDemo
-      ? "This stunning silk saree is a masterpiece of traditional Indian craftsmanship. Woven on a handloom using pure mulberry silk, it features intricate traditional motifs inspired by ancient temple architecture. Each thread is carefully selected and dyed using natural colors, ensuring vibrant hues that last for generations. The saree takes approximately 15-20 days to complete, with skilled artisans dedicating their expertise to every detail. The pallu showcases elaborate peacock designs, a symbol of grace and beauty in Indian culture. This saree represents not just a garment, but a piece of living heritage, connecting the wearer to centuries of textile tradition."
+      ? "Traditional Banarasi silk saree with intricate gold zari work and floral motifs. Each piece takes 15-20 days to weave by master artisans."
       : "",
   );
-  const [price, setPrice] = useState(isDemo ? "8500" : "");
-  const [image, setImage] = useState(isDemo ? "/demo/saree-classic.png" : "");
+  const [longDescription, setLongDescription] = useState("");
+  const [price, setPrice] = useState(isDemo ? "15000" : "");
+  const [image, setImage] = useState("");
   const [category, setCategory] = useState(isDemo ? "Textiles" : "");
   const [craftTradition, setCraftTradition] = useState(
-    isDemo ? "Handloom" : "",
+    isDemo ? "Banarasi Weaving" : "",
   );
   const [createCertificate, setCreateCertificate] = useState(
     isDemo ? true : false,
@@ -63,13 +62,7 @@ export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
 
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [voiceLoading, setVoiceLoading] = useState(false);
-  const [showVoiceModal, setShowVoiceModal] = useState(false);
 
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
   const router = useRouter();
 
   const generateDescription = async () => {
@@ -98,98 +91,6 @@ export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
       console.error("Error generating description:", error);
     } finally {
       setAiLoading(false);
-    }
-  };
-
-  const handleStartRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-
-      mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        setAudioBlob(blob);
-        audioChunksRef.current = [];
-      };
-
-      mediaRecorderRef.current.start();
-      setIsRecording(true);
-    } catch (error) {
-      console.error("Error accessing microphone:", error);
-      alert("Could not access microphone. Please check permissions.");
-    }
-  };
-
-  const handleStopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream
-        .getTracks()
-        .forEach((track) => track.stop());
-      setIsRecording(false);
-    }
-  };
-
-  const handleVoiceToProduct = async () => {
-    if (!audioBlob) return;
-
-    setVoiceLoading(true);
-    try {
-      // Convert audio blob to base64
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-
-      await new Promise((resolve) => {
-        reader.onloadend = async () => {
-          const base64Audio = (reader.result as string).split(",")[1];
-
-          const response = await fetch("/api/ai/voice-to-product", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              audioBase64: base64Audio,
-              mimeType: audioBlob.type,
-              imageUrl: image || undefined,
-            }),
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-
-            // Fill form with AI-generated data
-            setName(data.productName || "");
-            setCategory(data.category || "");
-            setCraftTradition(data.craftTradition || "");
-            setDescription(data.shortDescription || "");
-            setLongDescription(data.detailedDescription || "");
-
-            // Set price to average of suggested range
-            if (data.minPrice && data.maxPrice) {
-              const avgPrice = (data.minPrice + data.maxPrice) / 2;
-              setPrice(avgPrice.toString());
-            }
-
-            setShowVoiceModal(false);
-            setAudioBlob(null);
-            alert(
-              "Product details generated from your voice! Review and adjust as needed.",
-            );
-          } else {
-            throw new Error("Failed to process voice input");
-          }
-
-          resolve(null);
-        };
-      });
-    } catch (error) {
-      console.error("Error processing voice:", error);
-      alert("Failed to process voice input. Please try again.");
-    } finally {
-      setVoiceLoading(false);
     }
   };
 
@@ -228,15 +129,13 @@ export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
             id: `cert-${productId}`,
             productId,
             productName: name,
-            heritageStory: longDescription || description || "",
+            heritageStory: null,
             craftTradition: craftTradition || "Traditional Craft",
             createdAt: new Date(),
+            image,
           });
         }
 
-        alert(
-          `Product "${name}" created successfully!${createCertificate ? " Certificate generated." : ""}`,
-        );
         router.push("/dashboard/products");
         router.refresh();
         return;
@@ -270,268 +169,140 @@ export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
 
   return (
     <>
-      {/* Voice Input Modal */}
-      {showVoiceModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl max-w-md w-full p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                🎤 Voice to Product
-              </h3>
-              <button
-                onClick={() => {
-                  setShowVoiceModal(false);
-                  setAudioBlob(null);
-                  handleStopRecording();
-                }}
-                className="text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <div className="text-center space-y-4">
-              <p className="text-sm text-gray-600 dark:text-zinc-400">
-                {!audioBlob
-                  ? "Describe your product in your own words. Include details about materials, craftsmanship, and cultural significance."
-                  : "Recording complete! Click 'Generate Product' to create your listing."}
-              </p>
-
-              {/* Recording Button */}
-              <button
-                onClick={
-                  isRecording ? handleStopRecording : handleStartRecording
-                }
-                disabled={voiceLoading || audioBlob !== null}
-                className={`mx-auto w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  isRecording
-                    ? "bg-red-500 text-white animate-pulse"
-                    : audioBlob
-                      ? "bg-green-500 text-white"
-                      : "bg-emerald-500 text-white hover:bg-emerald-600"
-                } disabled:opacity-50`}
-              >
-                <svg
-                  className="w-12 h-12"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8h-1a6 6 0 11-12 0H3a7.001 7.001 0 006 6.93V17H7v2h6v-2h-2v-2.07z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-
-              <p className="font-semibold text-gray-700 dark:text-zinc-300">
-                {isRecording
-                  ? "🔴 Recording... Click to stop"
-                  : audioBlob
-                    ? "✅ Recording saved"
-                    : "Click to start recording"}
-              </p>
-
-              {/* Optional: Upload image first */}
-              {!image && (
-                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/30 rounded-lg p-3">
-                  <p className="text-xs text-amber-800 dark:text-amber-400">
-                    💡 Tip: Upload a product image first for better AI analysis!
-                  </p>
-                </div>
-              )}
-
-              {/* Generate Button */}
-              {audioBlob && (
-                <button
-                  onClick={handleVoiceToProduct}
-                  disabled={voiceLoading}
-                  className="w-full bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {voiceLoading ? (
-                    <>
-                      <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-                      AI Processing...
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 10V3L4 14h7v7l9-11h-7z"
-                        />
-                      </svg>
-                      Generate Product
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Form */}
       <form
         onSubmit={handleSubmit}
         className="bg-white dark:bg-zinc-900 rounded-xl p-4 sm:p-6 shadow-sm space-y-6"
       >
-        {/* Voice Input Button - Top of form */}
-        <div className="bg-linear-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 border-2 border-emerald-200 dark:border-emerald-500/30 rounded-xl p-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-emerald-600 dark:text-emerald-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8h-1a6 6 0 11-12 0H3a7.001 7.001 0 006 6.93V17H7v2h6v-2h-2v-2.07z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Create with Voice
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-zinc-400 mt-1">
-                Describe your product in your language - AI will fill the form!
+        {/* Two-column layout for desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Column - Image Upload */}
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                Product Image *
+              </label>
+              <ImageUpload
+                onUpload={setImage}
+                currentImage={image}
+                bucket="images"
+                folder="products"
+              />
+              <p className="text-xs text-gray-500 dark:text-zinc-500 mt-1">
+                Use Photo Studio to enhance your product images after uploading
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowVoiceModal(true)}
-              className="w-full sm:w-auto bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition flex items-center justify-center gap-2 font-medium"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8h-1a6 6 0 11-12 0H3a7.001 7.001 0 006 6.93V17H7v2h6v-2h-2v-2.07z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Start Voice Input
-            </button>
+          </div>
+
+          {/* Right Column - Form Fields */}
+          <div className="space-y-6">
+            {/* Basic Info */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                Product Name *
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g., Hand-woven Silk Saree"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                  Category *
+                </label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  required
+                >
+                  <option value="">Select category</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                  Craft Tradition
+                </label>
+                <select
+                  value={craftTradition}
+                  onChange={(e) => setCraftTradition(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                >
+                  <option value="">Select tradition</option>
+                  {craftTraditions.map((craft) => (
+                    <option key={craft} value={craft}>
+                      {craft}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                Price (₹) *
+              </label>
+              <input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">
+                  Short Description *
+                </label>
+                <button
+                  type="button"
+                  className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 p-1.5 rounded-lg transition"
+                  title="Voice input (Demo feature)"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Brief description for product cards..."
+                rows={3}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                required
+              />
+            </div>
           </div>
         </div>
 
-        {/* Basic Info */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-            Product Name *
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g., Hand-woven Silk Saree"
-            className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-              Category *
-            </label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              required
-            >
-              <option value="">Select category</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-              Craft Tradition
-            </label>
-            <select
-              value={craftTradition}
-              onChange={(e) => setCraftTradition(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            >
-              <option value="">Select tradition</option>
-              {craftTraditions.map((craft) => (
-                <option key={craft} value={craft}>
-                  {craft}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-            Price (₹) *
-          </label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="0.00"
-            min="0"
-            step="0.01"
-            className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-            Product Image *
-          </label>
-          <ImageUpload
-            onUpload={setImage}
-            currentImage={image}
-            bucket="images"
-            folder="products"
-          />
-          <p className="text-xs text-gray-500 dark:text-zinc-500 mt-1">
-            Use Photo Studio to enhance your product images after uploading
-          </p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-            Short Description *
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Brief description for product cards..."
-            rows={2}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            required
-          />
-        </div>
-
+        {/* Full-width sections below */}
         {/* AI Description */}
         <div>
           <div className="flex items-center justify-between mb-1">

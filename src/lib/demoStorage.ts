@@ -21,9 +21,10 @@ export interface DemoCertificate {
   id: string;
   productId: string;
   productName: string;
-  heritageStory: string;
+  heritageStory: string | null;
   craftTradition: string;
   createdAt: Date;
+  image?: string | null;
 }
 
 export interface DemoProject {

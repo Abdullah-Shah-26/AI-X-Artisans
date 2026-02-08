@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Send, Search, ArrowLeft } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 interface User {
   id: string;
@@ -119,76 +120,81 @@ const demoMessages: Record<string, Message[]> = {
 
 // Customer-specific demo messages
 const customerDemoMessages: Record<string, Message[]> = {
-  "demo-conv-2": [
+  "demo-conv-lakshmi": [
     {
       id: "msg-c1",
-      text: "Hello! I loved the handwoven silk saree on your page",
+      text: "Hello Lakshmi! I saw your beautiful handwoven sarees on the marketplace.",
       senderId: "demo-current-user",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4),
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
     },
     {
       id: "msg-c2",
-      text: "Thank you! That's one of our finest pieces. How can I help you?",
-      senderId: "demo-user-2",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3.5),
+      text: "Namaste! Thank you so much. I've been weaving sarees for over 25 years. How can I help you today?",
+      senderId: "lakshmi-devi",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1.9),
     },
     {
       id: "msg-c3",
-      text: "I have a saree that I'd like to get styled differently. Can you help with custom designs?",
+      text: "I have a silk saree that I'd like to get styled differently. Can you help with custom designs?",
       senderId: "demo-current-user",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3),
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1.8),
     },
     {
       id: "msg-c4",
-      text: "Absolutely! I'd be happy to create a custom design. Could you share an image of your saree?",
-      senderId: "demo-user-2",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2.8),
+      text: "Absolutely! I specialize in custom saree designs. I can create beautiful patterns - traditional, modern, or fusion styles. Could you share an image of your saree?",
+      senderId: "lakshmi-devi",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1.7),
     },
     {
       id: "msg-c5",
       text: "Here's my saree. I'm thinking of a minimalist style with subtle patterns.",
       senderId: "demo-current-user",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2.5),
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1.5),
       imageUrl:
         "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500",
     },
     {
       id: "msg-c6",
-      text: "Beautiful! I can definitely work with this. The minimalist approach will highlight the silk's natural elegance.",
-      senderId: "demo-user-2",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2.2),
+      text: "Beautiful silk! The color is gorgeous. For a minimalist design, I suggest delicate floral motifs along the border with fine zari work. It will highlight the silk's natural elegance without overwhelming it.",
+      senderId: "lakshmi-devi",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1.3),
     },
     {
       id: "msg-c7",
-      text: "When can we schedule the collaboration?",
+      text: "That sounds perfect! How long would it take?",
       senderId: "demo-current-user",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1.2),
     },
-  ],
-  "demo-conv-3": [
     {
       id: "msg-c8",
-      text: "Hi! I'm interested in your brass work collection",
-      senderId: "demo-current-user",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 26),
+      text: "For this design, it would take about 2-3 weeks. I hand-weave each pattern with care. The price would be ₹8,500 including materials and my craftsmanship.",
+      senderId: "lakshmi-devi",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1.1),
     },
     {
       id: "msg-c9",
-      text: "Hello! Thank you for your interest. Each piece is handcrafted using traditional techniques.",
-      senderId: "demo-user-3",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 25.5),
+      text: "That's reasonable! Can you show me some examples of your previous minimalist work?",
+      senderId: "demo-current-user",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60),
     },
     {
       id: "msg-c10",
-      text: "Do you offer custom orders? I'd love something with intricate patterns.",
-      senderId: "demo-current-user",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 25),
+      text: "Of course! Here's a recent minimalist saree I created. Notice the subtle geometric patterns.",
+      senderId: "lakshmi-devi",
+      timestamp: new Date(Date.now() - 1000 * 60 * 50),
+      imageUrl: "/demo/saree-minimalist.png",
     },
     {
       id: "msg-c11",
-      text: "Yes, I do custom work! I'd love to help with your marketing!",
-      senderId: "demo-user-3",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
+      text: "Wow, that's exactly the style I want! Can we proceed with the order?",
+      senderId: "demo-current-user",
+      timestamp: new Date(Date.now() - 1000 * 60 * 45),
+    },
+    {
+      id: "msg-c12",
+      text: "Wonderful! I'd love to create a custom design for your saree! I'll need a 50% advance to start. Once you confirm, I'll begin working on your piece right away.",
+      senderId: "lakshmi-devi",
+      timestamp: new Date(Date.now() - 1000 * 60 * 30),
     },
   ],
 };
@@ -277,19 +283,73 @@ const volunteerDemoMessages: Record<string, Message[]> = {
 
 export function ChatClient({
   currentUser,
-  conversations,
+  conversations: initialConversations,
   isDemo = false,
 }: ChatClientProps) {
   const [selectedConversation, setSelectedConversation] =
     useState<Conversation | null>(null);
+  const [conversations, setConversations] =
+    useState<Conversation[]>(initialConversations);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showChat, setShowChat] = useState(false);
+  const [realtimeStatus, setRealtimeStatus] = useState<string>("disconnected");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Real-time conversation updates
+  useEffect(() => {
+    if (isDemo) return;
+
+    const supabase = createClient();
+    console.log(
+      "Setting up real-time conversation subscription for user:",
+      currentUser.id,
+    );
+
+    // Subscribe to conversation updates for current user
+    const channel = supabase
+      .channel("conversations")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "Conversation",
+        },
+        (payload) => {
+          console.log("Conversation updated:", payload);
+          // Check if this conversation involves the current user
+          const conversation = payload.new || payload.old;
+          if (
+            conversation &&
+            ((conversation as any).participant1Id === currentUser.id ||
+              (conversation as any).participant2Id === currentUser.id)
+          ) {
+            console.log("Refreshing conversations for current user");
+            // Refresh conversations when there's an update
+            fetch("/api/chat")
+              .then((res) => res.json())
+              .then((data) => setConversations(data))
+              .catch((err) =>
+                console.error("Failed to refresh conversations:", err),
+              );
+          }
+        },
+      )
+      .subscribe((status) => {
+        console.log("Conversation subscription status:", status);
+        setRealtimeStatus(status);
+      });
+
+    return () => {
+      console.log("Cleaning up conversation subscription");
+      supabase.removeChannel(channel);
+    };
+  }, [currentUser.id, isDemo]);
 
   // Load messages when conversation changes
   useEffect(() => {
@@ -317,6 +377,59 @@ export function ChatClient({
         .catch((err) => console.error("Failed to load messages:", err));
     }
   }, [selectedConversation, isDemo, currentUser.role]);
+
+  // Real-time message subscription
+  useEffect(() => {
+    if (!selectedConversation || isDemo) return;
+
+    const supabase = createClient();
+    console.log(
+      "Setting up real-time message subscription for conversation:",
+      selectedConversation.id,
+    );
+
+    // Subscribe to new messages in this conversation
+    const channel = supabase
+      .channel(`messages:${selectedConversation.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "Message",
+          filter: `conversationId=eq.${selectedConversation.id}`,
+        },
+        (payload) => {
+          console.log("New message received:", payload);
+          const newMessage = {
+            id: payload.new.id,
+            text: payload.new.text,
+            senderId: payload.new.senderId,
+            timestamp: new Date(payload.new.timestamp),
+            imageUrl: payload.new.imageUrl,
+          };
+
+          // Only add if it's not from current user (to avoid duplicates)
+          if (payload.new.senderId !== currentUser.id) {
+            console.log("Adding message from other user:", newMessage);
+            setMessages((prev) => [...prev, newMessage]);
+          } else {
+            console.log("Ignoring own message to avoid duplicate");
+          }
+        },
+      )
+      .subscribe((status) => {
+        console.log("Message subscription status:", status);
+      });
+
+    return () => {
+      console.log(
+        "Cleaning up message subscription for conversation:",
+        selectedConversation.id,
+      );
+      supabase.removeChannel(channel);
+    };
+  }, [selectedConversation, isDemo, currentUser.id]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -513,9 +626,31 @@ export function ChatClient({
               <h3 className="font-semibold text-gray-900 dark:text-white">
                 {selectedConversation.otherParticipant.name}
               </h3>
-              <p className="text-xs text-emerald-600 dark:text-emerald-400">
-                Active now
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                  Active now
+                </p>
+                {!isDemo && (
+                  <div className="flex items-center gap-1">
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        realtimeStatus === "SUBSCRIBED"
+                          ? "bg-green-500"
+                          : realtimeStatus === "CHANNEL_ERROR"
+                            ? "bg-red-500"
+                            : "bg-yellow-500"
+                      }`}
+                    />
+                    <span className="text-xs text-gray-500 dark:text-zinc-400">
+                      {realtimeStatus === "SUBSCRIBED"
+                        ? "Real-time"
+                        : realtimeStatus === "CHANNEL_ERROR"
+                          ? "Offline"
+                          : "Connecting..."}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { CustomerHeader } from "@/components/layout/CustomerHeader";
 
 type StyleType = "minimalist" | "bohemian" | "extravagant" | "classic";
 type StylistStep = "select" | "generating" | "result";
@@ -113,91 +112,100 @@ export function ProductDetailClient({
   const [stylistError, setStylistError] = useState<string | null>(null);
 
   const handleAddToCart = async () => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
     setLoading(true);
 
-    // Guest mode simulation - store in localStorage
-    if (user.id === "guest-user") {
+    // If guest user or demo mode or demo product, use localStorage
+    if (user?.id === "guest-user" || !user || product.id.startsWith("demo-")) {
       setTimeout(() => {
-        // Get current cart from localStorage
-        const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
-        // Add product if not already in cart
-        if (!guestCart.includes(product.id)) {
-          guestCart.push(product.id);
-          localStorage.setItem("guestCart", JSON.stringify(guestCart));
-          // Update cart count state
-          setCartCount(guestCart.length);
-        }
+        if (typeof window !== "undefined") {
+          // Get current cart from localStorage
+          const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+          // Add product if not already in cart
+          if (!guestCart.includes(product.id)) {
+            guestCart.push(product.id);
+            localStorage.setItem("guestCart", JSON.stringify(guestCart));
+            // Update cart count state
+            setCartCount(guestCart.length);
+          }
 
-        setAddedToCart(true);
-        setLoading(false);
-        setTimeout(() => {
-          setAddedToCart(false);
-        }, 1000);
-      }, 600);
+          setAddedToCart(true);
+          setLoading(false);
+          setTimeout(() => {
+            setAddedToCart(false);
+          }, 1000);
+        }
+      }, 300);
       return;
     }
 
+    // Real user - API call
     try {
-      await fetch("/api/cart", {
+      const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product.id, quantity: 1 }),
       });
-      setAddedToCart(true);
-      setTimeout(() => {
-        setAddedToCart(false);
-        // Refresh to update cart count
-        router.refresh();
-      }, 1000);
+
+      if (res.ok) {
+        setCartCount((prev) => prev + 1);
+        setAddedToCart(true);
+        setTimeout(() => {
+          setAddedToCart(false);
+          router.refresh(); // Refresh to sync header count if needed
+        }, 1000);
+      }
     } catch (e) {
-      console.error(e);
+      console.error("Error adding to cart:", e);
     } finally {
       setLoading(false);
     }
   };
 
   const handleToggleFavorite = async () => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
     const newFav = !favorite;
     setFavorite(newFav);
 
-    // Guest mode simulation - store in localStorage
-    if (user.id === "guest-user") {
-      const guestFavorites = JSON.parse(
-        localStorage.getItem("guestFavorites") || "[]",
-      );
-      if (newFav) {
-        if (!guestFavorites.includes(product.id)) {
-          guestFavorites.push(product.id);
+    // If guest user or demo mode, use localStorage
+    if (user?.id === "guest-user" || !user) {
+      if (typeof window !== "undefined") {
+        const guestFavorites = JSON.parse(
+          localStorage.getItem("guestFavorites") || "[]",
+        );
+        if (newFav) {
+          if (!guestFavorites.includes(product.id)) {
+            guestFavorites.push(product.id);
+          }
+        } else {
+          const index = guestFavorites.indexOf(product.id);
+          if (index > -1) {
+            guestFavorites.splice(index, 1);
+          }
         }
-      } else {
-        const index = guestFavorites.indexOf(product.id);
-        if (index > -1) {
-          guestFavorites.splice(index, 1);
-        }
+        localStorage.setItem("guestFavorites", JSON.stringify(guestFavorites));
+        // Update favorites count state
+        setFavoritesCount(guestFavorites.length);
       }
-      localStorage.setItem("guestFavorites", JSON.stringify(guestFavorites));
-      // Update favorites count state
-      setFavoritesCount(guestFavorites.length);
       return;
     }
 
+    // Real user - API call
     try {
-      await fetch("/api/favorites", {
+      const res = await fetch("/api/favorites", {
         method: newFav ? "POST" : "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product.id }),
       });
+
+      if (res.ok) {
+        setFavoritesCount((prev) => (newFav ? prev + 1 : Math.max(0, prev - 1)));
+        router.refresh();
+      } else {
+        // Revert on failure
+        setFavorite(!newFav);
+      }
     } catch (e) {
+      console.error("Error toggling favorite:", e);
       setFavorite(!newFav);
-      console.error(e);
     }
   };
 
@@ -246,35 +254,8 @@ export function ProductDetailClient({
   };
 
   const handleMessageArtisan = async () => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
-    // Guest mode simulation - redirect to demo connections
-    if (user.id === "guest-user") {
-      router.push("/dashboard/connections");
-      return;
-    }
-
-    try {
-      // Create or get conversation with artisan
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ otherUserId: product.artisan.id }),
-      });
-
-      if (res.ok) {
-        const conversation = await res.json();
-        // Redirect to connections with this conversation
-        router.push(`/dashboard/connections?conversation=${conversation.id}`);
-      }
-    } catch (e) {
-      console.error(e);
-      // Fallback to general connections page
-      router.push("/dashboard/connections");
-    }
+    // Always redirect to chat page (works for all users)
+    router.push("/dashboard/chat");
   };
 
   // AI Stylist handlers
@@ -431,7 +412,7 @@ export function ProductDetailClient({
             {/* Right: Favorite + Cart */}
             <div className="flex items-center gap-2">
               {/* Favorite button - Links to marketplace favorites */}
-              {user && (
+              {mounted && (
                 <Link
                   href="/marketplace?view=favorites"
                   className="p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition relative"
@@ -459,7 +440,7 @@ export function ProductDetailClient({
               )}
 
               {/* Cart button */}
-              {user && (
+              {mounted && (
                 <Link
                   href="/cart"
                   className="p-2 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition relative"
@@ -679,48 +660,101 @@ export function ProductDetailClient({
             </div>
 
             {/* Bargain Section */}
-            {(user?.role?.toLowerCase() === "customer" ||
-              user?.id === "guest-user") && (
-              <div className="bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-500/10 dark:to-pink-500/10 rounded-2xl p-5 ring-1 ring-purple-200 dark:ring-purple-500/20">
-                <div className="flex items-center gap-2 mb-3">
-                  <svg
-                    className="w-5 h-5 text-purple-600 dark:text-purple-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
-                    Make an Offer
-                  </h3>
-                  {offer && getOfferStatusBadge()}
+            <div className="bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-500/10 dark:to-pink-500/10 rounded-2xl p-5 ring-1 ring-purple-200 dark:ring-purple-500/20">
+              <div className="flex items-center gap-2 mb-3">
+                <svg
+                  className="w-5 h-5 text-purple-600 dark:text-purple-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                <h3 className="font-semibold text-gray-900 dark:text-white">
+                  Make an Offer
+                </h3>
+                {offer && getOfferStatusBadge()}
+              </div>
+              <p className="text-sm text-gray-600 dark:text-zinc-400 mb-4">
+                This item supports bargaining. The artisan's price is{" "}
+                {formatPrice(product.price)}. Offer what you feel is fair.
+              </p>
+              {offer ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-zinc-900 rounded-xl">
+                    <span className="text-sm text-gray-600 dark:text-zinc-400">
+                      Your Offer
+                    </span>
+                    <span className="font-bold text-purple-600 dark:text-purple-400">
+                      {formatPrice(offer.offerAmount)}
+                    </span>
+                  </div>
+                  {offer.status === "ACCEPTED" && (
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={loading}
+                      className="w-full py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-medium flex items-center justify-center gap-2"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                        />
+                      </svg>
+                      Buy at {formatPrice(offer.offerAmount)}
+                    </button>
+                  )}
+                  {offer.status === "COUNTERED" && (
+                    <button className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium">
+                      Accept Counter Offer: {formatPrice(offer.counterAmount!)}
+                    </button>
+                  )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-zinc-400 mb-4">
-                  This item supports bargaining. The artisan's price is{" "}
-                  {formatPrice(product.price)}. Offer what you feel is fair.
-                </p>
-                {offer ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-white dark:bg-zinc-900 rounded-xl">
-                      <span className="text-sm text-gray-600 dark:text-zinc-400">
-                        Your Offer
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between text-sm mb-2">
+                      <span className="text-gray-500 dark:text-zinc-500">
+                        {formatPrice(minOffer)}
                       </span>
-                      <span className="font-bold text-purple-600 dark:text-purple-400">
-                        {formatPrice(offer.offerAmount)}
+                      <span className="font-semibold text-purple-600 dark:text-purple-400">
+                        Your Offer: {formatPrice(offerAmount)}
+                      </span>
+                      <span className="text-gray-500 dark:text-zinc-500">
+                        {formatPrice(maxOffer)}
                       </span>
                     </div>
-                    {offer.status === "ACCEPTED" && (
-                      <button
-                        onClick={handleAddToCart}
-                        disabled={loading}
-                        className="w-full py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-medium flex items-center justify-center gap-2"
-                      >
+                    <input
+                      type="range"
+                      min={minOffer}
+                      max={maxOffer}
+                      step={10}
+                      value={offerAmount}
+                      onChange={(e) => setOfferAmount(Number(e.target.value))}
+                      className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                    />
+                  </div>
+                  <button
+                    onClick={handleSubmitOffer}
+                    disabled={offerLoading}
+                    className="w-full py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {offerLoading ? (
+                      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <>
                         <svg
                           className="w-5 h-5"
                           fill="none"
@@ -731,100 +765,40 @@ export function ProductDetailClient({
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
                         </svg>
-                        Buy at {formatPrice(offer.offerAmount)}
-                      </button>
+                        Submit Offer
+                      </>
                     )}
-                    {offer.status === "COUNTERED" && (
-                      <button className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium">
-                        Accept Counter Offer:{" "}
-                        {formatPrice(offer.counterAmount!)}
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="text-gray-500 dark:text-zinc-500">
-                          {formatPrice(minOffer)}
-                        </span>
-                        <span className="font-semibold text-purple-600 dark:text-purple-400">
-                          Your Offer: {formatPrice(offerAmount)}
-                        </span>
-                        <span className="text-gray-500 dark:text-zinc-500">
-                          {formatPrice(maxOffer)}
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min={minOffer}
-                        max={maxOffer}
-                        step={10}
-                        value={offerAmount}
-                        onChange={(e) => setOfferAmount(Number(e.target.value))}
-                        className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
-                      />
-                    </div>
-                    <button
-                      onClick={handleSubmitOffer}
-                      disabled={offerLoading}
-                      className="w-full py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 font-medium flex items-center justify-center gap-2 disabled:opacity-50"
-                    >
-                      {offerLoading ? (
-                        <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <>
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          Submit Offer
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* AI Stylist Button */}
-            {(user?.role?.toLowerCase() === "customer" ||
-              user?.id === "guest-user") && (
-              <button
-                onClick={() => setIsStylistOpen(true)}
-                className="w-full py-3.5 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 font-medium flex items-center justify-center gap-2 shadow-lg hover:shadow-purple-500/25 transition-all"
+            <button
+              onClick={() => setIsStylistOpen(true)}
+              className="w-full py-3.5 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 font-medium flex items-center justify-center gap-2 shadow-lg hover:shadow-purple-500/25 transition-all"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                  />
-                </svg>
-                {product.category === "Textiles" &&
-                product.name.toLowerCase().includes("saree")
-                  ? "AI Stylist - Transform Saree Design"
-                  : "AI Stylist - Visualize in Your Space"}
-              </button>
-            )}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                />
+              </svg>
+              {product.category === "Textiles" &&
+              product.name.toLowerCase().includes("saree")
+                ? "AI Stylist - Transform Saree Design"
+                : "AI Stylist - Visualize in Your Space"}
+            </button>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
@@ -1010,7 +984,7 @@ export function ProductDetailClient({
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-zinc-800">
             {/* Clean Header */}
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4 flex items-center justify-between">
+            <div className="bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
                   <svg
@@ -1062,7 +1036,7 @@ export function ProductDetailClient({
                   {stylistError && (
                     <div className="p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-500/20 flex items-start gap-3">
                       <svg
-                        className="w-5 h-5 flex-shrink-0 mt-0.5"
+                        className="w-5 h-5 mt-0.5"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -1250,7 +1224,7 @@ export function ProductDetailClient({
                           AI Styled Design
                         </h4>
                       </div>
-                      <div className="relative bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-500/5 dark:to-indigo-500/5 rounded-lg overflow-hidden border-2 border-purple-200 dark:border-purple-500/30">
+                      <div className="relative bg-linear-to-br from-purple-50 to-indigo-50 dark:from-purple-500/5 dark:to-indigo-500/5 rounded-lg overflow-hidden border-2 border-purple-200 dark:border-purple-500/30">
                         <img
                           src={styledImageUrl}
                           alt="Styled"
@@ -1283,7 +1257,7 @@ export function ProductDetailClient({
                     <a
                       href={styledImageUrl}
                       download={`${product.name}-styled.png`}
-                      className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 font-medium transition-all flex items-center justify-center gap-2 text-sm"
+                      className="px-5 py-2 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 font-medium transition-all flex items-center justify-center gap-2 text-sm"
                     >
                       <svg
                         className="w-4 h-4"
