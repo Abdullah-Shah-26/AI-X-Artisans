@@ -1,31 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 
-// Check if real credentials exist
+// Check if real credentials exist by checking environment variable
 function hasRealCredentials(): boolean {
-  try {
-    const credPath = path.join(
-      process.cwd(),
-      "credentials",
-      "service-account-key.json",
-    );
-    if (!fs.existsSync(credPath)) return false;
+  // Check if Google Cloud Project ID is set and not a placeholder
+  const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
+  const hasValidProjectId =
+    projectId && !projectId.includes("your-project") && projectId !== "";
 
-    const credContent = fs.readFileSync(credPath, "utf-8");
-    const creds = JSON.parse(credContent);
+  // Check if service account key environment variable exists
+  const serviceAccountKey = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  const hasServiceAccount = serviceAccountKey && serviceAccountKey !== "";
 
-    // Check if it's a real service account (not placeholder)
-    return (
-      creds.type === "service_account" &&
-      creds.project_id &&
-      creds.private_key &&
-      !creds.project_id.includes("your-project") &&
-      !creds.private_key.includes("PLACEHOLDER")
-    );
-  } catch {
-    return false;
-  }
+  return !!(hasValidProjectId && hasServiceAccount);
 }
 
 export async function POST(request: NextRequest) {
