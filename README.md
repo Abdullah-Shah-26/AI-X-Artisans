@@ -130,7 +130,7 @@ graph TB
 
 ## Getting Started
 
-Please refer to [CONTRIBUTIONS.md](./CONTRIBUTIONS.md) for detailed setup instructions and Supabase configuration.
+Please refer to [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed setup instructions and Supabase configuration.
 
 ## Project Structure
 
