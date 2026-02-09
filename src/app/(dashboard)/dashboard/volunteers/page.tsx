@@ -33,15 +33,44 @@ const demoVolunteers = [
 ];
 
 // Demo projects
-const demoProjects = [
+const demoProjects: any[] = [
   {
     id: "demo-p1",
-    title: "Website Development for Online Store",
-    description:
-      "Need help building a professional e-commerce website to sell my handwoven textiles globally.",
+    title: "E-commerce Website Development",
+    description: "Need help building a professional e-commerce website to sell my handwoven textiles globally.",
     skillsNeeded: ["Web Development", "E-commerce", "Payment Integration"],
     status: "OPEN",
+    applications: [
+      {
+        id: "demo-app-1",
+        status: "PENDING",
+        volunteer: {
+          name: "Priya Sharma",
+          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
+        },
+      }
+    ],
+  },
+  {
+    id: "demo-p2",
+    title: "Product Photography Session",
+    description: "Need professional photos of my brass artifacts for marketplace listings.",
+    skillsNeeded: ["Photography", "Photo Editing"],
+    status: "IN_PROGRESS",
     applications: [],
+    collaborations: [
+      {
+        id: "demo-col-1",
+        status: "IN_PROGRESS",
+        rating: null,
+        feedback: null,
+        volunteer: {
+          id: "demo-v1",
+          name: "Arjun Patel",
+          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
+        }
+      }
+    ]
   },
 ];
 

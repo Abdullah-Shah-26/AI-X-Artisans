@@ -75,7 +75,7 @@ export default function CrowdfundClient({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [goal, setGoal] = useState("");
-  const [duration, setDuration] = useState("");
+  const [duration, setDuration] = useState("30");
   const [imageUrl, setImageUrl] = useState("");
 
   const handleGenerateDescription = async () => {
@@ -127,8 +127,9 @@ export default function CrowdfundClient({
     e.preventDefault();
     setLoading(true);
 
+    const days = parseInt(duration) || 30;
     const endDate = new Date();
-    endDate.setDate(endDate.getDate() + parseInt(duration));
+    endDate.setDate(endDate.getDate() + days);
 
     try {
       // Demo mode - save to localStorage

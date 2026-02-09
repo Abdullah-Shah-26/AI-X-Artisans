@@ -56,18 +56,29 @@ type TabType = "projects" | "volunteers";
 // Application Card Component
 function ApplicationCard({
   application,
+  isDemo,
+  onRespond,
 }: {
   application: {
     id: string;
     status: string;
     volunteer: { name: string; avatar: string | null };
   };
+  isDemo?: boolean;
+  onRespond?: (action: "ACCEPTED" | "DECLINED") => void;
 }) {
   const [responding, setResponding] = useState(false);
   const [status, setStatus] = useState(application.status);
 
   const handleRespond = async (action: "ACCEPTED" | "DECLINED") => {
     setResponding(true);
+    if (isDemo) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setStatus(action);
+      if (onRespond) onRespond(action);
+      setResponding(false);
+      return;
+    }
     try {
       const res = await fetch("/api/projects/applications/respond", {
         method: "POST",
@@ -271,6 +282,39 @@ export function VolunteerHubClient({
 
     setCompleting(true);
     try {
+      if (isDemo) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Update local state so the project list updates immediately
+        setProjects((prev) =>
+          prev.map((p) => ({
+            ...p,
+            collaborations: p.collaborations?.map((c) =>
+              c.id === selectedCollab.id
+                ? {
+                    ...c,
+                    status: "COMPLETED",
+                    rating: completeForm.rating,
+                    feedback: completeForm.feedback,
+                  }
+                : c,
+            ),
+          })),
+        );
+
+        setShowCompleteModal(false);
+        setSelectedCollab(null);
+
+        const certMsg = completeForm.issueCertificate
+          ? " and certificate issued"
+          : "";
+        setToastMessage(
+          `Collaboration completed${certMsg}! Volunteer has been rated.`,
+        );
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+        return;
+      }
       const res = await fetch("/api/collaborations/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -602,7 +646,47 @@ export function VolunteerHubClient({
                       </div>
                       <div className="space-y-2">
                         {project.applications.map((app) => (
-                          <ApplicationCard key={app.id} application={app} />
+                          <ApplicationCard
+                            key={app.id}
+                            application={app}
+                            isDemo={isDemo}
+                            onRespond={(action) => {
+                              if (isDemo && action === "ACCEPTED") {
+                                setProjects((prev) =>
+                                  prev.map((p) =>
+                                    p.id === project.id
+                                      ? {
+                                          ...p,
+                                          status: "IN_PROGRESS",
+                                          collaborations: [
+                                            ...(p.collaborations || []),
+                                            {
+                                              id: `demo-col-${Date.now()}`,
+                                              status: "IN_PROGRESS",
+                                              rating: null,
+                                              feedback: null,
+                                              volunteer: {
+                                                id: `demo-v-${Date.now()}`,
+                                                name: app.volunteer.name,
+                                                avatar: app.volunteer.avatar,
+                                              },
+                                            },
+                                          ],
+                                          applications: p.applications.filter(
+                                            (a) => a.id !== app.id,
+                                          ),
+                                        }
+                                      : p,
+                                  ),
+                                );
+                                setToastMessage(
+                                  `Accepted ${app.volunteer.name}'s application!`,
+                                );
+                                setShowToast(true);
+                                setTimeout(() => setShowToast(false), 3000);
+                              }
+                            }}
+                          />
                         ))}
                       </div>
                     </div>
