@@ -4,7 +4,13 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  output: 'standalone',
+  serverExternalPackages: ['@supabase/supabase-js'],
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('_http_common');
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
