@@ -85,8 +85,20 @@ export function ProjectsClient({
   >("projects");
   const [applying, setApplying] = useState<string | null>(null);
   const [connecting, setConnecting] = useState<string | null>(null);
+  const [localApplications, setLocalApplications] = useState(applications);
 
   const [demoApplied, setDemoApplied] = useState<string[]>([]);
+  const [localCollaborations, setLocalCollaborations] = useState(collaborations);
+
+  const handleMarkComplete = (collabId: string) => {
+    setLocalCollaborations((prev) =>
+      prev.map((c) =>
+        c.id === collabId
+          ? { ...c, status: "COMPLETED", endDate: new Date() }
+          : c,
+      ),
+    );
+  };
 
   const handleApply = async (projectId: string, isDemo?: boolean) => {
     setApplying(projectId);
@@ -94,6 +106,21 @@ export function ProjectsClient({
     // For demo projects, just simulate the apply
     if (isDemo) {
       setTimeout(() => {
+        const project = projects.find((p) => p.id === projectId);
+        if (project) {
+          const newApp = {
+            id: `demo-app-${Date.now()}`,
+            status: "PENDING",
+            applicationDate: new Date(),
+            project: {
+              id: project.id,
+              title: project.title,
+              description: project.description,
+              postedBy: project.postedBy,
+            },
+          };
+          setLocalApplications((prev) => [newApp, ...prev]);
+        }
         setDemoApplied((prev) => [...prev, projectId]);
         setApplying(null);
       }, 500);
@@ -151,13 +178,13 @@ export function ProjectsClient({
   };
 
   const hasApplied = (projectId: string) =>
-    applications.some((app) => app.project.id === projectId) ||
+    localApplications.some((app) => app.project.id === projectId) ||
     demoApplied.includes(projectId);
 
-  const activeCollabs = collaborations.filter(
+  const activeCollabs = localCollaborations.filter(
     (c) => c.status === "IN_PROGRESS",
   );
-  const completedCollabs = collaborations.filter(
+  const completedCollabs = localCollaborations.filter(
     (c) => c.status === "COMPLETED",
   );
 
@@ -278,8 +305,8 @@ export function ProjectsClient({
       {activeTab === "applications" && (
         <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 p-6">
           <div className="space-y-4">
-            {applications.length > 0 ? (
-              applications.map((app) => (
+            {localApplications.length > 0 ? (
+              localApplications.map((app) => (
                 <div
                   key={app.id}
                   className="p-4 bg-gray-50 dark:bg-zinc-800 rounded-lg flex justify-between items-center"
@@ -351,6 +378,12 @@ export function ProjectsClient({
                     <p className="text-xs text-gray-500 dark:text-zinc-400 mt-2">
                       Started {new Date(collab.startDate).toLocaleDateString()}
                     </p>
+                    <button
+                      onClick={() => handleMarkComplete(collab.id)}
+                      className="mt-4 w-full bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 text-sm font-medium transition"
+                    >
+                      Mark as Complete
+                    </button>
                   </div>
                 ))
               ) : (

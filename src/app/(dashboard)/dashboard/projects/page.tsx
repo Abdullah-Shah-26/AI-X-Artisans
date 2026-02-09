@@ -189,25 +189,7 @@ async function getSentConnections(userId: string) {
 }
 
 // Demo applications for demo mode
-const demoApplications = [
-  {
-    id: "demo-app-1",
-    status: "PENDING",
-    applicationDate: new Date(Date.now() - 1000 * 60 * 60 * 24),
-    project: {
-      id: "demo-proj-1",
-      title: "E-commerce Website Development",
-      description:
-        "Need help building a modern e-commerce website to sell my handwoven textiles globally.",
-      postedBy: {
-        id: "demo-artisan-1",
-        name: "Lakshmi Devi",
-        avatar:
-          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
-      },
-    },
-  },
-];
+const demoApplications: any[] = [];
 
 // Demo collaborations for demo mode
 const demoCollaborations = [
