@@ -20,7 +20,7 @@ AI-Powered Marketplace Assistant for Local Artisans
 ### For Customers
 
 - **Product Marketplace** - Browse and purchase handcrafted items with advanced filtering
-- **AI Stylist** - Transform product designs (especially sarees) with different styles (minimalist, bohemian, extravagant, classic)
+- **AI Stylist** - Transform product designs with different styles (minimalist, bohemian, extravagant, classic)
 - **Price Negotiation** - Make offers on products and negotiate with artisans
 - **Direct Artisan Contact** - Message artisans about custom product modifications and requests
 - **Certificate Verification** - View and verify product authenticity certificates
