@@ -3,7 +3,6 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   // For demo purposes, just pass through all requests
-  // This prevents the middleware error
   return NextResponse.next();
 }
 
