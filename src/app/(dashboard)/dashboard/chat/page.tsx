@@ -44,6 +44,20 @@ const customerDemoConversations = [
   },
 ];
 
+// Volunteer-specific demo conversations (with Lakshmi Devi about collaboration)
+const volunteerDemoConversations = [
+  {
+    id: "demo-conv-lakshmi-volunteer",
+    otherParticipant: {
+      id: "lakshmi-devi",
+      name: "Lakshmi Devi",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
+    },
+    lastMessage: "I saw your application for the collaboration project. Let's discuss!",
+    lastMessageAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+  },
+];
+
 async function getUser() {
   const supabase = await createClient();
   const {
@@ -94,17 +108,24 @@ export default async function ChatPage() {
 
   // In demo/guest mode, show demo conversations
   if (isDemo || !user) {
-    // Use customer-specific conversations if role is customer
+    // Use role-specific conversations
     const conversationsToShow =
       currentRole === "customer"
         ? customerDemoConversations
-        : demoConversations;
+        : currentRole === "volunteer"
+          ? volunteerDemoConversations
+          : demoConversations;
 
     return (
       <ChatClient
         currentUser={{
           id: "demo-current-user",
-          name: currentRole === "customer" ? "Demo Customer" : "Demo User",
+          name:
+            currentRole === "customer"
+              ? "Demo Customer"
+              : currentRole === "volunteer"
+                ? "Priya Sharma"
+                : "Demo User",
           avatar: null,
           role: currentRole.toUpperCase() as any,
         }}

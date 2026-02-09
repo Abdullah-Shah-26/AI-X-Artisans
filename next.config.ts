@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   serverExternalPackages: ['@supabase/supabase-js'],
+  turbopack: {},
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals.push('_http_common');

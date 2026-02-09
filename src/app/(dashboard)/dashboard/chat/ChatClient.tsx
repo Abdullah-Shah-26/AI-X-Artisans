@@ -201,6 +201,44 @@ const customerDemoMessages: Record<string, Message[]> = {
 
 // Volunteer-specific demo messages (conversations with artisans)
 const volunteerDemoMessages: Record<string, Message[]> = {
+  "demo-conv-lakshmi-volunteer": [
+    {
+      id: "msg-lv1",
+      text: "Namaste Lakshmi! I'm Priya, a volunteer interested in helping with your 'Heritage Story Branding' project.",
+      senderId: "demo-current-user",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5),
+    },
+    {
+      id: "msg-lv2",
+      text: "Namaste Priya! Thank you for reaching out. I really need help telling the story of our Pochampally weaving tradition to the world.",
+      senderId: "lakshmi-devi",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4.5),
+    },
+    {
+      id: "msg-lv3",
+      text: "I'd love to help! I have experience in digital storytelling and branding. Could you tell me more about the specific techniques you use?",
+      senderId: "demo-current-user",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4),
+    },
+    {
+      id: "msg-lv4",
+      text: "We use a unique 'Ikat' weaving technique where the yarn is tied and dyed before weaving. It's a very labor-intensive process that has been passed down for generations in my family.",
+      senderId: "lakshmi-devi",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3.5),
+    },
+    {
+      id: "msg-lv5",
+      text: "That's fascinating! We should definitely highlight that in your branding. I'll start by drafting a heritage story and some social media posts.",
+      senderId: "demo-current-user",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3),
+    },
+    {
+      id: "msg-lv6",
+      text: "I saw your application for the collaboration project. Let's discuss! When can you visit my workshop to see the process?",
+      senderId: "lakshmi-devi",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+    },
+  ],
   "demo-conv-2": [
     {
       id: "msg-v1",
