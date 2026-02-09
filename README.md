@@ -6,7 +6,7 @@ AI-Powered Marketplace Assistant for Local Artisans
 
 ### For Artisans
 
-- **AI Photo Studio** - Professional product photography with style transfer, background removal, and image enhancement
+- **AI Photo Studio** - Professional product photography with style transfer & image enhancement
 - **AI Video Studio** - Generate product videos with slideshow, rotation, and story styles using Vertex AI Veo
 - **Voice-to-Product** - Create complete product listings using speech recognition and AI
 - **AI Product Descriptions** - Generate compelling descriptions using Groq Llama 3.3 70B
