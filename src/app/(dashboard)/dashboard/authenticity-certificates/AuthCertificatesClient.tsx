@@ -59,6 +59,18 @@ export function AuthCertificatesClient({
   const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
   const [creating, setCreating] = useState(false);
 
+  // Certificate AI Animation
+  const [isGeneratingCert, setIsGeneratingCert] = useState(false);
+  const [certStep, setCertStep] = useState(0);
+  const certSteps = [
+    "Initiating AI Authenticity Engine...",
+    "Scanning artwork for craft markers...",
+    "Cross-referencing heritage database...",
+    "Verifying geographic tradition...",
+    "Generating secure authenticity hash...",
+    "Issuing permanent heritage seal...",
+  ];
+
   // Load demo certificates from localStorage
   useEffect(() => {
     if (isDemo) {
@@ -117,9 +129,29 @@ export function AuthCertificatesClient({
     }
 
     setCreating(true);
+    setShowCreateModal(false); // Close modal immediately so animation is visible
+    setIsGeneratingCert(true);
+    setCertStep(0);
+
+    // Simulate AI steps delay for animation
+    let step = 0;
+    const interval = setInterval(() => {
+      step++;
+      if (step < certSteps.length) {
+        setCertStep(step);
+      } else {
+        clearInterval(interval);
+      }
+    }, 800);
+
     try {
-      // Demo mode - create certificate locally
       if (isDemo) {
+        // Wait for animation steps and then finish
+        await new Promise((resolve) =>
+          setTimeout(resolve, certSteps.length * 800),
+        );
+        setIsGeneratingCert(false);
+
         const certId = `demo-cert-${Date.now()}`;
         const productId = `demo-product-${Date.now()}`;
 
@@ -145,20 +177,16 @@ export function AuthCertificatesClient({
         });
 
         setCertificates([newCert, ...certificates]);
-
-        // Reset form
         setShowCreateModal(false);
         setImage(null);
-        setArtworkName("Traditional Kanjivaram Silk Saree");
-        setCraftTradition("Kanjivaram Weaving");
-
-        // Show the new certificate
+        setArtworkName("");
+        setCraftTradition("");
         setSelectedCert(newCert);
         return;
       }
 
-      // Real mode - call API
-      const response = await fetch("/api/certificates", {
+      // Real mode - call API after a minimum animation time
+      const apiPromise = fetch("/api/certificates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -168,6 +196,12 @@ export function AuthCertificatesClient({
         }),
       });
 
+      // Wait for both API and animation (minimum 3s)
+      const [response] = await Promise.all([
+        apiPromise,
+        new Promise((resolve) => setTimeout(resolve, 3000)),
+      ]);
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Failed to create certificate");
@@ -175,16 +209,14 @@ export function AuthCertificatesClient({
 
       const newCert = await response.json();
       setCertificates([newCert, ...certificates]);
-
-      // Reset form
+      setIsGeneratingCert(false);
       setShowCreateModal(false);
       setImage(null);
-      setArtworkName("Traditional Kanjivaram Silk Saree");
-      setCraftTradition("Kanjivaram Weaving");
-
-      // Show the new certificate
+      setArtworkName("");
+      setCraftTradition("");
       setSelectedCert(newCert);
     } catch (error: any) {
+      setIsGeneratingCert(false);
       alert(error.message || "Failed to create certificate");
     } finally {
       setCreating(false);
@@ -494,6 +526,58 @@ export function AuthCertificatesClient({
           userName={userName}
           onClose={() => setSelectedCert(null)}
         />
+      )}
+
+      {/* AI Certificate Generation Overlay */}
+      {isGeneratingCert && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-md transition-all duration-500">
+          <div className="max-w-md w-full px-6 text-center">
+            <div className="relative mb-8 flex justify-center">
+              {/* Outer spinning ring */}
+              <div className="w-24 h-24 border-4 border-emerald-500/20 rounded-full animate-[spin_2s_linear_infinite] border-t-emerald-500" />
+              {/* Inner pulsing core */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-emerald-500/10 rounded-full animate-pulse flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-emerald-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              AI Authenticity Engine
+            </h2>
+
+            <div className="h-4 flex items-center justify-center">
+              <p className="text-emerald-600 dark:text-emerald-400 font-medium text-sm transition-all duration-300">
+                {certSteps[certStep]}
+              </p>
+            </div>
+
+            <div className="mt-8 w-full bg-gray-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+              <div
+                className="bg-emerald-500 h-full transition-all duration-500 ease-out"
+                style={{
+                  width: `${((certStep + 1) / certSteps.length) * 100}%`,
+                }}
+              />
+            </div>
+
+            <p className="mt-4 text-xs text-gray-500 dark:text-zinc-500 italic text-center">
+              AI is currently cross-referencing artisan records and geographic
+              heritage data...
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );

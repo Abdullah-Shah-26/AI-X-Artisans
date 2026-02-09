@@ -72,19 +72,6 @@ const demoFavorites = [
     image:
       "https://m.media-amazon.com/images/S/aplus-media/sc/600659ea-53c6-4da5-86d4-9ba14feea523.__CR0,210,1007,1007_PT0_SX300_V1___.jpg",
   },
-  {
-    id: "demo-4",
-    name: "Wooden Jewelry Box",
-    price: 2800,
-    image:
-      "https://i.etsystatic.com/37334871/r/il/7919ab/4350255523/il_570xN.4350255523_gv3a.jpg",
-  },
-  {
-    id: "demo-9",
-    name: "Handwoven Silk Saree",
-    price: 15000,
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500",
-  },
 ];
 
 const demoBargains = [
@@ -107,10 +94,10 @@ const demoBargains = [
   },
   {
     id: "OFF-003",
-    product: "Silk Scarf",
-    originalPrice: 950,
-    offerPrice: 800,
-    status: "Rejected",
+    product: "Handwoven Silk Saree",
+    originalPrice: 15000,
+    offerPrice: 12500,
+    status: "Accepted",
     image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=100",
   },
 ];

@@ -179,6 +179,16 @@ export function VideoStudioClient() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [videoResult, setVideoResult] = useState<string | null>(null);
 
+  // High-tech AI Animation
+  const [processStep, setProcessStep] = useState(0);
+  const processSteps = [
+    "Waking Cinematic AI...",
+    "Sequencing product keyframes...",
+    "Applying dynamic motion paths...",
+    "Synthesizing cinematic lighting...",
+    "Rendering final marketing reel...",
+  ];
+
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<any>(null);
 
@@ -318,14 +328,18 @@ export function VideoStudioClient() {
     setIsGenerating(true);
     setVideoResult(null);
 
+    // Start high-tech animation
+    setProcessStep(0);
+    const interval = setInterval(() => {
+      setProcessStep((prev) => (prev < processSteps.length - 1 ? prev + 1 : prev));
+    }, 1500);
+
     try {
-      // Add realistic delay for demo mode (3-5 seconds for video)
-      await new Promise((resolve) =>
-        setTimeout(resolve, 3000 + Math.random() * 2000),
-      );
+      // Add minimum animation time (4 seconds)
+      const minTimePromise = new Promise((resolve) => setTimeout(resolve, 4000));
 
       // Start video generation
-      const res = await fetch("/api/ai/generate-video", {
+      const apiPromise = fetch("/api/ai/generate-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -338,17 +352,23 @@ export function VideoStudioClient() {
         }),
       });
 
-      const data = await res.json();
+      const response = await apiPromise;
+      const data = await response.json();
+
+      // Wait for minimum animation time
+      await minTimePromise;
 
       if (data.error) {
         console.error("Video generation error:", data.error);
         alert(data.error);
+        clearInterval(interval);
         setIsGenerating(false);
         return;
       }
 
       // Check if video is already completed (demo mode)
       if (data.status === "completed" && data.videoUrl) {
+        clearInterval(interval);
         setVideoResult(data.videoUrl);
         setIsGenerating(false);
         return;
@@ -371,10 +391,13 @@ export function VideoStudioClient() {
 
             if (statusData.status === "completed" && statusData.videoUrl) {
               clearInterval(pollInterval);
+              clearInterval(interval);
               setVideoResult(statusData.videoUrl);
               setIsGenerating(false);
+              return;
             } else if (statusData.status === "failed") {
               clearInterval(pollInterval);
+              clearInterval(interval);
               alert(
                 "Video generation failed: " +
                   (statusData.error || "Unknown error"),
@@ -390,6 +413,7 @@ export function VideoStudioClient() {
         setTimeout(
           () => {
             clearInterval(pollInterval);
+            clearInterval(interval);
             setIsGenerating(false);
           },
           3 * 60 * 1000,
@@ -398,7 +422,10 @@ export function VideoStudioClient() {
     } catch (err) {
       console.error("Video generation error:", err);
       alert("Failed to start video generation");
+      clearInterval(interval);
       setIsGenerating(false);
+    } finally {
+      // Note: interval is usually cleared when video is ready, but safety first
     }
   };
 
@@ -714,7 +741,7 @@ export function VideoStudioClient() {
             <button
               onClick={generateVideo}
               disabled={!imageFile || isGenerating}
-              className="w-full mb-6 py-4 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full mb-6 py-4 rounded-xl font-semibold text-white bg-purple-600 hover:bg-purple-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isGenerating ? (
                 <>
@@ -754,79 +781,38 @@ export function VideoStudioClient() {
               }`}
             >
               {isGenerating ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-                  {/* Subtle animated background gradient - full coverage */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 animate-pulse"></div>
-
-                  {/* Decorative corner elements */}
-                  <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-br-full"></div>
-                  <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-pink-500/10 to-transparent rounded-tl-full"></div>
-
-                  {/* Main content centered */}
-                  <div className="relative z-10 flex flex-col items-center justify-center space-y-12">
-                    {/* Large elegant spinner */}
-                    <div className="relative">
-                      <svg
-                        className="animate-spin h-24 w-24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <circle
-                          className="opacity-10"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                        <path
-                          className="text-purple-600 dark:text-purple-400"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                        />
-                      </svg>
-                      {/* Subtle glow effect */}
-                      <div className="absolute inset-0 blur-2xl bg-purple-500/20 animate-pulse"></div>
-                    </div>
-
-                    {/* Clean text with more presence */}
-                    <div className="relative text-center space-y-3 max-w-md">
-                      <p className="text-2xl font-semibold text-gray-800 dark:text-zinc-200">
-                        Creating your video
-                      </p>
-                      <p className="text-base text-gray-500 dark:text-zinc-400">
-                        Applying {selectedStyle} style...
-                      </p>
-                    </div>
-
-                    {/* Minimal progress dots */}
-                    <div className="flex gap-3">
-                      <div
-                        className="w-3 h-3 bg-purple-600 dark:bg-purple-400 rounded-full animate-bounce"
-                        style={{
-                          animationDelay: "0ms",
-                          animationDuration: "1s",
-                        }}
-                      ></div>
-                      <div
-                        className="w-3 h-3 bg-purple-600 dark:bg-purple-400 rounded-full animate-bounce"
-                        style={{
-                          animationDelay: "200ms",
-                          animationDuration: "1s",
-                        }}
-                      ></div>
-                      <div
-                        className="w-3 h-3 bg-purple-600 dark:bg-purple-400 rounded-full animate-bounce"
-                        style={{
-                          animationDelay: "400ms",
-                          animationDuration: "1s",
-                        }}
-                      ></div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-white/60 dark:bg-black/60 backdrop-blur-sm z-20">
+                  <div className="relative mb-6 flex justify-center scale-90 sm:scale-100">
+                    {/* Outer spinning ring */}
+                    <div className="w-20 h-20 border-4 border-purple-500/20 rounded-full animate-[spin_2s_linear_infinite] border-t-purple-500" />
+                    {/* Inner pulsing core */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-purple-500/10 rounded-full animate-pulse flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-purple-500" />
                     </div>
                   </div>
 
-                  {/* Bottom decorative line */}
-                  <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent rounded-full"></div>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1.5 text-center">
+                    AI Cinematic Engine
+                  </h2>
+
+                  <div className="h-4 flex items-center justify-center">
+                    <p className="text-purple-600 dark:text-purple-400 font-medium text-xs transition-all duration-300">
+                      {processSteps[processStep]}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 w-full max-w-[160px] bg-gray-200 dark:bg-zinc-800 h-1 rounded-full overflow-hidden">
+                    <div
+                      className="bg-purple-500 h-full transition-all duration-500 ease-out"
+                      style={{
+                        width: `${((processStep + 1) / processSteps.length) * 100}%`,
+                      }}
+                    />
+                  </div>
+
+                  <p className="mt-4 text-[9px] text-gray-500 dark:text-zinc-500 italic text-center max-w-[200px]">
+                    Sequencing motions and synthesizing lighting...
+                  </p>
                 </div>
               ) : videoResult ? (
                 <video

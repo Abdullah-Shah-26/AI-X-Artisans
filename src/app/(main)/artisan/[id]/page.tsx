@@ -28,7 +28,7 @@ const demoArtisans: Record<string, any> = {
       },
       {
         id: "demo-prod-kanjivaram",
-        name: "Traditional Kanjivaram Silk Saree",
+        name: "Traditional Handwoven Silk Saree",
         price: 18500,
         image:
           "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c2lsayUyMHNhcmVlfGVufDB8fDB8fHww",
@@ -70,7 +70,7 @@ const demoArtisans: Record<string, any> = {
     products: [
       {
         id: "demo-prod-kanjivaram",
-        name: "Traditional Kanjivaram Silk Saree",
+        name: "Traditional Handwoven Silk Saree",
         price: 18500,
         image:
           "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c2lsayUyMHNhcmVlfGVufDB8fDB8fHww",

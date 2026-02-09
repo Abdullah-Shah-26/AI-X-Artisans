@@ -14,7 +14,7 @@ const demoArtisans = [
     artisanProfile: {
       location: "Varanasi, Uttar Pradesh",
       craftTypes: ["Silk Weaving", "Banarasi Sarees", "Handloom Textiles"],
-      bio: "Master weaver specializing in traditional Banarasi silk sarees with over 15 years of experience in handloom weaving.",
+      bio: "Master weaver specializing in traditional Banarasi silk sarees with over 1 year of experience in handloom weaving.",
     },
   },
   {

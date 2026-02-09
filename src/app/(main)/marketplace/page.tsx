@@ -197,7 +197,7 @@ const demoProducts = [
   },
   {
     id: "demo-9",
-    name: "Kanjivaram Silk Saree",
+    name: "Handwoven Silk Saree",
     description:
       "Exquisite handwoven silk saree with traditional zari work and intricate patterns",
     price: 15000,

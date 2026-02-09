@@ -224,8 +224,7 @@ export function ProductDetailClient({
           offerAmount,
           status: "PENDING",
           counterAmount: null,
-        });
-        setShowOfferModal(false);
+        }); 
         setOfferLoading(false);
       }, 800);
       return;
@@ -639,8 +638,14 @@ export function ProductDetailClient({
                     <span>{product.artisan._count.products} Products</span>
                     {product.artisan.artisanProfile?.yearsOfExperience && (
                       <span>
-                        {product.artisan.artisanProfile.yearsOfExperience}+
-                        Years Exp
+                        {product.artisan.artisanProfile.yearsOfExperience}
+                        {product.artisan.artisanProfile.yearsOfExperience > 1
+                          ? "+"
+                          : ""}{" "}
+                        {product.artisan.artisanProfile.yearsOfExperience === 1
+                          ? "Year"
+                          : "Years"}{" "}
+                        Exp
                       </span>
                     )}
                   </div>

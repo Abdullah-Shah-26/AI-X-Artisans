@@ -278,7 +278,7 @@ const demoProducts = [
   },
   {
     id: "demo-9",
-    name: " Silk Saree",
+    name: "Handwoven Silk Saree",
     description:
       "Exquisite handwoven silk saree with traditional zari work and intricate patterns. Perfect for weddings and special occasions.",
     longDescription:
@@ -295,14 +295,14 @@ const demoProducts = [
       avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
       artisanProfile: {
         location: "Kanchipuram, India",
-        bio: "Master silk weaver with 25 years of experience in traditional Kanjivaram sarees",
+        bio: "Master silk weaver with 1 year of experience in traditional Kanjivaram sarees",
         story:
           "Born into a family of traditional weavers in Kanchipuram, I learned the art of silk weaving from my grandmother. I specialize in creating intricate Kanjivaram sarees using traditional pit looms and authentic zari work techniques passed down through generations.",
         craftSpecialty: "Silk Weaving",
         craftTypes: ["Silk Weaving", "Zari Work"],
-        yearsOfExperience: 25,
+        yearsOfExperience: 1,
       },
-      _count: { products: 16 },
+      _count: { products: 1 },
     },
     certificate: {
       id: "cert-demo-9",

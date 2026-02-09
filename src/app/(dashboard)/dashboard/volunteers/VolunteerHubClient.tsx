@@ -257,6 +257,17 @@ export function VolunteerHubClient({
   });
   const [completing, setCompleting] = useState(false);
 
+  // Certificate AI Animation
+  const [isGeneratingCert, setIsGeneratingCert] = useState(false);
+  const [certStep, setCertStep] = useState(0);
+  const certSteps = [
+    "Initiating AI Authentication...",
+    "Verifying collaboration logs...",
+    "Analyzing volunteer contribution...",
+    "Generating secure heritage hash...",
+    "Issuing AI-verified certificate...",
+  ];
+
   // Delete project state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
@@ -276,45 +287,97 @@ export function VolunteerHubClient({
     setShowCompleteModal(true);
   };
 
+  const finishCollaboration = () => {
+    if (!selectedCollab) return;
+
+    setProjects((prev) =>
+      prev.map((p) => ({
+        ...p,
+        collaborations: p.collaborations?.map((c) =>
+          c.id === selectedCollab.id
+            ? {
+                ...c,
+                status: "COMPLETED",
+                rating: completeForm.rating,
+                feedback: completeForm.feedback,
+              }
+            : c,
+        ),
+      })),
+    );
+
+    setShowCompleteModal(false);
+    setSelectedCollab(null);
+
+    const certMsg = completeForm.issueCertificate
+      ? " and certificate issued"
+      : "";
+    setToastMessage(
+      `Collaboration completed${certMsg}! Volunteer has been rated.`,
+    );
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   const handleCompleteCollaboration = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCollab) return;
 
     setCompleting(true);
     try {
-      if (isDemo) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+      if (completeForm.issueCertificate) {
+        setShowCompleteModal(false); // Close modal immediately so animation is visible
+        setIsGeneratingCert(true);
+        setCertStep(0);
+        let step = 0;
+        const interval = setInterval(() => {
+          step++;
+          if (step < certSteps.length) {
+            setCertStep(step);
+          } else {
+            clearInterval(interval);
+          }
+        }, 800);
 
-        // Update local state so the project list updates immediately
-        setProjects((prev) =>
-          prev.map((p) => ({
-            ...p,
-            collaborations: p.collaborations?.map((c) =>
-              c.id === selectedCollab.id
-                ? {
-                    ...c,
-                    status: "COMPLETED",
-                    rating: completeForm.rating,
-                    feedback: completeForm.feedback,
-                  }
-                : c,
-            ),
-          })),
-        );
+        if (isDemo) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, certSteps.length * 800),
+          );
+          setIsGeneratingCert(false);
+          finishCollaboration();
+          return;
+        }
 
+        // Real mode - start API and wait for min animation time
+        const apiPromise = fetch("/api/collaborations/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            collaborationId: selectedCollab.id,
+            rating: completeForm.rating,
+            feedback: completeForm.feedback,
+            issueCertificate: completeForm.issueCertificate,
+            certificateTitle: completeForm.certificateTitle,
+          }),
+        });
+
+        await Promise.all([
+          apiPromise,
+          new Promise((resolve) => setTimeout(resolve, 3000)),
+        ]);
+        setIsGeneratingCert(false);
         setShowCompleteModal(false);
         setSelectedCollab(null);
-
-        const certMsg = completeForm.issueCertificate
-          ? " and certificate issued"
-          : "";
-        setToastMessage(
-          `Collaboration completed${certMsg}! Volunteer has been rated.`,
-        );
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
+        window.location.reload();
         return;
       }
+
+      if (isDemo) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        finishCollaboration();
+        return;
+      }
+
       const res = await fetch("/api/collaborations/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1058,6 +1121,57 @@ export function VolunteerHubClient({
                 />
               </svg>
             </button>
+          </div>
+        </div>
+      )}
+      {/* AI Certificate Generation Overlay */}
+      {isGeneratingCert && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-md transition-all duration-500">
+          <div className="max-w-md w-full px-6 text-center">
+            <div className="relative mb-8 flex justify-center">
+              {/* Outer spinning ring */}
+              <div className="w-24 h-24 border-4 border-emerald-500/20 rounded-full animate-[spin_2s_linear_infinite] border-t-emerald-500" />
+              {/* Inner pulsing core */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-emerald-500/10 rounded-full animate-pulse flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-emerald-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              AI Authenticity Engine
+            </h2>
+
+            <div className="h-4 flex items-center justify-center">
+              <p className="text-emerald-600 dark:text-emerald-400 font-medium text-sm transition-all duration-300">
+                {certSteps[certStep]}
+              </p>
+            </div>
+
+            <div className="mt-8 w-full bg-gray-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+              <div
+                className="bg-emerald-500 h-full transition-all duration-500 ease-out"
+                style={{
+                  width: `${((certStep + 1) / certSteps.length) * 100}%`,
+                }}
+              />
+            </div>
+
+            <p className="mt-4 text-xs text-gray-500 dark:text-zinc-500 italic">
+              AI is currently cross-referencing volunteer logs and collaboration
+              data...
+            </p>
           </div>
         </div>
       )}
