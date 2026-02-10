@@ -4,9 +4,7 @@ AI-Powered Marketplace Assistant for Local Artisans
 
 ## Project Links
 
-- **Live Demo:** [https://ai-x-artisans.vercel.app/](https://ai-x-artisans.vercel.app/)
-- **Video Walkthrough:** [https://youtu.be/XkxdKyEOsBI](https://youtu.be/XkxdKyEOsBI)
-- **GitHub Repository:** [https://github.com/Abdullah-Shah-26/AI-X-Artisans](https://github.com/Abdullah-Shah-26/AI-X-Artisans)
+- **Live Demo:** [Youtube](https://youtu.be/XkxdKyEOsBI)
 
 ## Features by User Role
 
@@ -133,6 +131,117 @@ graph TB
 | **AI Services**    | Vertex AI + Groq    | Image/video generation (Imagen, Veo) + Text (Llama 3) |
 | **Language**       | TypeScript          | Type-safe JavaScript development                      |
 | **Deployment**     | Vercel              | Serverless deployment platform                        |
+
+## App Gallery
+
+<table align="center">
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/Landing-Page-1.png" alt="Landing Page (1)" width="330" />
+            <br /><sub>Landing Page (1)</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/Landing-Page-2.png" alt="Landing Page (2)" width="330" />
+            <br /><sub>Landing Page (2)</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/Landing-Page-3.png" alt="Landing Page (3)" width="330" />
+            <br /><sub>Landing Page (3)</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/Login.png" alt="Login" width="330" />
+            <br /><sub>Login</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/SignUp.png" alt="Sign Up" width="330" />
+            <br /><sub>Sign Up</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/Demo-Artisan-Dashboard.png" alt="Artisan Dashboard" width="330" />
+            <br /><sub>Artisan Dashboard</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/Add-Product.png" alt="Add Product" width="330" />
+            <br /><sub>Add Product</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/Photo-Studio.png" alt="AI Photo Studio" width="330" />
+            <br /><sub>AI Photo Studio</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/Video-Studiop.png" alt="AI Video Studio" width="330" />
+            <br /><sub>AI Video Studio</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/Collabration-Hub-As-Artisan.png" alt="Collaboration Hub (Artisan)" width="330" />
+            <br /><sub>Collaboration Hub (Artisan)</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/Project-Posting.png" alt="Project Posting" width="330" />
+            <br /><sub>Project Posting</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/Connections.png" alt="Connections" width="330" />
+            <br /><sub>Connections</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/Conversation-Menu.png" alt="Conversations" width="330" />
+            <br /><sub>Conversations</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/Negotiation.png" alt="Negotiations" width="330" />
+            <br /><sub>Negotiations</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/Finance-Funding.png" alt="Finance Funding" width="330" />
+            <br /><sub>Finance Funding</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/Volunteer-Dashboard.png" alt="Volunteer Dashboard" width="330" />
+            <br /><sub>Volunteer Dashboard</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/Volunteer-Project-Management.png" alt="Volunteer Project Management" width="330" />
+            <br /><sub>Volunteer Project Management</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/MarketPlace-For-Customers.png" alt="Customer Marketplace" width="330" />
+            <br /><sub>Customer Marketplace</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="./public/screenshots/Demo-Project-Description-Page.png" alt="Demo Product Description Page" width="330" />
+            <br /><sub>Demo Product Description Page</sub>
+        </td>
+        <td align="center">
+            <img src="./public/screenshots/Current-AI-Stylist-Features.png" alt="AI Stylist Features" width="330" />
+            <br /><sub>AI Stylist Features</sub>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="2">
+            <img src="./public/screenshots/Customer-Profile.png" alt="Customer Profile" width="330" />
+            <br /><sub> Customer Profile</sub>
+        </td>
+    </tr>
+</table>
 
 ## Getting Started
 
