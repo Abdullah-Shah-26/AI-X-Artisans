@@ -4,9 +4,7 @@ AI-Powered Marketplace Assistant for Local Artisans
 
 ## Project Links
 
-- **Live Demo:** [https://ai-x-artisans.vercel.app/](https://ai-x-artisans.vercel.app/)
-- **Video Walkthrough:** [https://youtu.be/XkxdKyEOsBI](https://youtu.be/XkxdKyEOsBI)
-- **GitHub Repository:** [https://github.com/Abdullah-Shah-26/AI-X-Artisans](https://github.com/Abdullah-Shah-26/AI-X-Artisans)
+- **Live Demo:** [https://youtu.be/XkxdKyEOsBI](https://youtu.be/XkxdKyEOsBI)
 
 ## Features by User Role
 
