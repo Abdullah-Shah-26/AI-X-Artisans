@@ -45,3 +45,6 @@ next-env.d.ts
 *.json
 service-account*.json
 gcloud-key*.json
+
+# docs (local / submission)
+DEVPOST.md
