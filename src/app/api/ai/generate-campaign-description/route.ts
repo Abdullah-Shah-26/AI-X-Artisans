@@ -21,7 +21,13 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-3.0-flash",
+        generationConfig: {
+          // @ts-ignore - latest SDK property for Gemini 3
+          thinking_level: "low",
+        }
+      });
 
       const prompt = `Write a 2-3 sentence crowdfunding campaign description for: "${title}". Focus on why the artisan needs funding and the impact it will have. Keep it simple and heartfelt.`;
 

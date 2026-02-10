@@ -34,11 +34,11 @@ export default async function NegotiationsPage() {
     offers = [
       {
         id: "demo-offer-1",
-        offerAmount: 12500,
+        offerAmount: 10500,
         status: "PENDING",
         createdAt: new Date(),
         product: {
-          id: "demo-9",
+          id: "demo-8",
           name: "Kanjivaram Silk Saree",
           image: "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c2lsayUyMHNhcmVlfGVufDB8fDB8fHww",
           price: 15000,
@@ -48,7 +48,24 @@ export default async function NegotiationsPage() {
           name: "Aditi Rao",
           avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
         },
-      }
+      },
+      {
+        id: "demo-offer-2",
+        offerAmount: 10500,
+        status: "PENDING",
+        createdAt: new Date(Date.now() - 3600000), // 1 hour ago
+        product: {
+          id: "demo-9",
+          name: "Handwoven Silk Saree",
+          image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500",
+          price: 15000,
+        },
+        customer: {
+          id: "demo-c2",
+          name: "Meera Bai",
+          avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
+        },
+      },
     ] as any;
   }
 

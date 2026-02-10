@@ -42,34 +42,102 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
-  // Pre-fill with demo data if in demo mode (no hardcoded image or descriptions)
-  const [name, setName] = useState(isDemo ? "Handwoven Silk Saree" : "");
-  const [description, setDescription] = useState(
-    isDemo
-      ? "Traditional Banarasi silk saree with intricate gold zari work and floral motifs. Each piece takes 15-20 days to weave by master artisans."
-      : "",
-  );
+  // Start with empty fields to make the voice demo more impactful
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [longDescription, setLongDescription] = useState("");
-  const [price, setPrice] = useState(isDemo ? "15000" : "");
+  const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
-  const [category, setCategory] = useState(isDemo ? "Textiles" : "");
-  const [craftTradition, setCraftTradition] = useState(
-    isDemo ? "Banarasi Weaving" : "",
-  );
-  const [createCertificate, setCreateCertificate] = useState(
-    isDemo ? true : false,
-  );
+  const [category, setCategory] = useState("");
+  const [craftTradition, setCraftTradition] = useState("");
+  const [createCertificate, setCreateCertificate] = useState(true);
+
 
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
   const router = useRouter();
+
+  const handleVoiceInput = () => {
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Voice recognition is not supported in your browser.");
+      return;
+    }
+
+    if (isRecording) {
+      return; // Already recording
+    }
+
+    // @ts-ignore
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+    };
+
+    recognition.onresult = async (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setIsRecording(false);
+      setAiLoading(true);
+
+      try {
+        const response = await fetch("/api/ai/voice-to-product", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ transcription: transcript }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Update all form fields from AI response
+          if (data.productName) setName(data.productName);
+          if (data.category) setCategory(data.category);
+          if (data.craftTradition) setCraftTradition(data.craftTradition);
+          if (data.price) setPrice(data.price.toString());
+          if (data.shortDescription) setDescription(data.shortDescription);
+          if (data.detailedStory) setLongDescription(data.detailedStory);
+        } else {
+          alert("Could not process voice input. Please try again or fill manually.");
+        }
+      } catch (error) {
+        alert("An error occurred during voice processing.");
+      } finally {
+        setAiLoading(false);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      // Ignore 'aborted' if it's not a real error (e.g. system being touchy)
+      if (event.error !== "no-speech" && event.error !== "aborted") {
+        alert(`Voice recognition error: ${event.error}`);
+      }
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    try {
+      recognition.start();
+    } catch (e) {
+      setIsRecording(false);
+    }
+  };
 
   const generateDescription = async () => {
     if (!name || !craftTradition) {
       alert("Please enter product name and craft tradition first");
       return;
     }
+
+    // Post-demo safety: simulate quota exceeded
+    alert("AI Storyteller Quota Exceeded: You have reached the usage limit for AI-generated stories. Please upgrade to Pro for unlimited access.");
+    return;
 
     setAiLoading(true);
     try {
@@ -159,9 +227,11 @@ export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
       if (response.ok) {
         router.push("/dashboard/products");
         router.refresh();
+      } else {
+        alert("Failed to create product. Please try again.");
       }
     } catch (error) {
-      console.error("Error creating product:", error);
+      alert("An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -169,6 +239,47 @@ export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
 
   return (
     <>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Add New Product
+        </h1>
+        <button
+          type="button"
+          onClick={handleVoiceInput}
+          disabled={aiLoading}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all shadow-sm ${
+            isRecording
+              ? "bg-red-500 text-white animate-pulse shadow-red-500/20"
+              : "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-500/20"
+          }`}
+        >
+          {aiLoading ? (
+            <span className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full" />
+          ) : (
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+              />
+            </svg>
+          )}
+          <span className="text-sm">
+            {isRecording
+              ? "Listening..."
+              : aiLoading
+                ? "Processing..."
+                : "Fill form with Voice"}
+          </span>
+        </button>
+      </div>
+
       {/* Main Form */}
       <form
         onSubmit={handleSubmit}
@@ -270,25 +381,6 @@ export function ProductForm({ artisanStory, isDemo }: ProductFormProps) {
                 <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">
                   Short Description *
                 </label>
-                <button
-                  type="button"
-                  className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 p-1.5 rounded-lg transition"
-                  title="Voice input (Demo feature)"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                    />
-                  </svg>
-                </button>
               </div>
               <textarea
                 value={description}

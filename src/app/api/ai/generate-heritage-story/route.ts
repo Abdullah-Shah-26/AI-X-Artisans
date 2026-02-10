@@ -22,7 +22,13 @@ export async function POST(request: NextRequest) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-3.0-pro",
+      generationConfig: {
+        // @ts-ignore - latest SDK property for Gemini 3
+        thinking_level: "high", 
+      }
+    });
 
     const prompt = `Generate a compelling 'Heritage Story' for a certificate of authenticity, around 50-70 words. The story should sound official and connect the artisan, their craft, and the specific item.
 

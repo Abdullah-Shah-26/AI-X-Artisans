@@ -763,7 +763,7 @@ export function ProfileClient({
                     {
                       id: "ORD-001",
                       product: "Handwoven Silk Saree",
-                      price: 12500,
+                      price: 10500,
                       status: "Delivered",
                       date: "Dec 15, 2024",
                       image:

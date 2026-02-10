@@ -7,8 +7,6 @@ export async function POST(request: Request) {
   try {
     const { productName, craftTradition, artisanStory } = await request.json();
 
-    console.log("Generating description for:", { productName, craftTradition });
-
     if (!process.env.GROQ_API_KEY) {
       console.error("GROQ_API_KEY is not set");
       return NextResponse.json(
@@ -45,7 +43,6 @@ export async function POST(request: Request) {
 
     const description = completion.choices[0]?.message?.content || "";
 
-    console.log("Generated description successfully");
     return NextResponse.json({ description });
   } catch (error: any) {
     console.error("AI generation error:", error);

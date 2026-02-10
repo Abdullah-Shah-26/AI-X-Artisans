@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
-// import { toast } from "sonner"; // Removed as not installed
 import { useLanguage } from "@/lib/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -57,7 +56,6 @@ export function NegotiationsClient({
             : o
         ));
         setLoading(null);
-        console.log(`Offer ${action}ed successfully (Demo Mode)`);
       }, 800);
       return;
     }
@@ -71,14 +69,13 @@ export function NegotiationsClient({
       });
 
       if (res.ok) {
-        console.log(`Offer ${action}ed successfully`);
         router.refresh();
       } else {
         const error = await res.json();
-        console.error(error.error || "Failed to respond to offer");
+        alert(error.error || "Failed to respond to offer");
       }
     } catch (err) {
-      console.error("An error occurred");
+      alert("An unexpected error occurred while processing the negotiation.");
     } finally {
       setLoading(null);
     }

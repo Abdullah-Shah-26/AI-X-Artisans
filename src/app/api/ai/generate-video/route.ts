@@ -16,13 +16,32 @@ function hasRealCredentials(): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    const { imageUrl, style, prompt } = await request.json();
+    const { imageUrl, style, productName, prompt: manualPrompt } = await request.json();
 
-    if (!imageUrl && !prompt) {
+    if (!imageUrl && !manualPrompt) {
       return NextResponse.json(
         { error: "Image URL or prompt required" },
         { status: 400 },
       );
+    }
+
+    // Build the specialized prompt based on style and platform
+    let finalPrompt = manualPrompt || "";
+
+    if (!finalPrompt) {
+      const product = productName || "artisan product";
+      
+      const stylePrompts: Record<string, string> = {
+        rotate: `A professional 360-degree orbit showcase for YouTube. The camera performs a smooth, cinematic circular orbit around the stationary ${product}. The background is transformed into a clean, minimalist professional studio with elegant soft-box lighting. Keep every single detail, color, and texture of the ${product} exactly as seen in the source image. The product MUST NOT morph or change; only the camera and background should move. High-end advertising quality.`,
+        
+        slideshow: `A cinematic horizontal lifestyle reveal for YouTube. The camera performs a slow, elegant pan across the ${product}. The background is replaced with a warm, artisanal workspace featuring natural wood textures, soft bokeh, and dancing dust motes in sunlight. The ${product} remains perfectly still and identical to the original photo. Smooth cinematic motion, professional color grading, 4K resolution.`,
+        
+        story: `A high-energy, vertical social media reel for Instagram. The camera performs a dynamic 'push-in' and 'vibe' jitter to the ${product}. The background is replaced with a vibrant, trendy showroom featuring dynamic light leaks and neon-subtle accents. Every detail of the ${product} from the original image is preserved perfectly. The product remains rigid and consistent while the environment feels alive. Vertical 9:16 aspect ratio.`,
+        
+        zoom: `A dramatic macro-zoom reveal. The camera pushes slowly into the fine details of the ${product}. The background is a simplified, high-contrast dark gallery setting that makes the product pop. The ${product} must remain 100% consistent with the source image textures throughout the motion. Professional cinematography.`
+      };
+
+      finalPrompt = stylePrompts[style] || `A cinematic showcase of the ${product} from the image, preserving all original details.`;
     }
 
     // Use demo mode if no real credentials
@@ -31,17 +50,13 @@ export async function POST(request: NextRequest) {
     if (useDemo) {
       const styleMap: Record<string, string> = {
         slideshow: "slideshow-1.mp4",
-        zoom: "slideshow-1.mp4", // Using slideshow as fallback
+        zoom: "slideshow-1.mp4",
         rotate: "rotate-1.mp4",
         story: "story-1.mp4",
       };
 
       const videoFile = styleMap[style] || "story-1.mp4";
       const demoVideoUrl = `/demo/${videoFile}`;
-
-      console.log(
-        `[DEMO MODE] Returning video: ${demoVideoUrl} for style: ${style}`,
-      );
 
       return NextResponse.json({
         status: "completed",
@@ -50,24 +65,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // REAL VERTEX AI MODE: Check for credentials
-    if (!process.env.GOOGLE_CLOUD_PROJECT_ID) {
-      return NextResponse.json(
-        {
-          error:
-            "Google Cloud Project ID not configured. See VERTEX_AI_SETUP.md for setup instructions.",
-        },
-        { status: 500 },
-      );
-    }
-
-    // Dynamically import vertexai only when needed
+    // REAL VERTEX AI MODE
     try {
       const { generateVideo } = await import("@/lib/vertexai");
 
-      // Use Vertex AI for video generation
       const result = await generateVideo(
-        prompt || "Create a video",
+        finalPrompt,
         imageUrl,
         style,
       );

@@ -33,7 +33,7 @@ const demoOrders = [
   {
     id: "ORD-001",
     product: "Handwoven Silk Saree",
-    price: 12500,
+    price: 10500,
     status: "Delivered",
     date: "Dec 15, 2024",
     image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=100",
@@ -96,7 +96,7 @@ const demoBargains = [
     id: "OFF-003",
     product: "Handwoven Silk Saree",
     originalPrice: 15000,
-    offerPrice: 12500,
+    offerPrice: 10500,
     status: "Accepted",
     image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=100",
   },
@@ -444,7 +444,7 @@ export function CustomerProfileClient({
                     Total Spent
                   </span>
                   <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                    {formatPrice(18800)}
+                    {formatPrice(3500)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

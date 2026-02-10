@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(request: NextRequest) {
   let body: any;
@@ -14,44 +14,65 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const groqKey = process.env.GROQ_API_KEY;
-    if (!groqKey) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
       return NextResponse.json(getMockPrice(productType));
     }
 
-    const groq = new Groq({ apiKey: groqKey });
-
-    const prompt = `You are an expert in pricing handcrafted artisan products for the Indian market.
-
-Product type: ${productType || "handcrafted artisan product"}
-
-Suggest a fair price range in Indian Rupees (INR).
-
-Consider:
-- Type of craft (pottery, textiles, jewelry, woodwork, etc.)
-- Quality and craftsmanship
-- Materials typically used
-- Time and skill required
-- Indian market rates for similar handcrafted items
-- Fair pricing that supports artisan livelihoods
-
-Return ONLY a JSON object with minPrice and maxPrice as numbers.
-Example: {"minPrice": 500, "maxPrice": 1500}`;
-
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-      max_tokens: 200,
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-3.0-flash",
+      generationConfig: {
+        // @ts-ignore - Gemini 3 configuration
+        thinking_level: "low",
+        responseMimeType: "application/json"
+      }
     });
 
-    const text = completion.choices[0]?.message?.content || "{}";
-    const jsonMatch = text.match(/\{[^}]+\}/);
-    const result = jsonMatch
-      ? JSON.parse(jsonMatch[0])
-      : getMockPrice(productType);
+    // Handle base64 or URL
+    let imagePart: any;
+    if (imageUrl.startsWith("data:")) {
+      const [mimeInfo, base64Data] = imageUrl.split(",");
+      const mimeType = mimeInfo.match(/:(.*?);/)?.[1] || "image/jpeg";
+      imagePart = { inlineData: { data: base64Data, mimeType } };
+    } else {
+      // In a real environment, you'd fetch the image. 
+      // For this implementation, we assume base64 is passed from the client as seen in other routes.
+      // If it's a URL, Gemini can also take it in some SDK versions, but base64 is safer.
+      const response = await fetch(imageUrl);
+      const buffer = await response.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString("base64");
+      const mimeType = response.headers.get("content-type") || "image/jpeg";
+      imagePart = { inlineData: { data: base64, mimeType } };
+    }
 
-    return NextResponse.json(result);
+    const prompt = `Analyze this product image and suggest a fair price range in Indian Rupees (INR).
+    
+    Product type: ${productType || "handcrafted artisan product"}
+    
+    Consider:
+    - The visual quality/intricacy shown in the image
+    - Type of craft and materials visible
+    - Estimated time and skill required for this specific piece
+    - Current Indian market rates for similar handcrafted items
+    - Fair pricing that supports artisan livelihoods
+    
+    Return ONLY a JSON object with keys: minPrice and maxPrice (numbers).`;
+
+    const result = await model.generateContent([prompt, imagePart]);
+    const response = await result.response;
+    const text = response.text();
+    
+    try {
+      const parsed = JSON.parse(text);
+      return NextResponse.json({
+        minPrice: parsed.minPrice || parsed.min_price,
+        maxPrice: parsed.maxPrice || parsed.max_price
+      });
+    } catch (parseError) {
+      console.error("Failed to parse Gemini pricing JSON:", text);
+      return NextResponse.json(getMockPrice(productType));
+    }
   } catch (error) {
     console.error("Price suggestion error:", error);
     return NextResponse.json(getMockPrice(body?.productType));

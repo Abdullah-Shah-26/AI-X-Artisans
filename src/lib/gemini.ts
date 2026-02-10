@@ -38,7 +38,7 @@ Return ONLY a JSON object with keys: description, productName, category, hashtag
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-3.0-flash",
       contents: {
         parts: [
           { inlineData: { data: base64Image, mimeType } },
@@ -111,7 +111,7 @@ export async function enhanceImageWithAI(
     console.log("Trying image enhancement with gemini-2.5-flash-image");
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-3.0-flash-image",
       contents: {
         parts: [
           { inlineData: { data: base64Image, mimeType } },
@@ -178,7 +178,7 @@ export async function generateText(prompt: string): Promise<string> {
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-3.0-flash",
       contents: prompt,
     });
     return response.text || "";
