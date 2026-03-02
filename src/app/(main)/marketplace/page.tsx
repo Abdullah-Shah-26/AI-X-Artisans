@@ -237,21 +237,10 @@ export default async function MarketplacePage({
   searchParams: Promise<{ category?: string; search?: string }>;
 }) {
   const params = await searchParams;
-  const [dbProducts, categories] = await Promise.all([
-    getProducts(params.category, params.search),
-    getCategories(),
-  ]);
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Check for guest mode cookie
-  const cookieStore = await cookies();
-  const guestMode = cookieStore.get("guestMode")?.value === "true";
-  const viewMode = cookieStore.get("viewMode")?.value;
-
+  let dbProducts: any[] = [];
+  let categories = ["All"];
+  let user = null;
   let userData = {
     favoriteIds: [] as string[],
     cartCount: 0,
@@ -261,9 +250,34 @@ export default async function MarketplacePage({
       role: string;
     } | null,
   };
-  if (user) {
-    userData = await getUserData(user.id);
+
+  // Try to get data from database, but don't fail if it's not available
+  try {
+    [dbProducts, categories] = await Promise.all([
+      getProducts(params.category, params.search),
+      getCategories(),
+    ]);
+  } catch (error) {
+    console.log("Database not available, using demo mode");
   }
+
+  // Try to get user from Supabase, but don't fail if it's not available
+  try {
+    const supabase = await createClient();
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+
+    if (user) {
+      userData = await getUserData(user.id);
+    }
+  } catch (error) {
+    console.log("Auth not available, using guest mode");
+  }
+
+  // Check for guest mode cookie
+  const cookieStore = await cookies();
+  const guestMode = cookieStore.get("guestMode")?.value === "true";
+  const viewMode = cookieStore.get("viewMode")?.value;
 
   // Filter out products with broken/mismatched images from old seed data
   const excludedProducts = [

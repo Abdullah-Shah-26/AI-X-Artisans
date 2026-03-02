@@ -157,7 +157,6 @@ export default function LandingPage() {
     elementsToAnimate.forEach((el) => observer.observe(el));
 
     return () => {
-      // Clean up: remove animate-in class and disconnect observer
       elementsToAnimate.forEach((el) => el.classList.remove("animate-in"));
       observer.disconnect();
     };
