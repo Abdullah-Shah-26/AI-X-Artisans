@@ -17,7 +17,7 @@ AI-Powered Marketplace Assistant for Local Artisans
 - **Product Management** - Create, edit, and manage product listings with certificates
 - **Digital Certificates** - Generate authenticity certificates with QR codes and heritage stories
 - **Price Negotiation** - Receive and respond to customer offers with accept/reject/counter options
-- **Crowdfunding** - Launch and manage funding campaigns for projects
+- **Crowd Funding** - Launch and manage funding campaigns for projects
 - **Project Posting** - Post collaboration projects and manage volunteer applications
 - **Real-time Chat** - Message customers and volunteers with image sharing
 
@@ -27,7 +27,7 @@ AI-Powered Marketplace Assistant for Local Artisans
 - **AI Stylist** - Transform product designs with different styles (minimalist, bohemian, extravagant, classic)
 - **Price Negotiation** - Make offers on products and negotiate with artisans
 - **Direct Artisan Contact** - Message artisans about custom product modifications and requests
-- **Certificate Verification** - View and verify product authenticity certificates
+- **Certificate Verification** - View product authenticity certificates
 - **Shopping Cart & Favorites** - Full e-commerce functionality with persistent wishlist
 - **Real-time Chat** - Communicate with artisans about customizations and orders
 
@@ -35,13 +35,12 @@ AI-Powered Marketplace Assistant for Local Artisans
 
 - **Project Discovery** - Browse and apply to artisan collaboration projects
 - **Skill Offering** - Provide marketing, photography, business development, and other professional skills
-- **Artisan Support** - Help artisans with digital marketing, pricing strategies, and business growth
 - **Real-time Collaboration** - Chat with artisans to coordinate project work
 
 ### For Everyone
 
 - **Demo Mode** - Experience all features without registration using localStorage persistence
-- **Multi-language Support** - Interface available in English and Hindi
+- **Multi-language Support** - Interface available in English & Hindi
 - **Responsive Design** - Optimized for desktop, tablet, and mobile devices
 - **Dark/Light Mode** - Theme switching for better user experience
 
