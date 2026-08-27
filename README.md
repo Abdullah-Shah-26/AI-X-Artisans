@@ -27,7 +27,7 @@ AI-Powered Marketplace Assistant for Local Artisans
 - **AI Stylist** - Transform product designs with different styles (minimalist, bohemian, extravagant, classic)
 - **Price Negotiation** - Make offers on products and negotiate with artisans
 - **Direct Artisan Contact** - Message artisans about custom product modifications and requests
-- **Certificate Verification** - View and verify product authenticity certificates
+- **Certificate Verification** - View product authenticity certificates
 - **Shopping Cart & Favorites** - Full e-commerce functionality with persistent wishlist
 - **Real-time Chat** - Communicate with artisans about customizations and orders
 
@@ -35,13 +35,12 @@ AI-Powered Marketplace Assistant for Local Artisans
 
 - **Project Discovery** - Browse and apply to artisan collaboration projects
 - **Skill Offering** - Provide marketing, photography, business development, and other professional skills
-- **Artisan Support** - Help artisans with digital marketing, pricing strategies, and business growth
 - **Real-time Collaboration** - Chat with artisans to coordinate project work
 
 ### For Everyone
 
 - **Demo Mode** - Experience all features without registration using localStorage persistence
-- **Multi-language Support** - Interface available in English and Hindi
+- **Multi-language Support** - Interface available in English & Hindi
 - **Responsive Design** - Optimized for desktop, tablet, and mobile devices
 - **Dark/Light Mode** - Theme switching for better user experience
 
