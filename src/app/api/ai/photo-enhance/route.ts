@@ -1,9 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-// DEMO MODE - Set to true to use pre-generated images
-const DEMO_MODE = true;
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,56 +11,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // DEMO MODE: Return pre-generated images
-    if (DEMO_MODE) {
-      const demoFolder = path.join(process.cwd(), "public", "demo");
-      const themeMap: Record<string, string> = {
-        clean: "clean",
-        festive: "festive",
-        artistic: "artistic",
-        rustic: "rustic",
-      };
-
-      const themeName = themeMap[theme] || "clean";
-
-      // Try to find demo images for this theme
-      try {
-        const files = fs.readdirSync(demoFolder);
-        const themeFiles = files.filter(
-          (f) =>
-            f.startsWith(`${themeName}-`) &&
-            (f.endsWith(".jpg") || f.endsWith(".png")),
-        );
-
-        if (themeFiles.length > 0) {
-          // Pick a random demo image
-          const randomFile =
-            themeFiles[Math.floor(Math.random() * themeFiles.length)];
-          const demoImageUrl = `/demo/${randomFile}`;
-
-          return NextResponse.json({
-            enhancedUrl: demoImageUrl,
-            theme,
-            message: `${theme} style applied (DEMO MODE)`,
-            demo: true,
-          });
-        }
-      } catch (err) {
-        console.log("Demo folder not found or empty, falling back to AI");
-      }
-    }
-
-    // REAL AI MODE: Use Hugging Face
+    // REAL AI MODE: Check if Hugging Face API key is configured
     const hfToken = process.env.HUGGINGFACE_API_KEY;
     if (!hfToken) {
       return NextResponse.json(
-        { error: "Hugging Face API key not configured" },
-        { status: 500 },
+        {
+          error: "Photo enhancement is currently unavailable. Image generation service is not configured in this deployment.",
+          available: false,
+          enhancedUrl: null,
+        },
+        { status: 503 },
       );
     }
 
     // Fetch the image
     const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      return NextResponse.json(
+        { error: "Failed to fetch source image", available: false },
+        { status: 400 },
+      );
+    }
     const imageBlob = await imageResponse.blob();
 
     // Style prompts for different themes
@@ -104,22 +70,14 @@ export async function POST(request: NextRequest) {
       const errorText = await response.text();
       console.error("Hugging Face API error:", errorText);
 
-      if (response.status === 503) {
-        return NextResponse.json(
-          {
-            error: "Model is loading, please try again in 30 seconds",
-            loading: true,
-            enhancedUrl: imageUrl,
-          },
-          { status: 200 },
-        );
-      }
-
-      return NextResponse.json({
-        enhancedUrl: imageUrl,
-        theme,
-        message: "Using original image (API error)",
-      });
+      return NextResponse.json(
+        {
+          error: "Photo enhancement service is currently unavailable.",
+          available: false,
+          enhancedUrl: null,
+        },
+        { status: 503 },
+      );
     }
 
     const resultBlob = await response.blob();
@@ -128,19 +86,21 @@ export async function POST(request: NextRequest) {
     const enhancedUrl = `data:image/png;base64,${base64}`;
 
     return NextResponse.json({
+      success: true,
       enhancedUrl,
       theme,
-      message: `${theme} style applied successfully (FREE - Hugging Face)`,
+      message: `${theme} style applied successfully`,
     });
   } catch (error: any) {
     console.error("Photo enhance error:", error);
 
-    const { imageUrl } = await request.json().catch(() => ({ imageUrl: null }));
-
-    return NextResponse.json({
-      enhancedUrl: imageUrl || "",
-      message: "Using original image (error occurred)",
-      error: error.message,
-    });
+    return NextResponse.json(
+      {
+        error: error.message || "Failed to process image",
+        available: false,
+        enhancedUrl: null,
+      },
+      { status: 500 },
+    );
   }
 }

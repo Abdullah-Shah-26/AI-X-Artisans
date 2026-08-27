@@ -178,6 +178,7 @@ export function VideoStudioClient() {
   const [loadingDescription, setLoadingDescription] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [videoResult, setVideoResult] = useState<string | null>(null);
+  const [videoError, setVideoError] = useState<string | null>(null);
 
   // High-tech AI Animation
   const [processStep, setProcessStep] = useState(0);
@@ -327,6 +328,7 @@ export function VideoStudioClient() {
 
     setIsGenerating(true);
     setVideoResult(null);
+    setVideoError(null);
 
     // Start high-tech animation
     setProcessStep(0);
@@ -335,8 +337,8 @@ export function VideoStudioClient() {
     }, 1500);
 
     try {
-      // Add minimum animation time (4 seconds)
-      const minTimePromise = new Promise((resolve) => setTimeout(resolve, 4000));
+      // Add minimum animation time (3 seconds)
+      const minTimePromise = new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Start video generation
       const apiPromise = fetch("/api/ai/generate-video", {
@@ -358,15 +360,18 @@ export function VideoStudioClient() {
       // Wait for minimum animation time
       await minTimePromise;
 
-      if (data.error) {
-        console.error("Video generation error:", data.error);
-        alert(data.error);
+      if (!response.ok || data.error) {
+        console.warn("Video generation unavailable:", data.error);
+        setVideoError(
+          data.error ||
+            "Video generation is currently unavailable. AI video service is not configured.",
+        );
         clearInterval(interval);
         setIsGenerating(false);
         return;
       }
 
-      // Check if video is already completed (demo mode)
+      // Check if video is completed
       if (data.status === "completed" && data.videoUrl) {
         clearInterval(interval);
         setVideoResult(data.videoUrl);
@@ -398,9 +403,9 @@ export function VideoStudioClient() {
             } else if (statusData.status === "failed") {
               clearInterval(pollInterval);
               clearInterval(interval);
-              alert(
-                "Video generation failed: " +
-                  (statusData.error || "Unknown error"),
+              setVideoError(
+                statusData.error ||
+                  "Video generation is currently unavailable.",
               );
               setIsGenerating(false);
             }
@@ -414,18 +419,25 @@ export function VideoStudioClient() {
           () => {
             clearInterval(pollInterval);
             clearInterval(interval);
+            setVideoError("Video generation request timed out.");
             setIsGenerating(false);
           },
           3 * 60 * 1000,
         );
+      } else {
+        setVideoError(
+          "Video generation is currently unavailable in this deployment environment.",
+        );
+        clearInterval(interval);
+        setIsGenerating(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Video generation error:", err);
-      alert("Failed to start video generation");
+      setVideoError(
+        "Video generation is currently unavailable. Service is not configured.",
+      );
       clearInterval(interval);
       setIsGenerating(false);
-    } finally {
-      // Note: interval is usually cleared when video is ready, but safety first
     }
   };
 
@@ -821,6 +833,20 @@ export function VideoStudioClient() {
                   className="w-full h-full object-contain"
                   poster={imageFile?.url}
                 />
+              ) : videoError ? (
+                <div className="text-center p-6 space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
+                    <Info className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800 dark:text-white text-sm">
+                      Video Generation Unavailable
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1 max-w-xs mx-auto">
+                      {videoError}
+                    </p>
+                  </div>
+                </div>
               ) : (
                 <div className="text-center p-4">
                   <svg

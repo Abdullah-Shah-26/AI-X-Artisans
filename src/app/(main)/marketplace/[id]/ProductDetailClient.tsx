@@ -278,27 +278,6 @@ export function ProductDetailClient({
     setStylistStep("generating");
     setStylistError(null);
 
-    // Hardcoded demo styled images for demo products
-    const demoStyledImages: Record<string, Record<StyleType, string>> = {
-      "demo-9": {
-        // Handwoven Silk Saree - Design transformations
-        minimalist: "/demo/saree-minimalist.png",
-        bohemian: "/demo/saree-bohemian.png",
-        extravagant: "/demo/saree-extravagant.png",
-        classic: "/demo/saree-classic.png",
-      },
-    };
-
-    // Check if this is a demo product with hardcoded images
-    if (product.id.startsWith("demo-") && demoStyledImages[product.id]) {
-      // Simulate API delay for realism
-      setTimeout(() => {
-        setStyledImageUrl(demoStyledImages[product.id][style]);
-        setStylistStep("result");
-      }, 2000);
-      return;
-    }
-
     try {
       const res = await fetch("/api/ai/style-image", {
         method: "POST",
@@ -313,19 +292,19 @@ export function ProductDetailClient({
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to style image");
+        throw new Error(data.error || "AI image styling is currently unavailable.");
       }
 
       if (data.imageUrl) {
         setStyledImageUrl(data.imageUrl);
         setStylistStep("result");
       } else {
-        throw new Error("No image returned");
+        throw new Error(data.error || "AI image styling is currently unavailable.");
       }
     } catch (error: any) {
       console.error("AI Stylist Error:", error);
       setStylistError(
-        error.message || "Failed to style image. Please try again.",
+        error.message || "AI image styling is currently unavailable in this deployment.",
       );
       setStylistStep("select");
     }

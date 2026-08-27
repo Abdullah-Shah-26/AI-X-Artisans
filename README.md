@@ -17,7 +17,7 @@ AI-Powered Marketplace Assistant for Local Artisans
 - **Product Management** - Create, edit, and manage product listings with certificates
 - **Digital Certificates** - Generate authenticity certificates with QR codes and heritage stories
 - **Price Negotiation** - Receive and respond to customer offers with accept/reject/counter options
-- **Crowdfunding** - Launch and manage funding campaigns for projects
+- **Crowd Funding** - Launch and manage funding campaigns for projects
 - **Project Posting** - Post collaboration projects and manage volunteer applications
 - **Real-time Chat** - Message customers and volunteers with image sharing
 
@@ -48,73 +48,157 @@ AI-Powered Marketplace Assistant for Local Artisans
 ## Architecture
 
 ```mermaid
-graph TB
-    subgraph "Client Layer"
-        A[Next.js 16 Frontend]
-        B[React Components]
-        C[Tailwind CSS]
+flowchart LR
+
+    %% =========================================================
+    %% CLIENT
+    %% =========================================================
+    subgraph CLIENT["CLIENT"]
+        direction TB
+
+        UI["Next.js 16<br/>React + TypeScript"]
+        COMPONENTS["UI Components<br/>Tailwind CSS"]
+        SPEECH["Web Speech API"]
+
+        UI --> COMPONENTS
+        UI --> SPEECH
     end
 
-    subgraph "Application Layer"
-        D[Next.js API Routes]
-        E[Server Components]
-        F[Middleware]
+
+    %% =========================================================
+    %% APPLICATION
+    %% =========================================================
+    subgraph APP["APPLICATION"]
+        direction TB
+
+        API["Next.js API Routes"]
+        SERVER["Server Components"]
+        MIDDLEWARE["Middleware"]
+
+        API --- SERVER
+        API --- MIDDLEWARE
     end
 
-    subgraph "AI Services"
-        VA[Google Vertex AI]
-        H[Groq - Llama 3]
-        I[Imagen - Image Gen]
-        J[Veo - Video Gen]
-        K[Text Generation]
-        SR[Speech Recognition]
+
+    %% =========================================================
+    %% AI SERVICES
+    %% =========================================================
+    subgraph AI["AI SERVICES"]
+        direction TB
+
+        VERTEX["Google Vertex AI"]
+
+        subgraph GEN["GENERATION"]
+            direction LR
+            IMAGEN["Imagen<br/>Image Generation"]
+            VEO["Veo<br/>Video Generation"]
+        end
+
+        GROQ["Groq · Llama 3"]
+        TEXT["Text Generation"]
+        SR["Speech Recognition"]
+
+        VERTEX --> IMAGEN
+        VERTEX --> VEO
+
+        GROQ --> TEXT
+        SR --> TEXT
     end
 
-    subgraph "Browser APIs"
-        L[Web Speech API]
+
+    %% =========================================================
+    %% DATA + AUTH
+    %% =========================================================
+    subgraph DATA["DATA & AUTHENTICATION"]
+        direction TB
+
+        PRISMA["Prisma ORM"]
+        DB[("Supabase PostgreSQL")]
+        STORAGE["Supabase Storage"]
+        REALTIME["Supabase Realtime"]
+        AUTH["Supabase Auth"]
+
+        PRISMA --> DB
+        REALTIME --> DB
+        AUTH --> DB
     end
 
-    subgraph "Data Layer"
-        M[(Supabase PostgreSQL)]
-        N[Prisma ORM]
-        O[Supabase Storage]
-        Q[Supabase Realtime<br/>WebSocket]
-    end
 
-    subgraph "Authentication"
-        P[Supabase Auth]
-    end
+    %% =========================================================
+    %% PRIMARY FLOW
+    %% =========================================================
 
-    A --> B
-    B --> C
-    A --> D
-    A --> E
-    A --> L
-    D --> N
-    E --> N
-    N --> M
-    D --> VA
-    D --> H
-    D --> O
-    D --> Q
-    F --> P
-    P --> M
-    VA --> I
-    VA --> J
-    H --> K
-    L --> SR
-    SR --> K
-    Q --> M
+    CLIENT --> APP
+    APP --> AI
+    APP --> DATA
 
-    style A fill:#10b981
-    style VA fill:#4285f4
-    style H fill:#ff6b6b
-    style L fill:#ffa500
-    style M fill:#3ecf8e
-    style P fill:#3ecf8e
-    style L fill:#ffa500
-    style M fill:#3ecf8e
-    style P fill:#3ecf8e
+    COMPONENTS --> API
+    SPEECH --> SR
+
+    API --> VERTEX
+    API --> GROQ
+
+    API --> PRISMA
+    API --> STORAGE
+    API --> REALTIME
+
+    MIDDLEWARE --> AUTH
+
+
+    %% =========================================================
+    %% COLORS — REFERENCE STYLE
+    %% =========================================================
+
+    %% Blue — Frontend
+    classDef frontend fill:#4285F4,stroke:#4285F4,color:#FFFFFF,stroke-width:2px
+
+    %% Purple — Google / Generation / Speech
+    classDef purple fill:#8B5CF6,stroke:#8B5CF6,color:#FFFFFF,stroke-width:2px
+
+    %% Pink — Groq / Text AI
+    classDef pink fill:#EC4899,stroke:#EC4899,color:#FFFFFF,stroke-width:2px
+
+    %% Orange — Browser / Storage / Realtime
+    classDef orange fill:#F59E0B,stroke:#F59E0B,color:#FFFFFF,stroke-width:2px
+
+    %% Green — Database / Authentication
+    classDef green fill:#3ECF8E,stroke:#3ECF8E,color:#FFFFFF,stroke-width:2px
+
+    %% Neutral — Internal components
+    classDef neutral fill:#292929,stroke:#8A8A8A,color:#FFFFFF,stroke-width:1.5px
+
+
+    %% Apply colors
+    class UI frontend
+
+    class VERTEX,IMAGEN,VEO,SR purple
+
+    class GROQ,TEXT pink
+
+    class SPEECH,STORAGE,REALTIME orange
+
+    class DB,AUTH green
+
+    class COMPONENTS,API,SERVER,MIDDLEWARE,PRISMA neutral
+
+
+    %% =========================================================
+    %% CONTAINER STYLING
+    %% =========================================================
+
+    style CLIENT fill:#464646,stroke:#666666,stroke-width:1px,color:#FFFFFF
+    style APP fill:#464646,stroke:#666666,stroke-width:1px,color:#FFFFFF
+    style AI fill:#464646,stroke:#666666,stroke-width:1px,color:#FFFFFF
+    style DATA fill:#464646,stroke:#666666,stroke-width:1px,color:#FFFFFF
+
+    style GEN fill:#3D3D3D,stroke:#666666,stroke-width:1px,color:#FFFFFF
+
+
+    %% =========================================================
+    %% CONNECTIONS
+    %% =========================================================
+
+    linkStyle default stroke:#B8B8B8,stroke-width:1.3px
 ```
 
 ## Tech Stack

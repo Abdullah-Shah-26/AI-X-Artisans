@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// DEMO MODE - Set to true to use pre-generated images
-const DEMO_MODE = true;
-
 export async function POST(request: NextRequest) {
   try {
     const { imageUrl, style } = await request.json();
@@ -14,40 +11,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // DEMO MODE: Return pre-generated styled images
-    if (DEMO_MODE) {
-      // Map style to specific demo image file (no random picking)
-      const styleMap: Record<string, string> = {
-        clean: "clean-1.png",
-        festive: "festive-1.png",
-        artistic: "artistic-1.png",
-        rustic: "rustic-1.png",
-      };
-
-      const imageFile = styleMap[style] || "clean-1.png";
-      const demoImageUrl = `/demo/${imageFile}`;
-
-      console.log(
-        `[DEMO MODE] Returning image: ${demoImageUrl} for style: ${style}`,
-      );
-
-      return NextResponse.json({
-        success: true,
-        imageUrl: demoImageUrl,
-        message: `${style} style applied successfully`,
-      });
-    }
-
     const hfToken = process.env.HUGGINGFACE_API_KEY;
     if (!hfToken) {
       return NextResponse.json(
-        { error: "Hugging Face API key not configured" },
-        { status: 500 },
+        {
+          error: "AI image styling is currently unavailable. Image generation service is not configured in this deployment environment.",
+          available: false,
+        },
+        { status: 503 },
       );
     }
 
     // Fetch the image
     const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      return NextResponse.json(
+        { error: "Failed to fetch source image", available: false },
+        { status: 400 },
+      );
+    }
     const imageBlob = await imageResponse.blob();
 
     // Style prompts for different themes
@@ -60,6 +42,14 @@ export async function POST(request: NextRequest) {
         "artistic composition, creative styling, unique perspective, aesthetic, beautiful lighting",
       rustic:
         "rustic wooden surface, natural textures, warm lighting, handcrafted feel, organic materials",
+      minimalist:
+        "minimalist aesthetic, clean lines, neutral background, modern studio lighting",
+      bohemian:
+        "bohemian aesthetic, earthy tones, natural textures, artistic mood",
+      extravagant:
+        "luxurious premium setting, rich colors, dramatic lighting, high-end display",
+      classic:
+        "timeless classic presentation, elegant backdrop, balanced soft lighting",
     };
 
     const prompt = stylePrompts[style] || stylePrompts.clean;
@@ -86,16 +76,13 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      if (response.status === 503) {
-        return NextResponse.json(
-          {
-            error: "Model is loading, please try again in 20 seconds",
-            loading: true,
-          },
-          { status: 503 },
-        );
-      }
-      throw new Error(`API error: ${errorText}`);
+      return NextResponse.json(
+        {
+          error: "AI image styling is currently unavailable.",
+          available: false,
+        },
+        { status: 503 },
+      );
     }
 
     const resultBlob = await response.blob();
@@ -106,12 +93,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       imageUrl: styledImageUrl,
-      message: `${style} style applied successfully (FREE - Hugging Face)`,
+      message: `${style} style applied successfully`,
     });
   } catch (error: any) {
     console.error("Style image error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to process image" },
+      { error: error.message || "Failed to process image", available: false },
       { status: 500 },
     );
   }

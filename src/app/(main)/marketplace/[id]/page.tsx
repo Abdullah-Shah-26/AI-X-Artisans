@@ -22,7 +22,8 @@ const demoProducts = [
     artisan: {
       id: "demo-a3",
       name: "Meena Sharma",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
+      avatar:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
       artisanProfile: {
         bio: "Master ceramic artist with 15 years of experience in traditional pottery",
         craftSpecialty: "Pottery",
@@ -43,7 +44,7 @@ const demoProducts = [
       certificationDate: new Date(),
       qrCode: "demo-qr-1",
     },
-  },                                                                                                                              
+  },
   {
     id: "demo-2",
     name: "Brass Oil Lamp",
@@ -353,18 +354,23 @@ async function getProduct(id: string) {
     return demoProducts.find((p) => p.id === id) || null;
   }
 
-  return prisma.product.findUnique({
-    where: { id },
-    include: {
-      artisan: {
-        include: {
-          artisanProfile: true,
-          _count: { select: { products: true } },
+  try {
+    return await prisma.product.findUnique({
+      where: { id },
+      include: {
+        artisan: {
+          include: {
+            artisanProfile: true,
+            _count: { select: { products: true } },
+          },
         },
+        certificate: true,
       },
-      certificate: true,
-    },
-  });
+    });
+  } catch (error) {
+    console.log("Database not available for product");
+    return null;
+  }
 }
 
 async function getRelatedProducts(category: string, excludeId: string) {
@@ -397,22 +403,27 @@ async function getRelatedProducts(category: string, excludeId: string) {
     "silver filigree earrings",
   ];
 
-  // Get from database
-  const dbProducts = await prisma.product.findMany({
-    where: {
-      category,
-      id: { not: excludeId },
-    },
-    include: { artisan: { select: { name: true, avatar: true } } },
-    take: 10, // Get more than needed to account for filtering
-  });
+  try {
+    // Get from database
+    const dbProducts = await prisma.product.findMany({
+      where: {
+        category,
+        id: { not: excludeId },
+      },
+      include: { artisan: { select: { name: true, avatar: true } } },
+      take: 10, // Get more than needed to account for filtering
+    });
 
-  // Filter out excluded products after fetching
-  const filteredDbProducts = dbProducts
-    .filter((p) => !excludedProducts.includes(p.name.toLowerCase()))
-    .slice(0, 4 - demoCategoryProducts.length);
+    // Filter out excluded products after fetching
+    const filteredDbProducts = dbProducts
+      .filter((p) => !excludedProducts.includes(p.name.toLowerCase()))
+      .slice(0, 4 - demoCategoryProducts.length);
 
-  return [...demoCategoryProducts, ...filteredDbProducts];
+    return [...demoCategoryProducts, ...filteredDbProducts];
+  } catch (error) {
+    console.log("Database not available for related products");
+    return demoCategoryProducts;
+  }
 }
 
 async function getUserOffer(productId: string, userId: string) {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLanguage } from "@/lib/contexts/LanguageContext";
-import { Sparkles, Lightbulb, Wand2 } from "lucide-react";
+import { Sparkles, Lightbulb, Wand2, Info } from "lucide-react";
 
 // Theme icons as SVG components
 const CleanIcon = () => (
@@ -244,6 +244,7 @@ export function PhotoStudioClient() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
     imageUrl?: string;
+    isEnhancementUnavailable?: boolean;
     description?: string;
     productName?: string;
     postContent?: string;
@@ -440,13 +441,17 @@ export function PhotoStudioClient() {
       const [enhanceRes, contentRes] = results;
 
       const enhanceData =
-        enhanceRes.status === "fulfilled" ? enhanceRes.value : null;
-      const enhancedUrl = enhanceData?.enhancedUrl || imageUrl;
+        enhanceRes.status === "fulfilled" && enhanceRes.value?.success && enhanceRes.value?.enhancedUrl
+          ? enhanceRes.value
+          : null;
+      const isEnhancementUnavailable = !enhanceData;
+      const displayedImageUrl = enhanceData?.enhancedUrl || imageUrl;
       const content =
         contentRes.status === "fulfilled" ? contentRes.value : null;
 
       setResult({
-        imageUrl: enhancedUrl,
+        imageUrl: displayedImageUrl,
+        isEnhancementUnavailable,
         description: content?.description,
         productName: content?.productName,
         postContent: content?.postContent,
@@ -827,11 +832,19 @@ export function PhotoStudioClient() {
               )}
 
               {result?.imageUrl && !isLoading && (
-                <img
-                  src={result.imageUrl}
-                  alt="Enhanced result"
-                  className="h-full w-full object-contain p-2 rounded-lg"
-                />
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <img
+                    src={result.imageUrl}
+                    alt="Result preview"
+                    className="h-full w-full object-contain p-2 rounded-lg"
+                  />
+                  {result.isEnhancementUnavailable && (
+                    <div className="absolute top-3 left-3 right-3 bg-zinc-900/85 backdrop-blur-md text-amber-300 text-xs px-3 py-1.5 rounded-lg border border-amber-500/20 shadow-sm flex items-center gap-1.5 z-10">
+                      <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span className="truncate">Photo enhancement currently unavailable • Showing original photo</span>
+                    </div>
+                  )}
+                </div>
               )}
 
               {!isLoading && !result && !error && (

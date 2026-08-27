@@ -530,7 +530,7 @@ export function AuthCertificatesClient({
 
       {/* AI Certificate Generation Overlay */}
       {isGeneratingCert && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-md transition-all duration-500">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-md transition-all duration-500">
           <div className="max-w-md w-full px-6 text-center">
             <div className="relative mb-8 flex justify-center">
               {/* Outer spinning ring */}

@@ -25,11 +25,24 @@ async function getProducts(category?: string, search?: string) {
 }
 
 async function getCategories() {
-  const products = await prisma.product.findMany({
-    select: { category: true },
-    distinct: ["category"],
-  });
-  return ["All", ...products.map((p) => p.category)];
+  try {
+    const products = await prisma.product.findMany({
+      select: { category: true },
+      distinct: ["category"],
+    });
+    const dbCategories = products.map((p) => p.category);
+
+    // Merge with demo categories
+    const demoCategories = [...new Set(demoProducts.map((p) => p.category))];
+    const allCategories = [...new Set([...dbCategories, ...demoCategories])];
+
+    return ["All", ...allCategories.sort()];
+  } catch (error) {
+    console.log("Database not available, using demo categories");
+    // Return demo categories only
+    const demoCategories = [...new Set(demoProducts.map((p) => p.category))];
+    return ["All", ...demoCategories.sort()];
+  }
 }
 
 async function getUserData(userId: string) {
