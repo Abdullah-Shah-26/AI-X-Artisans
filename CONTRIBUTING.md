@@ -2,6 +2,43 @@
 
 Thank you for your interest in contributing to AIxArtisans! This guide will help you set up your development environment and understand the Supabase configuration.
 
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── (auth)/          # Auth pages (login, signup)
+│   ├── api/             # API routes
+│   ├── auth/            # Auth callbacks
+│   └── page.tsx         # Landing page
+├── lib/
+│   ├── prisma.ts        # Prisma client
+│   ├── supabase/        # Supabase clients
+│   ├── ai/              # AI service functions
+│   └── utils.ts         # Utility functions
+└── types/               # TypeScript types
+```
+
+## Database Schema
+
+Key models:
+
+- **User** - Base user with role (ARTISAN, VOLUNTEER, CUSTOMER)
+- **ArtisanProfile** / **VolunteerProfile** - Role-specific data
+- **Product** - Artisan products with certificates
+- **Project** - Volunteer collaboration projects
+- **Conversation** / **Message** - Chat system
+- **BargainRequest** - Price negotiation
+- **Certificate** - Authenticity certificates
+
+## Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run db:push` - Push schema to database
+- `npm run db:generate` - Generate Prisma client
+- `npm run db:studio` - Open Prisma Studio
+
 ## Getting Started
 
 ### 1. Clone and Install
