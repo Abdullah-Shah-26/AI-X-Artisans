@@ -218,148 +218,148 @@ flowchart LR
 ## App Gallery
 
 <div align="center">
-    <img src="./public/screenshots/Landing-Page-1.png" alt="Landing Page (1)" width="700" style="max-width: 90%; height: auto;" />
     <h3>Landing Page (1)</h3>
+    <img src="./public/screenshots/Landing-Page-1.png" alt="Landing Page (1)" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Landing-Page-2.png" alt="Landing Page (2)" width="700" style="max-width: 90%; height: auto;" />
     <h3>Landing Page (2)</h3>
+    <img src="./public/screenshots/Landing-Page-2.png" alt="Landing Page (2)" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Landing-Page-3.png" alt="Landing Page (3)" width="700" style="max-width: 90%; height: auto;" />
     <h3>Landing Page (3)</h3>
+    <img src="./public/screenshots/Landing-Page-3.png" alt="Landing Page (3)" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Login.png" alt="Login" width="700" style="max-width: 90%; height: auto;" />
     <h3>Login</h3>
+    <img src="./public/screenshots/Login.png" alt="Login" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/SignUp.png" alt="Sign Up" width="700" style="max-width: 90%; height: auto;" />
     <h3>Sign Up</h3>
+    <img src="./public/screenshots/SignUp.png" alt="Sign Up" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Demo-Artisan-Dashboard.png" alt="Artisan Dashboard" width="700" style="max-width: 90%; height: auto;" />
     <h3>Artisan Dashboard</h3>
+    <img src="./public/screenshots/Demo-Artisan-Dashboard.png" alt="Artisan Dashboard" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Add-Product.png" alt="Add Product" width="700" style="max-width: 90%; height: auto;" />
     <h3>Add Product</h3>
+    <img src="./public/screenshots/Add-Product.png" alt="Add Product" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Photo-Studio.png" alt="AI Photo Studio" width="700" style="max-width: 90%; height: auto;" />
     <h3>AI Photo Studio</h3>
+    <img src="./public/screenshots/Photo-Studio.png" alt="AI Photo Studio" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Video-Studiop.png" alt="AI Video Studio" width="700" style="max-width: 90%; height: auto;" />
     <h3>AI Video Studio</h3>
+    <img src="./public/screenshots/Video-Studiop.png" alt="AI Video Studio" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Collabration-Hub-As-Artisan.png" alt="Collaboration Hub (Artisan)" width="700" style="max-width: 90%; height: auto;" />
     <h3>Collaboration Hub (Artisan)</h3>
+    <img src="./public/screenshots/Collabration-Hub-As-Artisan.png" alt="Collaboration Hub (Artisan)" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Project-Posting.png" alt="Project Posting" width="700" style="max-width: 90%; height: auto;" />
     <h3>Project Posting</h3>
+    <img src="./public/screenshots/Project-Posting.png" alt="Project Posting" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Connections.png" alt="Connections" width="700" style="max-width: 90%; height: auto;" />
     <h3>Connections</h3>
+    <img src="./public/screenshots/Connections.png" alt="Connections" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Conversation-Menu.png" alt="Conversations" width="700" style="max-width: 90%; height: auto;" />
     <h3>Conversations</h3>
+    <img src="./public/screenshots/Conversation-Menu.png" alt="Conversations" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Negotiation.png" alt="Negotiations" width="700" style="max-width: 90%; height: auto;" />
     <h3>Negotiations</h3>
+    <img src="./public/screenshots/Negotiation.png" alt="Negotiations" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Finance-Funding.png" alt="Finance Funding" width="700" style="max-width: 90%; height: auto;" />
     <h3>Finance Funding</h3>
+    <img src="./public/screenshots/Finance-Funding.png" alt="Finance Funding" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Volunteer-Dashboard.png" alt="Volunteer Dashboard" width="700" style="max-width: 90%; height: auto;" />
     <h3>Volunteer Dashboard</h3>
+    <img src="./public/screenshots/Volunteer-Dashboard.png" alt="Volunteer Dashboard" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Volunteer-Project-Management.png" alt="Volunteer Project Management" width="700" style="max-width: 90%; height: auto;" />
     <h3>Volunteer Project Management</h3>
+    <img src="./public/screenshots/Volunteer-Project-Management.png" alt="Volunteer Project Management" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/MarketPlace-For-Customers.png" alt="Customer Marketplace" width="700" style="max-width: 90%; height: auto;" />
     <h3>Customer Marketplace</h3>
+    <img src="./public/screenshots/MarketPlace-For-Customers.png" alt="Customer Marketplace" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Demo-Project-Description-Page.png" alt="Demo Product Description Page" width="700" style="max-width: 90%; height: auto;" />
     <h3>Demo Product Description Page</h3>
+    <img src="./public/screenshots/Demo-Project-Description-Page.png" alt="Demo Product Description Page" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Current-AI-Stylist-Features.png" alt="AI Stylist Features" width="700" style="max-width: 90%; height: auto;" />
     <h3>AI Stylist Features</h3>
+    <img src="./public/screenshots/Current-AI-Stylist-Features.png" alt="AI Stylist Features" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 <hr />
 
 <div align="center">
-    <img src="./public/screenshots/Customer-Profile.png" alt="Customer Profile" width="700" style="max-width: 90%; height: auto;" />
     <h3>Customer Profile</h3>
+    <img src="./public/screenshots/Customer-Profile.png" alt="Customer Profile" width="100%" style="width: 100%; height: auto;" />
 </div>
 
 ## Getting Started
